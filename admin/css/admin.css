@@ -225,3 +225,9 @@ tbody tr:hover td { background:var(--gray50); }
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background:var(--gray100); }
 ::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
+
+/* TomSelect Adjustments */
+.ts-wrapper { background: var(--gray100) !important; border-radius: var(--radius-sm) !important; border: 1.5px solid var(--gray200) !important; }
+.ts-wrapper.focus { border-color: var(--accent) !important; background: var(--white) !important; }
+.ts-control { background: transparent !important; border: none !important; padding: .6rem .85rem !important; font-family: var(--font-body) !important; font-size: .85rem !important; color: var(--text) !important; min-height: 38px !important; }
+.ts-dropdown { border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important; border-color: var(--accent) !important; }

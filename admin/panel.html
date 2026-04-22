@@ -675,7 +675,7 @@
                   <th>Kategori</th>
                   <th>Status</th>
                   <th>Stok</th>
-                  <th>Harga</th>
+                  <th id="th-price">Harga</th>
                   <th>Unggulan</th>
                   <th>Aksi</th>
                 </tr>
@@ -893,15 +893,10 @@
                 <option value="">Pilih produk...</option>
               </select></div>
             <div class="form-grid">
-              <div class="form-group"><label>Jumlah *</label><input type="number" id="siQty" min="1" placeholder="0">
-              </div>
-              <div class="form-group"><label>Supplier</label><select id="siSupplier">
-                  <option value="">Pilih...</option>
-                </select></div>
-            </div>
-            <div class="form-group"><label>No. PO / Referensi</label><input type="text" id="siRef"
-                placeholder="PO-2026-001"></div>
-            <div class="form-group"><label>Harga Satuan (Rp)</label><input type="number" id="siPrice" min="0" value="0">
+              <div class="form-group"><label>Jumlah *</label><input type="number" id="siQty" min="1" placeholder="0"></div>
+              <div class="form-group"><label>Supplier</label><select id="siSupplier"><option value="">Pilih...</option></select></div>
+              <div class="form-group"><label>No. PO / Referensi</label><input type="text" id="siRef" placeholder="PO-2026-001"></div>
+              <div class="form-group"><label>Harga Satuan (Rp)</label><input type="number" id="siPrice" min="0" placeholder="0"></div>
             </div>
             <div class="form-group"><label>Catatan</label><textarea id="siNotes" rows="2"
                 placeholder="Opsional..."></textarea></div>
@@ -929,10 +924,17 @@
               Keluar</button>
           </div>
         </div>
+      </div>
+
+      <!-- STOCK SUMMARY -->
+      <div class="page" id="page-stock-summary">
         <div class="card">
           <div class="card-header">
             <div class="card-title">📊 Ringkasan Stok Semua Produk</div>
-            <button class="btn btn-sm btn-outline" onclick="loadStockSummary()">🔄 Refresh</button>
+            <div style="display:flex;gap:.75rem">
+              <button class="btn btn-sm btn-accent" onclick="exportStockPDF()">📄 Export PDF</button>
+              <button class="btn btn-sm btn-outline" onclick="loadStockSummary()">🔄 Refresh</button>
+            </div>
           </div>
           <div class="table-toolbar">
             <input type="text" id="stockSearch" placeholder="🔍 Cari produk..." oninput="filterStockTable()">
@@ -955,6 +957,7 @@
               <tbody id="stockSummaryBody"></tbody>
             </table>
           </div>
+          <div id="stockPagination" class="table-pagination"></div>
         </div>
       </div>
 
@@ -974,8 +977,7 @@
             <input type="date" id="txFrom" onchange="loadTransactions()">
             <span style="align-self:center;color:var(--text-light);font-size:.82rem">s/d</span>
             <input type="date" id="txTo" onchange="loadTransactions()">
-            <button class="btn btn-primary" style="margin-left:auto" onclick="printStockReport()">🖨️ Export
-              PDF</button>
+            <button class="btn btn-accent" style="margin-left:auto" onclick="exportTransactionPDF()">📄 Export PDF</button>
           </div>
           <div class="table-wrap">
             <table>
@@ -1327,19 +1329,22 @@
                 placeholder="Kayu Jati Solid"></div>
             <div class="form-group"><label>Dimensi</label><input type="text" id="pDimensions"
                 placeholder="100 x 60 x 40 cm"></div>
-            <div class="form-group"><label>Urutan Tampil</label><input type="number" id="pSortOrder" value="0"></div>
+            <div class="form-group">
+              <label>Prioritas Tampil</label>
+              <input type="number" id="pSortOrder" placeholder="0">
+              <p class="form-note">Angka kecil muncul paling depan (misal: 1, 2, 3)</p>
+            </div>
             <div class="form-group full"><label class="form-check"><input type="checkbox" id="pFeatured"> ⭐ Produk
                 Unggulan (tampil di halaman utama)</label></div>
           </div>
         </div>
         <!-- Tab: Warehouse -->
         <div id="ptWarehouse" class="settings-panel">
-          <div
-            style="background:var(--accent-warm);border-radius:var(--radius-md);padding:1rem;margin-bottom:1rem;font-size:.83rem;color:var(--primary)">
+          <div style="background:var(--accent-warm);border-radius:var(--radius-md);padding:1rem;margin-bottom:1rem;font-size:.83rem;color:var(--primary)">
             🏭 <strong>Data Gudang</strong> — Hanya terlihat oleh Admin Gudang & Superadmin. Tidak tampil di website.
           </div>
           <div class="form-grid">
-            <div class="form-group"><label>Stok Awal (unit)</label><input type="number" id="pStock" min="0" value="0">
+            <div class="form-group"><label>Stok Awal (unit)</label><input type="number" id="pStock" min="0" placeholder="0">
             </div>
             <div class="form-group"><label>Satuan</label>
               <select id="pUnit">
@@ -1351,10 +1356,10 @@
                 <option value="kg">kg</option>
               </select>
             </div>
-            <div class="form-group"><label>Harga Modal (Rp)</label><input type="number" id="pCostPrice" min="0"
-                value="0"></div>
+            <div class="form-group"><label>Harga Beli (Rp)</label><input type="number" id="pCostPrice" min="0"
+                placeholder="0"></div>
             <div class="form-group"><label>Harga Jual (Rp)</label><input type="number" id="pSellPrice" min="0"
-                value="0"></div>
+                placeholder="0"></div>
           </div>
         </div>
         <!-- Tab: Content -->
@@ -1441,7 +1446,11 @@
               onchange="previewImg(this,'prevCatImg')"><img id="prevCatImg" class="img-preview" style="display:none">
           </div>
           <div class="form-group full"><label>Deskripsi</label><textarea id="cDesc" rows="2"></textarea></div>
-          <div class="form-group"><label>Urutan</label><input type="number" id="cOrder" value="0"></div>
+          <div class="form-group">
+            <label>Prioritas Tampil</label>
+            <input type="number" id="cOrder" placeholder="0">
+            <p class="form-note">Angka kecil muncul paling depan</p>
+          </div>
           <div class="form-group"><label style="margin-top:1.2rem" class="form-check"><input type="checkbox"
                 id="cActive" checked> Aktif</label></div>
         </div>
@@ -1635,9 +1644,9 @@
           <div id="orderItems"></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem">
-          <div class="form-group"><label>Diskon (Rp)</label><input type="number" id="oDiscount" value="0" min="0"
+          <div class="form-group"><label>Diskon (Rp)</label><input type="number" id="oDiscount" placeholder="0" min="0"
               onchange="calcTotal()"></div>
-          <div class="form-group"><label>Ongkos Kirim (Rp)</label><input type="number" id="oShipping" value="0" min="0"
+          <div class="form-group"><label>Ongkos Kirim (Rp)</label><input type="number" id="oShipping" placeholder="0" min="0"
               onchange="calcTotal()"></div>
           <div class="form-group"><label>TOTAL BAYAR</label><input type="text" id="oTotal" readonly
               style="font-weight:700;color:var(--primary);font-size:1rem;background:var(--accent-warm)"></div>

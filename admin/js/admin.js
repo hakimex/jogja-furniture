@@ -141,6 +141,13 @@ function initUI() {
   // Slug auto-gen from product name
   const pName = document.getElementById('pName');
   if (pName) pName.addEventListener('input', autoSlug);
+
+  // Auto-select text on focus for number inputs
+  document.addEventListener('focus', (e) => {
+    if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
+      e.target.select();
+    }
+  }, true);
 }
 
 function roleLabel(r) {
@@ -171,6 +178,7 @@ const MENUS = {
     { icon: '📦', label: 'Master Produk', page: 'products' },
     { icon: '🗂', label: 'Kategori', page: 'categories' },
     { icon: '📥', label: 'Barang Masuk / Keluar', page: 'stock' },
+    { icon: '📊', label: 'Ringkasan Stok', page: 'stock-summary' },
     { icon: '📋', label: 'Riwayat Transaksi', page: 'stock-transactions' },
     { section: 'Relasi Bisnis' },
     { icon: '🏢', label: 'Supplier', page: 'suppliers' },
@@ -268,7 +276,7 @@ function navigateTo(page) {
     'services': '🛠 Layanan', 'testimonials': '💬 Testimoni', 'contacts': '📨 Pesan Masuk',
     'settings': '⚙️ Settings / CMS', 'warehouse-dashboard': '📊 Dashboard Gudang',
     'marketing-dashboard': '📊 Dashboard Marketing',
-    'stock': '📥 Stok Manajemen', 'stock-transactions': '📋 Transaksi Stok',
+    'stock': '📥 Stok Manajemen', 'stock-summary': '📊 Ringkasan Stok Produk', 'stock-transactions': '📋 Transaksi Stok',
     'suppliers': '🏢 Supplier', 'customers': '👥 Customer', 'orders': '🛒 Order',
     'invoice-view': '🧾 Invoice', 'users': '👤 User Management',
     'activity-logs': '📋 Activity Log', 'control-center': '🛡️ Control Center',
@@ -289,7 +297,7 @@ function navigateTo(page) {
     'settings': loadSettings,
     'warehouse-dashboard': loadWarehouseDashboard,
     'stock': () => { loadStockSummary(); loadProductsDropdown(); loadSuppliersDropdown(); setVal('soRef', `OUT-${Math.floor(Date.now() / 1000).toString().slice(-6)}`); },
-    'stock-transactions': loadTransactions,
+    'stock-summary': loadStockSummary, 'stock-transactions': loadTransactions,
     'suppliers': loadSuppliers,
     'customers': loadCustomers,
     'orders': () => { loadOrders(); loadOrderStats(); loadCustomersDropdown(); loadProductsDropdown(); },
@@ -514,8 +522,14 @@ function buildStatCards(items) {
 let prodPage = 1;
 async function loadProducts(page = 1) {
   prodPage = page;
+  const thPrice = document.getElementById('th-price');
+  if (thPrice) {
+    if (me.role === 'admin_gudang' || me.role === 'superadmin') thPrice.textContent = 'Harga Beli';
+    else if (me.role === 'admin_website' || me.role === 'marketing') thPrice.textContent = 'Harga Jual';
+    else thPrice.textContent = 'Harga';
+  }
   const search = getVal('prodSearch');
-  const cat = getVal('prodCatFilter');
+const cat = getVal('prodCatFilter');
   const status = getVal('prodStatusFilter');
   try {
     const data = await api('GET', `/products?page=${page}&limit=20&search=${encodeURIComponent(search)}&category=${cat}&status=${status}`);
@@ -529,9 +543,13 @@ async function loadProducts(page = 1) {
         <td>${p.category_name || '—'}</td>
         <td>${statusBadge(p.publish_status)}</td>
         <td><span style="font-weight:600;color:${p.warehouse_stock <= 3 ? 'var(--danger)' : p.warehouse_stock <= 10 ? 'var(--warning)' : 'var(--success)'}">${p.warehouse_stock ?? 0}</span> ${p.unit || 'unit'}</td>
-        <td style="font-size:.82rem">${p.price_label || '—'}</td>
+        <td style="font-size:.82rem">
+          ${(me.role === 'admin_gudang' || me.role === 'superadmin') ? fmtRp(p.cost_price) : 
+            (me.role === 'admin_website' || me.role === 'marketing') ? fmtRp(p.sell_price) : 
+            (p.price_label || '—')}
+        </td>
         <td>${p.is_featured ? '⭐' : '—'}</td>
-        <td>
+<td>
           <div style="display:flex;gap:.35rem;flex-wrap:wrap">
             ${me.role !== 'marketing' ? `<button class="btn btn-sm btn-outline" onclick="editProduct(${p.id})">✏️</button>` : `<button class="btn btn-sm btn-outline" title="Lihat Detail" onclick="openProductModal(${p.id}, true)">👁️</button>`}
             ${(me.role === 'admin_website' || me.role === 'superadmin') && p.publish_status !== 'published' ? `<button class="btn btn-sm btn-success" onclick="quickPublish(${p.id})">🌐</button>` : ''}
@@ -611,7 +629,7 @@ function openProductModal(id = null, isViewOnly = false) {
   editingId = id;
   // Reset form
   ['pName', 'pSku', 'pSlug', 'pPriceLabel', 'pMaterial', 'pDimensions', 'pShortDesc', 'pDesc', 'pSpec', 'pTags', 'pMetaTitle', 'pMetaDesc'].forEach(f => setVal(f, ''));
-  setVal('pSortOrder', 0); setVal('pStock', 0); setVal('pCostPrice', 0); setVal('pSellPrice', 0);
+  setVal('pSortOrder', ''); setVal('pStock', ''); setVal('pCostPrice', ''); setVal('pSellPrice', '');
   setChecked('pFeatured', false); setVal('pStatus', 'new'); setVal('pCategory', ''); setVal('pUnit', 'unit');
   const prevEl = document.getElementById('prevThumb');
   if (prevEl) prevEl.style.display = 'none';
@@ -633,6 +651,8 @@ function openProductModal(id = null, isViewOnly = false) {
   if (tabContent) tabContent.style.display = (isGudang) ? 'none' : '';
   if (tabSeo) tabSeo.style.display = (isGudang) ? 'none' : '';
   if (pFeaturedGroup) pFeaturedGroup.style.display = (isGudang) ? 'none' : '';
+  const pOrderGroup = document.getElementById('pSortOrder')?.closest('.form-group');
+  if (pOrderGroup) pOrderGroup.style.display = (isGudang) ? 'none' : '';
   
   if (pStatusGroup) pStatusGroup.style.display = (isWebsite || me.role === 'superadmin') ? '' : 'none';
   if (pSellPriceInfoGroup) pSellPriceInfoGroup.style.display = (isWebsite || me.role === 'marketing' || me.role === 'superadmin') ? '' : 'none';
@@ -839,7 +859,10 @@ function openCategoryModal(id = null) {
   ['cName', 'cSlug', 'cDesc', 'cColorFromT', 'cColorToT'].forEach(f => setVal(f, ''));
   setVal('cColorFrom', '#5C2E0E'); setVal('cColorTo', '#C49A6C');
   setVal('cColorFromT', '#5C2E0E'); setVal('cColorToT', '#C49A6C');
-  setVal('cOrder', 0); setChecked('cActive', true);
+  setVal('cOrder', ''); setChecked('cActive', true);
+  const isGudang = me.role === 'admin_gudang';
+  const cOrderGroup = document.getElementById('cOrder')?.closest('.form-group');
+  if (cOrderGroup) cOrderGroup.style.display = (isGudang) ? 'none' : '';
   document.getElementById('prevCatImg').style.display = 'none';
   if (id) {
     const cat = categories.find(c => c.id === id);
@@ -1244,16 +1267,17 @@ async function submitStockOut() {
   } catch (e) { toast(e.message, 'error'); }
 }
 
-async function loadStockSummary() {
+async function loadStockSummary(page = 1) {
   try {
-    const data = await api('GET', '/stock/summary');
+    const q = getVal('stockSearch');
+    const data = await api('GET', `/stock/summary?page=${page}&search=${q}`);
     stockSummaryData = data.data || [];
-    renderStockTable();
+    renderStockTable(data);
   } catch (e) { toast(e.message, 'error'); }
 }
 
-function renderStockTable(filtered = null) {
-  const rows = filtered || stockSummaryData;
+function renderStockTable(data) {
+  const rows = data.data || [];
   document.getElementById('stockSummaryBody').innerHTML = rows.map(p => `
     <tr>
       <td style="font-size:.78rem;color:var(--text-light)">${p.sku || '—'}</td>
@@ -1266,12 +1290,112 @@ function renderStockTable(filtered = null) {
       <td style="font-size:.8rem;font-weight:600">${fmtRp(p.stock_value)}</td>
       <td>${statusBadge(p.publish_status)}</td>
     </tr>`).join('');
+  buildPagination('stockPagination', data.pagination, 'loadStockSummary');
 }
 
-function filterStockTable() {
-  const q = getVal('stockSearch').toLowerCase();
-  const filtered = q ? stockSummaryData.filter(p => p.name.toLowerCase().includes(q) || ((p.sku || '').toLowerCase().includes(q))) : null;
-  renderStockTable(filtered);
+const filterStockTable = debounce(() => loadStockSummary(1), 500);
+
+async function exportStockPDF() {
+  try {
+    const q = getVal('stockSearch');
+    const data = await api('GET', `/stock/summary?limit=1000&search=${q}`);
+    const items = data.data || [];
+    const totalVal = data.total_stock_value || 0;
+    const c = data.company || {};
+
+    const html = `
+      <html>
+      <head>
+        <title>Stock Report - ${new Date().toLocaleDateString()}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+        <style>
+          body { font-family: 'Outfit', sans-serif; color: #2C1A0E; padding: 40px; line-height: 1.4; }
+          .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+          .co-info h1 { font-size: 28px; margin: 0; color: #5C2E0E; font-weight: 700; }
+          .co-info p { margin: 3px 0; font-size: 13px; color: #6B5040; }
+          .report-meta { text-align: right; }
+          .report-meta h2 { font-size: 32px; margin: 0; color: #5C2E0E; letter-spacing: 2px; font-weight: 600; }
+          .report-meta p { margin: 5px 0; font-size: 14px; font-weight: 600; color: #5C2E0E; }
+          .report-date { font-size: 13px; color: #6B5040; }
+          
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+          th { background: #F5F0EB; text-align: left; padding: 12px 10px; border-bottom: 2px solid #5C2E0E; text-transform: uppercase; font-weight: 700; color: #5C2E0E; }
+          td { padding: 10px; border-bottom: 1px solid #F0EBE3; }
+          tr:nth-child(even) { background: #FAFAFA; }
+          
+          .summary { margin-top: 40px; display: flex; justify-content: flex-end; }
+          .summary-card { background: #F5F0EB; padding: 20px 30px; border-radius: 8px; border-left: 5px solid #5C2E0E; }
+          .summary-lbl { font-size: 14px; color: #6B5040; margin-bottom: 5px; display: block; }
+          .summary-val { font-size: 22px; font-weight: 700; color: #5C2E0E; }
+          
+          .footer { margin-top: 50px; border-top: 1px solid #E0D8CE; padding-top: 20px; font-size: 11px; color: #999; display: flex; justify-content: space-between; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="co-info">
+            <h1>${c.site_name || 'JOGJA FURNITURE'}</h1>
+            <p>FURNITURE & INTERIOR SOLUTIONS</p>
+            <p style="margin-top: 10px">📍 ${c.address || '—'}</p>
+            <p>📞 ${c.phone || '—'}</p>
+            <p>📧 ${c.email || '—'}</p>
+          </div>
+          <div class="report-meta">
+            <h2>REPORT</h2>
+            <p>STOCK SUMMARY</p>
+            <div class="report-date">Tanggal: ${new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })}</div>
+            <div style="margin-top: 15px"><span style="background:#E8F5E9; color:#2E7D32; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase">Inventory Live</span></div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Produk</th>
+              <th>Kategori</th>
+              <th style="text-align:center">Stok</th>
+              <th>Satuan</th>
+              <th>Harga Modal</th>
+              <th>Harga Jual</th>
+              <th>Nilai Stok</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(p => `
+              <tr>
+                <td style="color:#888">${p.sku || '—'}</td>
+                <td><strong>${p.name}</strong></td>
+                <td>${p.category_name || '—'}</td>
+                <td style="font-weight:700; text-align:center; color:${p.warehouse_stock <= 5 ? '#D32F2F' : '#2C1A0E'}">${p.warehouse_stock}</td>
+                <td>${p.unit || 'unit'}</td>
+                <td>${fmtRp(p.cost_price)}</td>
+                <td>${fmtRp(p.sell_price)}</td>
+                <td style="font-weight:600; color:#5C2E0E">${fmtRp(p.stock_value)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+
+        <div class="summary">
+          <div class="summary-card">
+            <span class="summary-lbl">Total Nilai Inventori (Berdasarkan Harga Modal)</span>
+            <span class="summary-val">${fmtRp(totalVal)}</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div>Dicetak oleh: ${me.full_name} (${me.role})</div>
+          <div>Halaman 1 dari 1</div>
+        </div>
+
+        <script>window.onload = () => { window.print(); setTimeout(() => window.close(), 500); };</script>
+      </body>
+      </html>`;
+
+    const win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+  } catch (e) { toast(e.message, 'error'); }
 }
 
 let txPage = 1;
@@ -1579,7 +1703,7 @@ function addOrderItem() {
     </div>
     <div class="form-group" style="margin:0">
       <label style="font-size:.72rem">Harga Satuan (Rp) *</label>
-      <input type="number" id="iPrice_${idx}" value="0" min="0" onchange="calcTotal()" onkeyup="calcTotal()">
+      <input type="number" id="iPrice_${idx}" value="" placeholder="0" min="0" onchange="calcTotal()" onkeyup="calcTotal()">
     </div>
     <div style="margin:0;align-self:end;padding-bottom:.35rem">
       <div style="font-size:.7rem;color:var(--text-light);margin-bottom:.2rem">Subtotal</div>
@@ -1631,7 +1755,7 @@ function openOrderModal(id = null) {
   editingId = id;
   document.getElementById('modalOrdTitle').textContent = id ? 'Edit Order' : 'Buat Order Baru';
   ['oCusName', 'oCusPhone', 'oCusEmail', 'oAddr', 'oShipAddr', 'oNotes'].forEach(f => setVal(f, ''));
-  setVal('oDiscount', 0); setVal('oShipping', 0); setVal('oTotal', 'Rp 0');
+  setVal('oDiscount', ''); setVal('oShipping', ''); setVal('oTotal', 'Rp 0');
   setVal('oCustomerId', ''); setVal('oPayMethod', ''); setVal('oDelivery', '');
   document.getElementById('orderItems').innerHTML = '';
   orderItems = []; orderItemCount = 0;
@@ -2072,3 +2196,102 @@ async function doChangePassword() {
 const style = document.createElement('style');
 style.textContent = `@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}`;
 document.head.appendChild(style);
+
+
+// Stock Transactions Export
+async function exportTransactionPDF() {
+  try {
+    const type = getVal('txType'), from = getVal('txFrom'), to = getVal('txTo');
+    const data = await api('GET', `/stock/transactions?limit=1000&type=${type}&date_from=${from}&date_to=${to}`);
+    const items = data.data || [];
+    const c = data.company || {};
+
+    const html = `
+      <html>
+      <head>
+        <title>Transaction Report - ${new Date().toLocaleDateString()}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+        <style>
+          body { font-family: 'Outfit', sans-serif; color: #2C1A0E; padding: 40px; line-height: 1.4; }
+          .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+          .co-info h1 { font-size: 28px; margin: 0; color: #5C2E0E; font-weight: 700; }
+          .co-info p { margin: 3px 0; font-size: 13px; color: #6B5040; }
+          .report-meta { text-align: right; }
+          .report-meta h2 { font-size: 32px; margin: 0; color: #5C2E0E; letter-spacing: 2px; font-weight: 600; }
+          .report-meta p { margin: 5px 0; font-size: 14px; font-weight: 600; color: #5C2E0E; }
+          .report-date { font-size: 13px; color: #6B5040; }
+          
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; }
+          th { background: #F5F0EB; text-align: left; padding: 12px 10px; border-bottom: 2px solid #5C2E0E; text-transform: uppercase; font-weight: 700; color: #5C2E0E; }
+          td { padding: 10px; border-bottom: 1px solid #F0EBE3; }
+          tr:nth-child(even) { background: #FAFAFA; }
+          
+          .badge { padding: 3px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+          .badge-in { background: #E8F5E9; color: #2E7D32; }
+          .badge-out { background: #FFEBEE; color: #C62828; }
+          .badge-adjustment { background: #E3F2FD; color: #1565C0; }
+          
+          .footer { margin-top: 50px; border-top: 1px solid #E0D8CE; padding-top: 20px; font-size: 11px; color: #999; display: flex; justify-content: space-between; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="co-info">
+            <h1>${c.site_name || 'JOGJA FURNITURE'}</h1>
+            <p>FURNITURE & INTERIOR SOLUTIONS</p>
+            <p style="margin-top: 10px">📍 ${c.address || '—'}</p>
+            <p>📞 ${c.phone || '—'}</p>
+            <p>📧 ${c.email || '—'}</p>
+          </div>
+          <div class="report-meta">
+            <h2>REPORT</h2>
+            <p>STOCK TRANSACTIONS</p>
+            <div class="report-date">Tanggal: ${new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })}</div>
+            <div style="margin-top: 10px; font-size:11px; color:#888">Periode: ${from || 'Awal'} s/d ${to || 'Sekarang'}</div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Produk</th>
+              <th>SKU</th>
+              <th>Tipe</th>
+              <th style="text-align:center">Qty</th>
+              <th style="text-align:center">Sebelum</th>
+              <th style="text-align:center">Sesudah</th>
+              <th>Ref. No.</th>
+              <th>Oleh</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(t => `
+              <tr>
+                <td>${fmtDate(t.created_at)}</td>
+                <td><strong>${t.product_name}</strong></td>
+                <td>${t.sku || '—'}</td>
+                <td><span class="badge badge-${t.type}">${t.type.toUpperCase()}</span></td>
+                <td style="font-weight:700; text-align:center; color:${t.type === 'in' ? '#2E7D32' : '#C62828'}">${t.type === 'in' ? '+' : '-'}${t.qty}</td>
+                <td style="text-align:center; color:#888">${t.qty_before}</td>
+                <td style="text-align:center; font-weight:600">${t.qty_after}</td>
+                <td>${t.reference_no || '—'}</td>
+                <td>${t.created_by_name}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+
+        <div class="footer">
+          <div>Dicetak oleh: ${me.full_name} (${me.role})</div>
+          <div>Halaman 1 dari 1</div>
+        </div>
+
+        <script>window.onload = () => { window.print(); setTimeout(() => window.close(), 500); };</script>
+      </body>
+      </html>`;
+
+    const win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+  } catch (e) { toast(e.message, 'error'); }
+}
