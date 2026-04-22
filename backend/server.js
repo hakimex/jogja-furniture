@@ -18,7 +18,7 @@ uploadDirs.forEach(dir => {
 
 // ── CORS (Konfigurasi untuk Production & Local) ────────────────
 const allowedOrigins = [
-  process.env.FRONTEND_URL, jogja-furniture-production.up.railway.app
+  process.env.FRONTEND_URL,
   'http://localhost:3000',
   'http://localhost:5000',
   'http://localhost:5500',
