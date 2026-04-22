@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Backend API for Jogja Furniture Decoration",
   "main": "server.js",
-   "scripts": {
+  "scripts": {
     "start": "node server.js",
-    "setup": "node setup-admin.js"
+    "setup": "node setup-admin.js",
     "dev": "nodemon server.js"
   },
   "dependencies": {
