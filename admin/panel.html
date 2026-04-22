@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Jogja Furniture Enterprise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    /* ── ENTERPRISE EXTENSIONS ── */
+    .top-module-bar {
+      display: none;
+      align-items: center;
+      background: var(--primary-dark);
+      border-bottom: 1px solid rgba(255, 255, 255, .1);
+      padding: .45rem 1.5rem;
+      gap: .5rem;
+      flex-wrap: wrap;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200
+    }
+
+    .top-module-bar.show {
+      display: flex
+    }
+
+    .module-btn {
+      padding: .35rem .9rem;
+      border-radius: var(--radius-sm);
+      font-size: .78rem;
+      font-weight: 600;
+      border: 1.5px solid rgba(255, 255, 255, .2);
+      color: rgba(255, 255, 255, .65);
+      cursor: pointer;
+      background: transparent;
+      transition: .2s;
+      letter-spacing: .03em
+    }
+
+    .module-btn:hover,
+    .module-btn.active {
+      background: var(--accent);
+      color: var(--white);
+      border-color: var(--accent)
+    }
+
+    body.superadmin-mode .sidebar {
+      top: 38px
+    }
+
+    body.superadmin-mode .main-wrap {
+      padding-top: 38px
+    }
+
+    .badge-status,
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: .18rem .6rem;
+      border-radius: 99px;
+      font-size: .68rem;
+      font-weight: 600;
+      white-space: nowrap
+    }
+
+    .badge-new {
+      background: #fff3cd;
+      color: #7d5a00
+    }
+
+    .badge-draft {
+      background: #cce5ff;
+      color: #004085
+    }
+
+    .badge-review {
+      background: #e2d9f3;
+      color: #6f42c1
+    }
+
+    .badge-ready {
+      background: #d1ecf1;
+      color: #0c5460
+    }
+
+    .badge-published,
+    .badge-active {
+      background: #d4edda;
+      color: #155724
+    }
+
+    .badge-hidden,
+    .badge-inactive {
+      background: #f8d7da;
+      color: #721c24
+    }
+
+    .badge-out_of_stock {
+      background: #fff3cd;
+      color: #7d5a00
+    }
+
+    .badge-archived {
+      background: #e9ecef;
+      color: #495057
+    }
+
+    .badge-pending {
+      background: #fff3cd;
+      color: #7d5a00
+    }
+
+    .badge-confirmed {
+      background: #cce5ff;
+      color: #004085
+    }
+
+    .badge-processing {
+      background: #d1ecf1;
+      color: #0c5460
+    }
+
+    .badge-delivered,
+    .badge-paid {
+      background: #d4edda;
+      color: #155724
+    }
+
+    .badge-cancelled,
+    .badge-refunded {
+      background: #f8d7da;
+      color: #721c24
+    }
+
+    .badge-unpaid {
+      background: #f8d7da;
+      color: #721c24
+    }
+
+    .badge-partial {
+      background: #fff3cd;
+      color: #7d5a00
+    }
+
+    .badge-superadmin {
+      background: var(--accent-warm);
+      color: var(--primary);
+      font-weight: 700
+    }
+
+    .badge-admin_gudang {
+      background: #cce5ff;
+      color: #004085
+    }
+
+    .badge-admin_website {
+      background: #d4edda;
+      color: #155724
+    }
+
+    .badge-marketing {
+      background: #e2d9f3;
+      color: #6f42c1
+    }
+
+    .badge-in {
+      background: #d4edda;
+      color: #155724
+    }
+
+    .badge-out {
+      background: #f8d7da;
+      color: #721c24
+    }
+
+    .badge-adjustment {
+      background: #fff3cd;
+      color: #7d5a00
+    }
+
+    .stat-icon.purple {
+      background: #e2d9f3
+    }
+
+    .stat-icon.teal {
+      background: #d1ecf1
+    }
+
+    .order-items-editor .item-row {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr 1.2fr 1.2fr auto;
+      gap: .5rem;
+      align-items: end;
+      margin-bottom: .5rem;
+      padding: .65rem;
+      background: var(--gray50);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--gray200)
+    }
+
+    .item-subtotal {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: .9rem;
+      padding-bottom: .35rem;
+      align-self: center
+    }
+
+    .invoice-wrap {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--white);
+      padding: 2.5rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md)
+    }
+
+    .inv-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 3px solid var(--primary)
+    }
+
+    .inv-company .co-name {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      color: var(--primary);
+      font-weight: 700;
+      line-height: 1
+    }
+
+    .inv-company .co-tag {
+      font-size: .65rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: .2rem
+    }
+
+    .inv-company .co-contact {
+      font-size: .82rem;
+      color: var(--text-light);
+      margin-top: .75rem;
+      line-height: 1.7
+    }
+
+    .inv-meta .inv-number {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      color: var(--primary);
+      font-weight: 700
+    }
+
+    .inv-meta {
+      text-align: right;
+      font-size: .82rem;
+      color: var(--text-light);
+      line-height: 1.8
+    }
+
+    .inv-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 1.5rem 0;
+      padding: 1.25rem;
+      background: var(--gray50);
+      border-radius: var(--radius-md)
+    }
+
+    .inv-info-block h4 {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--text-light);
+      margin-bottom: .5rem;
+      font-weight: 700
+    }
+
+    .inv-info-block p {
+      font-size: .88rem;
+      line-height: 1.65;
+      color: var(--text)
+    }
+
+    .inv-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.25rem;
+      font-size: .85rem
+    }
+
+    .inv-table th {
+      background: var(--primary);
+      color: var(--white);
+      padding: .6rem .85rem;
+      text-align: left;
+      font-size: .73rem;
+      text-transform: uppercase;
+      letter-spacing: .07em
+    }
+
+    .inv-table td {
+      padding: .65rem .85rem;
+      border-bottom: 1px solid var(--gray200)
+    }
+
+    .inv-table tr:nth-child(even) td {
+      background: var(--gray50)
+    }
+
+    .inv-totals {
+      max-width: 300px;
+      margin-left: auto;
+      border-top: 2px solid var(--gray200);
+      padding-top: .75rem
+    }
+
+    .tot-row {
+      display: flex;
+      justify-content: space-between;
+      padding: .3rem 0;
+      font-size: .88rem
+    }
+
+    .tot-row.grand {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      border-top: 2px solid var(--primary);
+      padding-top: .5rem;
+      margin-top: .25rem
+    }
+
+    .inv-footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--gray200);
+      font-size: .78rem;
+      color: var(--text-light)
+    }
+
+    .inv-signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-top: 2rem
+    }
+
+    .sign-box {
+      text-align: center;
+      font-size: .82rem
+    }
+
+    .sign-line {
+      height: 65px;
+      border-bottom: 1px solid var(--gray400);
+      margin-bottom: .4rem
+    }
+
+    .nav-sub {
+      padding-left: .5rem
+    }
+
+    .nav-sub .nav-item {
+      padding-left: 2.5rem;
+      font-size: .8rem;
+      color: rgba(255, 255, 255, .5)
+    }
+
+    .nav-sub .nav-item:hover,
+    .nav-sub .nav-item.active {
+      color: rgba(255, 255, 255, .9)
+    }
+
+    @media print {
+
+      .top-module-bar,
+      .sidebar,
+      .topbar,
+      .table-toolbar,
+      .btn:not(.no-hide),
+      .table-pagination {
+        display: none !important
+      }
+
+      .main-wrap {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important
+      }
+
+      /* Mode Invoice */
+      body:not(.print-stock-tx) .page:not(#page-invoice-view) {
+        display: none !important
+      }
+
+      body:not(.print-stock-tx) #page-invoice-view {
+        display: block !important
+      }
+
+      /* Mode Laporan Stok */
+      body.print-stock-tx .page:not(#page-stock-transactions) {
+        display: none !important
+      }
+
+      body.print-stock-tx #page-stock-transactions {
+        display: block !important
+      }
+
+      body.print-stock-tx .card {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      body.print-stock-tx .card-header {
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      body.print-stock-tx .card-title::after {
+        content: " - Jogja Furniture Enterprise";
+        font-size: 0.8rem;
+        color: var(--text-light);
+        font-weight: normal;
+      }
+
+      body.print-stock-tx table {
+        border: 1px solid var(--gray200);
+      }
+
+      body.print-stock-tx th {
+        background: var(--gray100) !important;
+        border: 1px solid var(--gray200);
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body.print-stock-tx td {
+        border: 1px solid var(--gray200);
+        padding: 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .invoice-wrap {
+        box-shadow: none;
+        padding: 1rem;
+        max-width: 100%
+      }
+    }
+
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet"><style>
+
+    /* Tom Select Overrides */
+    .ts-wrapper {
+      margin-top: 0.2rem;
+    }
+
+    .ts-control {
+      border: 1px solid #dcdce1;
+      border-radius: 6px;
+      padding: 0.65rem 0.8rem;
+      background-color: #f4f3eb;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.88rem;
+      color: #333;
+    }
+
+    .ts-control.focus {
+      border-color: #5C2E0E;
+      box-shadow: 0 0 0 2px rgba(92, 46, 14, 0.15);
+      background-color: #fff;
+    }
+
+    .ts-dropdown {
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      font-family: 'Jost', sans-serif;
+      font-size: 0.88rem;
+      margin-top: 4px;
+    }
+
+    .ts-dropdown .option {
+      padding: 0.5rem 0.8rem;
+      cursor: pointer;
+    }
+
+    .ts-dropdown .active {
+      background-color: #f3e8dd;
+      color: #5C2E0E;
+      font-weight: 500;
+    }
+
+    select.tomselected {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ TOP MODULE BAR (Superadmin) ══ -->
+  <div class="top-module-bar" id="topModuleBar">
+    <span
+      style="color:rgba(255,255,255,.4);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-right:.5rem">MODUL:</span>
+    <button class="module-btn" id="modBtnCms" onclick="switchModule('cms')">🌐 Website CMS</button>
+    <button class="module-btn" id="modBtnWarehouse" onclick="switchModule('warehouse')">📦 Warehouse</button>
+    <button class="module-btn" id="modBtnMarketing" onclick="switchModule('marketing')">📣 Marketing</button>
+    <button class="module-btn" id="modBtnControl" onclick="switchModule('control')">🛡️ Control Center</button>
+    <span style="margin-left:auto;color:rgba(255,255,255,.35);font-size:.72rem" id="modCurrentInfo"></span>
+  </div>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo-name">JOGJA</div>
+      <div class="sidebar-logo-tag">Furniture Enterprise</div>
+    </div>
+    <div class="sidebar-admin">
+      <div class="admin-avatar" id="adminAvatar">A</div>
+      <div>
+        <div class="admin-name" id="adminName">Administrator</div>
+        <div class="admin-role" id="adminRoleLabel">—</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <a href="../index.html" target="_blank">🌐 Lihat Website</a><br><br>
+      <a href="#" id="logoutBtn">🚪 Keluar</a>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main-wrap">
+    <div class="topbar">
+      <button class="btn btn-outline btn-icon" id="sidebarToggle" style="display:none">☰</button>
+      <div class="topbar-title" id="pageTitle">📊 Dashboard</div>
+      <div class="topbar-actions">
+        <span style="position:relative;cursor:pointer;font-size:1.15rem" onclick="navigateTo('notifications')"
+          title="Notifikasi">
+          🔔<span id="notifBadge"
+            style="display:none;position:absolute;top:-5px;right:-7px;background:var(--danger);color:#fff;font-size:.58rem;padding:1px 4px;border-radius:99px;font-weight:700;min-width:16px;text-align:center">0</span>
+        </span>
+        <a href="../index.html" target="_blank" class="btn btn-outline">🌐 Website</a>
+      </div>
+    </div>
+
+    <div class="main-content">
+
+      <!-- DASHBOARD (CMS) -->
+      <div class="page" id="page-dashboard">
+        <!-- Quick Actions -->
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem">
+          <button class="btn btn-primary" onclick="navigateTo('products')" style="gap:.5rem">📦 Kelola Produk</button>
+          <button class="btn btn-outline" onclick="navigateTo('contacts')" style="gap:.5rem">📨 Lihat Pesan</button>
+          <button class="btn btn-outline" onclick="navigateTo('testimonials')" style="gap:.5rem">💬 Testimoni</button>
+          <button class="btn btn-outline" onclick="navigateTo('settings')" style="gap:.5rem">⚙️ Settings</button>
+        </div>
+        <div class="stat-cards" id="dashStats" style="grid-template-columns:repeat(auto-fill,minmax(195px,1fr))"></div>
+        <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:1.25rem;margin-top:1.25rem">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" id="dash1Title">📨 Pesan Terbaru</div>
+              <button class="btn btn-sm btn-outline" id="dash1Btn">Lihat Semua</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr id="dash1Head"></tr>
+                </thead>
+                <tbody id="dash1Body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 Produk Terpopuler</div>
+            </div>
+            <canvas id="chartTopProducts" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD MARKETING -->
+      <div class="page" id="page-marketing-dashboard">
+        <!-- Quick Actions Marketing -->
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem">
+          <button class="btn btn-primary" onclick="openOrderModal()" style="gap:.5rem">🛒 Buat Order Baru</button>
+          <button class="btn btn-outline" onclick="openCustomerModal()" style="gap:.5rem">👥 Tambah Customer</button>
+          <button class="btn btn-outline" onclick="navigateTo('products')" style="gap:.5rem">📦 Lihat Produk</button>
+          <button class="btn btn-outline" onclick="navigateTo('orders')" style="gap:.5rem">📋 Daftar Order</button>
+        </div>
+        <div class="stat-cards" id="marketStats"
+          style="grid-template-columns:repeat(auto-fill,minmax(195px,1fr));margin-bottom:1.25rem"></div>
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1.25rem">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🛒 Order Terbaru</div>
+              <button class="btn btn-sm btn-outline" onclick="navigateTo('orders')">Lihat Semua</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="marketOrderBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📈 Top Produk (Views)</div>
+            </div>
+            <canvas id="chartMarketTop" height="240"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="page" id="page-products">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📦 Manajemen Produk</div>
+            <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+              <span id="newProductAlert" style="display:none;cursor:pointer" onclick="navigateTo('products-new')">
+                <span class="badge badge-new">🆕 Ada produk baru</span>
+              </span>
+              <button class="btn btn-primary" id="btnAddProduct" onclick="openProductModal()">+ Produk Baru</button>
+            </div>
+          </div>
+          <div class="table-toolbar">
+            <input type="text" id="prodSearch" placeholder="🔍 Cari produk..." oninput="debounce(loadProducts,400)()">
+            <select id="prodCatFilter" onchange="loadProducts()">
+              <option value="">Semua Kategori</option>
+            </select>
+            <select id="prodStatusFilter" onchange="loadProducts()">
+              <option value="">Semua Status</option>
+              <option value="new">🆕 Baru</option>
+              <option value="draft">📝 Draft</option>
+              <option value="review">🔍 Review</option>
+              <option value="ready">✅ Siap Publish</option>
+              <option value="published">🌐 Published</option>
+              <option value="hidden">🙈 Hidden</option>
+              <option value="out_of_stock">❌ Out of Stock</option>
+              <option value="archived">📦 Archived</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Produk</th>
+                  <th>Kategori</th>
+                  <th>Status</th>
+                  <th>Stok</th>
+                  <th>Harga</th>
+                  <th>Unggulan</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="prodBody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="prodPagination"></div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS NEW FROM WAREHOUSE -->
+      <div class="page" id="page-products-new">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🆕 Produk Baru dari Gudang</div>
+            <span style="font-size:.82rem;color:var(--text-light)">Siap untuk diedit & dipublish ke website</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Produk</th>
+                  <th>SKU</th>
+                  <th>Kategori</th>
+                  <th>Status</th>
+                  <th>Dibuat Oleh</th>
+                  <th>Tanggal</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="newProdBody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="newProdPagination"></div>
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="page" id="page-categories">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🗂 Kategori Produk</div>
+            <button class="btn btn-primary" id="btnAddCat" onclick="openCategoryModal()">+ Kategori Baru</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ikon</th>
+                  <th>Nama</th>
+                  <th>Slug</th>
+                  <th>Status</th>
+                  <th>Urutan</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="catBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICES -->
+      <div class="page" id="page-services">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🛠 Layanan</div>
+            <button class="btn btn-primary" onclick="openServiceModal()">+ Layanan Baru</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ikon</th>
+                  <th>Nama</th>
+                  <th>Deskripsi Singkat</th>
+                  <th>Status</th>
+                  <th>Urutan</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="svcBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TESTIMONIALS -->
+      <div class="page" id="page-testimonials">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">💬 Testimoni</div>
+            <button class="btn btn-primary" onclick="openTestimonialModal()">+ Testimoni Baru</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Peran</th>
+                  <th>Rating</th>
+                  <th>Konten</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="testiBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTACTS -->
+      <div class="page" id="page-contacts">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📨 Pesan Masuk <span id="contactUnreadBadge"></span></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Email / Telp</th>
+                  <th>Subjek</th>
+                  <th>Waktu</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="contactBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div class="settings-tabs" id="settingsTabs"></div>
+        <div id="settingsPanels"></div>
+      </div>
+
+      <!-- WAREHOUSE DASHBOARD -->
+      <div class="page" id="page-warehouse-dashboard">
+        <!-- Quick Actions Gudang -->
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem">
+          <button class="btn btn-success" onclick="navigateTo('stock')" style="gap:.5rem">📥 Barang
+            Masuk/Keluar</button>
+          <button class="btn btn-outline" onclick="navigateTo('stock-transactions')" style="gap:.5rem">📋 Riwayat
+            Transaksi</button>
+          <button class="btn btn-outline" onclick="navigateTo('suppliers')" style="gap:.5rem">🏢 Supplier</button>
+          <button class="btn btn-outline" onclick="navigateTo('orders')" style="gap:.5rem">🛒 Order</button>
+        </div>
+        <div class="stat-cards" id="whStats" style="grid-template-columns:repeat(auto-fill,minmax(195px,1fr))"></div>
+        <!-- Inventory Value KPI -->
+        <div id="whInventoryKPI" style="display:none;margin-top:1rem"></div>
+        <!-- Charts Row -->
+        <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:1.25rem;margin-top:1.25rem">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 Stok Masuk vs Keluar (7 Hari)</div>
+            </div>
+            <canvas id="chartStockFlow" height="180"></canvas>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">⚠️ Stok Kritis</div>
+              <button class="btn btn-sm btn-outline" onclick="navigateTo('stock')">Kelola</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Produk</th>
+                    <th>SKU</th>
+                    <th>Stok</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="lowStockBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:1.25rem">
+          <div class="card-header">
+            <div class="card-title">📋 Transaksi Terbaru</div>
+            <button class="btn btn-sm btn-outline" onclick="navigateTo('stock-transactions')">Semua</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Produk</th>
+                  <th>Tipe</th>
+                  <th>Qty</th>
+                  <th>Waktu</th>
+                </tr>
+              </thead>
+              <tbody id="recentTxBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- STOCK MANAGEMENT -->
+      <div class="page" id="page-stock">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📥 Barang Masuk</div>
+            </div>
+            <div class="form-group"><label>Produk *</label><select id="siProduct">
+                <option value="">Pilih produk...</option>
+              </select></div>
+            <div class="form-grid">
+              <div class="form-group"><label>Jumlah *</label><input type="number" id="siQty" min="1" placeholder="0">
+              </div>
+              <div class="form-group"><label>Supplier</label><select id="siSupplier">
+                  <option value="">Pilih...</option>
+                </select></div>
+            </div>
+            <div class="form-group"><label>No. PO / Referensi</label><input type="text" id="siRef"
+                placeholder="PO-2026-001"></div>
+            <div class="form-group"><label>Harga Satuan (Rp)</label><input type="number" id="siPrice" min="0" value="0">
+            </div>
+            <div class="form-group"><label>Catatan</label><textarea id="siNotes" rows="2"
+                placeholder="Opsional..."></textarea></div>
+            <button class="btn btn-success" style="width:100%" onclick="submitStockIn()">✅ Konfirmasi Barang
+              Masuk</button>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📤 Barang Keluar</div>
+            </div>
+            <div class="form-group"><label>Produk *</label><select id="soProduct">
+                <option value="">Pilih produk...</option>
+              </select></div>
+            <div class="form-grid">
+              <div class="form-group"><label>Jumlah *</label><input type="number" id="soQty" min="1" placeholder="0">
+              </div>
+              <div class="form-group"><label>No. Order</label><input type="text" id="soRef" placeholder="ORD-2026-0001">
+              </div>
+            </div>
+            <div class="form-group"><label>Catatan</label><textarea id="soNotes" rows="2"
+                placeholder="Opsional..."></textarea></div>
+            <div class="form-group"><label>Stok Tersedia: <strong id="soCurrentStock"
+                  style="color:var(--primary)">—</strong></label></div>
+            <button class="btn btn-danger" style="width:100%" onclick="submitStockOut()">📤 Konfirmasi Barang
+              Keluar</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📊 Ringkasan Stok Semua Produk</div>
+            <button class="btn btn-sm btn-outline" onclick="loadStockSummary()">🔄 Refresh</button>
+          </div>
+          <div class="table-toolbar">
+            <input type="text" id="stockSearch" placeholder="🔍 Cari produk..." oninput="filterStockTable()">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Produk</th>
+                  <th>Kategori</th>
+                  <th>Stok</th>
+                  <th>Satuan</th>
+                  <th>Harga Modal</th>
+                  <th>Harga Jual</th>
+                  <th>Nilai Stok</th>
+                  <th>Publish</th>
+                </tr>
+              </thead>
+              <tbody id="stockSummaryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- STOCK TRANSACTIONS -->
+      <div class="page" id="page-stock-transactions">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 Riwayat Transaksi Stok</div>
+          </div>
+          <div class="table-toolbar">
+            <select id="txType" onchange="loadTransactions()">
+              <option value="">Semua Tipe</option>
+              <option value="in">📥 Masuk</option>
+              <option value="out">📤 Keluar</option>
+              <option value="adjustment">🔧 Adjustment</option>
+            </select>
+            <input type="date" id="txFrom" onchange="loadTransactions()">
+            <span style="align-self:center;color:var(--text-light);font-size:.82rem">s/d</span>
+            <input type="date" id="txTo" onchange="loadTransactions()">
+            <button class="btn btn-primary" style="margin-left:auto" onclick="printStockReport()">🖨️ Export
+              PDF</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Produk</th>
+                  <th>SKU</th>
+                  <th>Tipe</th>
+                  <th>Qty</th>
+                  <th>Sebelum</th>
+                  <th>Sesudah</th>
+                  <th>Ref. No.</th>
+                  <th>Supplier/Order</th>
+                  <th>Oleh</th>
+                </tr>
+              </thead>
+              <tbody id="txBody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="txPagination"></div>
+        </div>
+      </div>
+
+      <!-- SUPPLIERS -->
+      <div class="page" id="page-suppliers">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🏢 Manajemen Supplier</div>
+            <button class="btn btn-primary" onclick="openSupplierModal()">+ Supplier Baru</button>
+          </div>
+          <div class="table-toolbar">
+            <input type="text" id="supSearch" placeholder="🔍 Cari supplier..." oninput="debounce(loadSuppliers,400)()">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kode</th>
+                  <th>Nama Supplier</th>
+                  <th>Kontak</th>
+                  <th>Telepon</th>
+                  <th>Kota</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="supBody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="supPagination"></div>
+        </div>
+      </div>
+
+      <!-- CUSTOMERS -->
+      <div class="page" id="page-customers">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">👥 Manajemen Customer</div>
+            <button class="btn btn-primary" onclick="openCustomerModal()">+ Customer Baru</button>
+          </div>
+          <div class="table-toolbar">
+            <input type="text" id="cusSearch" placeholder="🔍 Cari customer..." oninput="debounce(loadCustomers,400)()">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kode</th>
+                  <th>Nama</th>
+                  <th>Telepon</th>
+                  <th>Email</th>
+                  <th>Kota</th>
+                  <th>Total Order</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="cusBody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="cusPagination"></div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="page" id="page-orders">
+        <div class="stat-cards" id="orderStats"
+          style="grid-template-columns:repeat(auto-fill,minmax(195px,1fr));margin-bottom:1rem"></div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🛒 Manajemen Order</div>
+            <button class="btn btn-primary" onclick="openOrderModal()">+ Order Baru</button>
+          </div>
+          <div class="table-toolbar" style="flex-wrap:wrap;gap:.6rem">
+            <input type="text" id="ordSearch" placeholder="🔍 No. Order / Customer..."
+              oninput="debounce(loadOrders,400)()" style="min-width:200px">
+            <select id="ordStatusF" onchange="loadOrders()">
+              <option value="">Semua Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="processing">Processing</option>
+              <option value="ready">Ready</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="ordPayF" onchange="loadOrders()">
+              <option value="">Semua Bayar</option>
+              <option value="unpaid">Unpaid</option>
+              <option value="partial">Partial</option>
+              <option value="paid">Paid</option>
+            </select>
+            <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
+              <span style="font-size:.78rem;color:var(--text-light);white-space:nowrap">📅 Dari:</span>
+              <input type="date" id="ordDateFrom" onchange="loadOrders()" style="min-width:unset">
+              <span style="font-size:.78rem;color:var(--text-light)">s/d</span>
+              <input type="date" id="ordDateTo" onchange="loadOrders()" style="min-width:unset">
+              <button class="btn btn-sm btn-outline" onclick="resetOrderDateFilter()" title="Reset Tanggal">✕</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No. Order</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Pembayaran</th>
+                  <th>Tanggal</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="ordBody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="ordPagination"></div>
+        </div>
+      </div>
+
+      <!-- INVOICE VIEW + PRINT -->
+      <div class="page" id="page-invoice-view">
+        <div style="display:flex;gap:.75rem;margin-bottom:1.25rem" class="no-print">
+          <button class="btn btn-outline" onclick="navigateTo('orders')">← Kembali</button>
+          <button class="btn btn-primary" onclick="window.print()">🖨️ Print Invoice</button>
+          <button class="btn btn-outline" onclick="exportInvoicePDF()">📄 Export PDF</button>
+        </div>
+        <div class="invoice-wrap" id="invoiceContent"></div>
+      </div>
+
+      <!-- USERS -->
+      <div class="page" id="page-users">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">👤 Manajemen User</div>
+            <button class="btn btn-primary" onclick="openUserModal()">+ User Baru</button>
+          </div>
+          <div class="table-toolbar">
+            <input type="text" id="usrSearch" placeholder="🔍 Cari user..." oninput="debounce(loadUsers,400)()">
+            <select id="usrRoleF" onchange="loadUsers()">
+              <option value="">Semua Role</option>
+              <option value="superadmin">Superadmin</option>
+              <option value="admin_gudang">Admin Gudang</option>
+              <option value="admin_website">Admin Website</option>
+              <option value="marketing">Marketing</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Nama Lengkap</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Last Login</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="usrBody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="usrPagination"></div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY LOGS -->
+      <div class="page" id="page-activity-logs">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 Activity Log Sistem</div>
+          </div>
+          <div class="table-toolbar">
+            <select id="logModule" onchange="loadActivityLogs()">
+              <option value="">Semua Modul</option>
+              <option value="Auth">Auth/Login</option>
+              <option value="Products">Produk</option>
+              <option value="Stock">Stok</option>
+              <option value="Orders">Order</option>
+              <option value="Users">User</option>
+              <option value="Suppliers">Supplier</option>
+              <option value="Customers">Customer</option>
+              <option value="Settings">Settings</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>User</th>
+                  <th>Role</th>
+                  <th>Aksi</th>
+                  <th>Modul</th>
+                  <th>Deskripsi</th>
+                  <th>IP</th>
+                </tr>
+              </thead>
+              <tbody id="logBody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="logPagination"></div>
+        </div>
+      </div>
+
+      <!-- CONTROL CENTER -->
+      <div class="page" id="page-control-center">
+        <!-- Quick Actions CC -->
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem">
+          <button class="btn btn-primary" onclick="navigateTo('users')" style="gap:.5rem">👤 Kelola User</button>
+          <button class="btn btn-outline" onclick="navigateTo('activity-logs')" style="gap:.5rem">📋 Activity
+            Log</button>
+          <button class="btn btn-outline" onclick="navigateTo('orders')" style="gap:.5rem">🛒 Semua Order</button>
+          <button class="btn btn-outline" onclick="navigateTo('notifications')" style="gap:.5rem">🔔 Notifikasi</button>
+        </div>
+        <div class="stat-cards" id="ccStats"
+          style="grid-template-columns:repeat(auto-fill,minmax(195px,1fr));margin-bottom:1.25rem"></div>
+        <!-- Charts Row -->
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:1.25rem;margin-bottom:1.25rem">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📈 Revenue 30 Hari Terakhir</div>
+            </div>
+            <canvas id="chartRevenue" height="160"></canvas>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">👥 Distribusi Role User</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:1rem;padding:.5rem 0">
+              <canvas id="chartRoleDonut" width="140" height="140" style="flex-shrink:0"></canvas>
+              <div id="ccRoleChart" style="flex:1;padding:.5rem 0"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 Aktivitas Terbaru</div>
+            <button class="btn btn-sm btn-outline" onclick="navigateTo('activity-logs')">Lihat Semua</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>User</th>
+                  <th>Aksi</th>
+                  <th>Modul</th>
+                </tr>
+              </thead>
+              <tbody id="ccLogsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="page" id="page-notifications">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔔 Notifikasi Sistem</div>
+          </div>
+          <div id="notifList" style="padding:.5rem 0"></div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="page" id="page-profile">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">👤 Profil Akun Saya</div>
+            </div>
+            <div id="profileInfo"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🔑 Ganti Password</div>
+            </div>
+            <div class="form-group"><label>Password Saat Ini *</label><input type="password" id="cpOld"
+                placeholder="Password lama"></div>
+            <div class="form-group"><label>Password Baru *</label><input type="password" id="cpNew"
+                placeholder="Min. 6 karakter"></div>
+            <div class="form-group"><label>Konfirmasi Password Baru *</label><input type="password" id="cpConfirm"
+                placeholder="Ketik ulang password baru"></div>
+            <button class="btn btn-primary" onclick="doChangePassword()">💾 Simpan Password Baru</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /main-wrap -->
+
+  <!-- ══════ MODALS ══════ -->
+
+  <!-- Modal: Product -->
+  <div class="modal-overlay" id="modalProduct">
+    <div class="modal-box modal-lg">
+      <div class="modal-head">
+        <h3 id="modalProductTitle">Tambah Produk</h3><button class="modal-close-btn"
+          onclick="closeModal('modalProduct')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-tabs" id="productTabBar">
+          <button class="settings-tab active" onclick="switchProdTab('info',this)">📋 Info</button>
+          <button class="settings-tab" id="tabWH" onclick="switchProdTab('warehouse',this)">🏭 Gudang</button>
+          <button class="settings-tab" id="tabContent" onclick="switchProdTab('content',this)">📝 Konten</button>
+          <button class="settings-tab" onclick="switchProdTab('images',this)">📷 Foto</button>
+          <button class="settings-tab" id="tabSeo" onclick="switchProdTab('seo',this)">🔍 SEO & Status</button>
+        </div>
+        <!-- Tab: Info -->
+        <div id="ptInfo" class="settings-panel active">
+          <div class="form-grid">
+            <div class="form-group full"><label>Nama Produk *</label><input type="text" id="pName" oninput="autoSlug()"
+                placeholder="Nama lengkap produk"></div>
+            <div class="form-group"><label>Kategori</label><select id="pCategory">
+                <option value="">Pilih Kategori</option>
+              </select></div>
+            <div class="form-group"><label>SKU</label><input type="text" id="pSku" placeholder="SKU-LR-001"></div>
+            <div class="form-group"><label>Slug (URL)</label><input type="text" id="pSlug"
+                placeholder="nama-produk-url"></div>
+            <div class="form-group"><label>Harga Tampil Website</label><input type="text" id="pPriceLabel"
+                placeholder="Mulai Rp 1.000.000 / Hubungi Kami"></div>
+            <div class="form-group" id="pSellPriceInfoGroup"><label>Harga Jual Aktual (Sistem Gudang)</label><input
+                type="text" id="pSellPriceInfo" disabled
+                style="background:var(--gray50);color:var(--primary);font-weight:700;border-color:transparent"></div>
+            <div class="form-group"><label>Material</label><input type="text" id="pMaterial"
+                placeholder="Kayu Jati Solid"></div>
+            <div class="form-group"><label>Dimensi</label><input type="text" id="pDimensions"
+                placeholder="100 x 60 x 40 cm"></div>
+            <div class="form-group"><label>Urutan Tampil</label><input type="number" id="pSortOrder" value="0"></div>
+            <div class="form-group full"><label class="form-check"><input type="checkbox" id="pFeatured"> ⭐ Produk
+                Unggulan (tampil di halaman utama)</label></div>
+          </div>
+        </div>
+        <!-- Tab: Warehouse -->
+        <div id="ptWarehouse" class="settings-panel">
+          <div
+            style="background:var(--accent-warm);border-radius:var(--radius-md);padding:1rem;margin-bottom:1rem;font-size:.83rem;color:var(--primary)">
+            🏭 <strong>Data Gudang</strong> — Hanya terlihat oleh Admin Gudang & Superadmin. Tidak tampil di website.
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>Stok Awal (unit)</label><input type="number" id="pStock" min="0" value="0">
+            </div>
+            <div class="form-group"><label>Satuan</label>
+              <select id="pUnit">
+                <option value="unit">unit</option>
+                <option value="set">set</option>
+                <option value="pcs">pcs</option>
+                <option value="meter">meter</option>
+                <option value="lembar">lembar</option>
+                <option value="kg">kg</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Harga Modal (Rp)</label><input type="number" id="pCostPrice" min="0"
+                value="0"></div>
+            <div class="form-group"><label>Harga Jual (Rp)</label><input type="number" id="pSellPrice" min="0"
+                value="0"></div>
+          </div>
+        </div>
+        <!-- Tab: Content -->
+        <div id="ptContent" class="settings-panel">
+          <div class="form-group"><label>Deskripsi Singkat</label><textarea id="pShortDesc" rows="3"
+              placeholder="Ringkasan menarik (max 200 karakter)"></textarea></div>
+          <div class="form-group"><label>Deskripsi Lengkap</label><textarea id="pDesc" rows="6"
+              placeholder="Detail lengkap produk, keunggulan, dll."></textarea></div>
+          <div class="form-group"><label>Spesifikasi Teknis</label><textarea id="pSpec" rows="6"
+              placeholder="Material: Kayu Jati Solid&#10;Ukuran: 100 x 60 x 40 cm&#10;Garansi: 2 tahun"></textarea>
+          </div>
+          <div class="form-group"><label>Tags (pisahkan koma)</label><input type="text" id="pTags"
+              placeholder="jati, sofa, living-room, premium"></div>
+        </div>
+        <!-- Tab: Images -->
+        <div id="ptImages" class="settings-panel">
+          <div class="form-group"><label>Thumbnail Utama</label><input type="file" id="pThumb" accept="image/*"
+              onchange="previewImg(this,'prevThumb')"><img id="prevThumb" class="img-preview" style="display:none">
+          </div>
+          <div class="form-group"><label>Galeri Foto Tambahan (maks 10)</label><input type="file" id="pImages"
+              accept="image/*" multiple>
+            <p class="form-note">Format: JPG, PNG, WEBP. Maks 5MB/foto.</p>
+          </div>
+          <div id="existingImgGrid" class="images-grid" style="margin-top:1rem"></div>
+        </div>
+        <!-- Tab: SEO & Status -->
+        <div id="ptSeo" class="settings-panel">
+          <div class="form-group"><label>Meta Title <span style="color:var(--text-light);font-weight:400">(maks 60
+                karakter)</span></label><input type="text" id="pMetaTitle" placeholder="Judul untuk Google / SEO"></div>
+          <div class="form-group"><label>Meta Description <span style="color:var(--text-light);font-weight:400">(maks
+                160 karakter)</span></label><textarea id="pMetaDesc" rows="3"
+              placeholder="Deskripsi singkat untuk mesin pencari"></textarea></div>
+          <div class="form-group" id="pStatusGroup">
+            <label>Status Publish</label>
+            <select id="pStatus">
+              <option value="new">🆕 Produk Baru (dari Gudang)</option>
+              <option value="draft">📝 Draft</option>
+              <option value="review">🔍 Dalam Review</option>
+              <option value="ready">✅ Siap Publish</option>
+              <option value="published">🌐 Published (tampil di website)</option>
+              <option value="hidden">🙈 Hidden (disembunyikan)</option>
+              <option value="out_of_stock">❌ Out of Stock</option>
+              <option value="archived">📦 Archived</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalProduct')">Batal</button>
+        <button class="btn btn-primary" id="saveProductBtn" onclick="saveProduct()">💾 Simpan Produk</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Category -->
+  <div class="modal-overlay" id="modalCategory">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalCatTitle">Tambah Kategori</h3><button class="modal-close-btn"
+          onclick="closeModal('modalCategory')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group full"><label>Nama Kategori *</label><input type="text" id="cName"
+              placeholder="Living Room"></div>
+          <div class="form-group"><label>Ikon (Emoji)</label><input type="text" id="cIcon" value="📦" maxlength="2">
+          </div>
+          <div class="form-group"><label>Slug</label><input type="text" id="cSlug" placeholder="living-room"></div>
+          <div class="form-group"><label>Warna Awal</label>
+            <div class="color-row"><input type="color" id="cColorFrom" value="#5C2E0E"
+                oninput="document.getElementById('cColorFromT').value=this.value">
+              <input type="text" id="cColorFromT" value="#5C2E0E"
+                onchange="document.getElementById('cColorFrom').value=this.value">
+            </div>
+          </div>
+          <div class="form-group"><label>Warna Akhir</label>
+            <div class="color-row"><input type="color" id="cColorTo" value="#C49A6C"
+                oninput="document.getElementById('cColorToT').value=this.value">
+              <input type="text" id="cColorToT" value="#C49A6C"
+                onchange="document.getElementById('cColorTo').value=this.value">
+            </div>
+          </div>
+          <div class="form-group"><label>Gambar Kategori</label><input type="file" id="cImage" accept="image/*"
+              onchange="previewImg(this,'prevCatImg')"><img id="prevCatImg" class="img-preview" style="display:none">
+          </div>
+          <div class="form-group full"><label>Deskripsi</label><textarea id="cDesc" rows="2"></textarea></div>
+          <div class="form-group"><label>Urutan</label><input type="number" id="cOrder" value="0"></div>
+          <div class="form-group"><label style="margin-top:1.2rem" class="form-check"><input type="checkbox"
+                id="cActive" checked> Aktif</label></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalCategory')">Batal</button>
+        <button class="btn btn-primary" onclick="saveCategory()">💾 Simpan Kategori</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Update Status Order -->
+  <div class="modal-overlay" id="modalOrderStatus">
+    <div class="modal-box" style="max-width:480px">
+      <div class="modal-head">
+        <h3>🔄 Update Status Order</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalOrderStatus')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div
+          style="background:var(--accent-warm);border-radius:var(--radius-md);padding:1rem;margin-bottom:1.25rem;font-size:.84rem;color:var(--primary)">
+          <div style="font-weight:700;margin-bottom:.3rem" id="osOrderNo">—</div>
+          <div id="osCustomerName" style="color:var(--text-light)">—</div>
+        </div>
+        <div class="form-group">
+          <label>Status Order</label>
+          <select id="osStatus">
+            <option value="pending">⏳ Pending</option>
+            <option value="confirmed">✅ Confirmed</option>
+            <option value="processing">⚙️ Processing</option>
+            <option value="ready">📦 Ready</option>
+            <option value="delivered">🚚 Delivered</option>
+            <option value="cancelled">❌ Cancelled</option>
+            <option value="refunded">↩️ Refunded</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status Pembayaran</label>
+          <select id="osPayStatus">
+            <option value="unpaid">🔴 Unpaid</option>
+            <option value="partial">🟡 Partial</option>
+            <option value="paid">🟢 Paid</option>
+            <option value="refunded">↩️ Refunded</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalOrderStatus')">Batal</button>
+        <button class="btn btn-primary" onclick="saveOrderStatus()">💾 Simpan Status</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: User -->
+  <div class="modal-overlay" id="modalUser">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalUserTitle">Tambah User Baru</h3><button class="modal-close-btn"
+          onclick="closeModal('modalUser')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group"><label>Username *</label><input type="text" id="uUsername" placeholder="username123">
+          </div>
+          <div class="form-group"><label>Role *</label>
+            <select id="uRole">
+              <option value="admin_website">Admin Website</option>
+              <option value="admin_gudang">Admin Gudang</option>
+              <option value="marketing">Marketing</option>
+              <option value="superadmin">Superadmin</option>
+            </select>
+          </div>
+          <div class="form-group full"><label>Email *</label><input type="email" id="uEmail"
+              placeholder="user@jogjafurniture.com"></div>
+          <div class="form-group"><label>Nama Lengkap</label><input type="text" id="uName" placeholder="Nama Lengkap">
+          </div>
+          <div class="form-group"><label>Telepon</label><input type="tel" id="uPhone" placeholder="0812xxxx"></div>
+          <div class="form-group full" id="uPassGroup"><label>Password *</label><input type="password" id="uPassword"
+              placeholder="Minimal 6 karakter"></div>
+          <div class="form-group full"><label class="form-check"><input type="checkbox" id="uActive" checked> ✅ User
+              Aktif</label></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalUser')">Batal</button>
+        <button class="btn btn-primary" onclick="saveUser()">💾 Simpan User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Supplier -->
+  <div class="modal-overlay" id="modalSupplier">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalSupTitle">Tambah Supplier</h3><button class="modal-close-btn"
+          onclick="closeModal('modalSupplier')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group"><label>Kode</label><input type="text" id="sCode" placeholder="SUP001"></div>
+          <div class="form-group full"><label>Nama Supplier *</label><input type="text" id="sName"
+              placeholder="CV Jati Lestari Yogya"></div>
+          <div class="form-group"><label>Nama Kontak</label><input type="text" id="sContact" placeholder="Pak Surya">
+          </div>
+          <div class="form-group"><label>Telepon</label><input type="tel" id="sPhone" placeholder="08123456789"></div>
+          <div class="form-group full"><label>Email</label><input type="email" id="sEmail"
+              placeholder="supplier@email.com"></div>
+          <div class="form-group"><label>Kota</label><input type="text" id="sCity" placeholder="Yogyakarta"></div>
+          <div class="form-group"><label>Provinsi</label><input type="text" id="sProvince" placeholder="DIY"></div>
+          <div class="form-group full"><label>Alamat</label><textarea id="sAddress" rows="2"></textarea></div>
+          <div class="form-group full"><label>Catatan</label><textarea id="sNotes" rows="2"
+              placeholder="Produk disupply, syarat pembayaran, dll."></textarea></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalSupplier')">Batal</button>
+        <button class="btn btn-primary" onclick="saveSupplier()">💾 Simpan Supplier</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Customer -->
+  <div class="modal-overlay" id="modalCustomer">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalCusTitle">Tambah Customer</h3><button class="modal-close-btn"
+          onclick="closeModal('modalCustomer')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group"><label>Kode</label><input type="text" id="kCode" placeholder="CUS001"></div>
+          <div class="form-group full"><label>Nama Customer *</label><input type="text" id="kName"
+              placeholder="Bapak Andi Wijaya"></div>
+          <div class="form-group"><label>Telepon</label><input type="tel" id="kPhone" placeholder="08556677001"></div>
+          <div class="form-group"><label>Email</label><input type="email" id="kEmail" placeholder="andi@email.com">
+          </div>
+          <div class="form-group"><label>Kota</label><input type="text" id="kCity" placeholder="Yogyakarta"></div>
+          <div class="form-group"><label>Provinsi</label><input type="text" id="kProvince" placeholder="DIY"></div>
+          <div class="form-group full"><label>Alamat Lengkap</label><textarea id="kAddress" rows="2"></textarea></div>
+          <div class="form-group full"><label>Catatan</label><textarea id="kNotes" rows="2"
+              placeholder="Preferensi, catatan khusus pelanggan..."></textarea></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalCustomer')">Batal</button>
+        <button class="btn btn-primary" onclick="saveCustomer()">💾 Simpan Customer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Order -->
+  <div class="modal-overlay" id="modalOrder">
+    <div class="modal-box modal-lg">
+      <div class="modal-head">
+        <h3 id="modalOrdTitle">Buat Order Baru</h3><button class="modal-close-btn"
+          onclick="closeModal('modalOrder')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group"><label>Pilih Customer</label>
+            <select id="oCustomerId" onchange="fillCustomer()">
+              <option value="">— Isi manual di bawah —</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Nama Customer *</label><input type="text" id="oCusName"
+              placeholder="Nama Customer"></div>
+          <div class="form-group"><label>Telepon</label><input type="tel" id="oCusPhone" placeholder="0812xxxx"></div>
+          <div class="form-group"><label>Email</label><input type="email" id="oCusEmail" placeholder="email@gmail.com">
+          </div>
+          <div class="form-group"><label>Metode Pembayaran</label>
+            <select id="oPayMethod">
+              <option value="">Pilih...</option>
+              <option>Transfer Bank</option>
+              <option>Cash</option>
+              <option>DP + Pelunasan</option>
+              <option>COD</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Tgl Pengiriman</label><input type="date" id="oDelivery"></div>
+          <div class="form-group full"><label>Alamat Customer</label><textarea id="oAddr" rows="2"
+              placeholder="Alamat lengkap customer"></textarea></div>
+          <div class="form-group full"><label>Alamat Pengiriman <span
+                style="font-weight:400;color:var(--text-light)">(kosong = sama dengan alamat
+                customer)</span></label><textarea id="oShipAddr" rows="2"></textarea></div>
+        </div>
+        <div style="margin:1rem 0">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+            <strong style="font-family:var(--font-heading);color:var(--primary);font-size:1rem">🛍️ Item Order</strong>
+            <button class="btn btn-sm btn-outline" onclick="addOrderItem()">+ Tambah Item</button>
+          </div>
+          <div id="orderItems"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem">
+          <div class="form-group"><label>Diskon (Rp)</label><input type="number" id="oDiscount" value="0" min="0"
+              onchange="calcTotal()"></div>
+          <div class="form-group"><label>Ongkos Kirim (Rp)</label><input type="number" id="oShipping" value="0" min="0"
+              onchange="calcTotal()"></div>
+          <div class="form-group"><label>TOTAL BAYAR</label><input type="text" id="oTotal" readonly
+              style="font-weight:700;color:var(--primary);font-size:1rem;background:var(--accent-warm)"></div>
+        </div>
+        <div class="form-group"><label>Catatan Order</label><textarea id="oNotes" rows="2"
+            placeholder="Catatan khusus..."></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalOrder')">Batal</button>
+        <button class="btn btn-primary" onclick="saveOrder()">💾 Buat Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Testimonial -->
+  <div class="modal-overlay" id="modalTesti">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalTestiTitle">Tambah Testimoni</h3><button class="modal-close-btn"
+          onclick="closeModal('modalTesti')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group"><label>Nama *</label><input type="text" id="tName"></div>
+          <div class="form-group"><label>Peran / Kota</label><input type="text" id="tRole"
+              placeholder="Interior Designer, Yogyakarta"></div>
+          <div class="form-group"><label>Inisial</label><input type="text" id="tInitial" maxlength="2" placeholder="A">
+          </div>
+          <div class="form-group"><label>Rating</label>
+            <select id="tRating">
+              <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+              <option value="4">⭐⭐⭐⭐ (4)</option>
+              <option value="3">⭐⭐⭐ (3)</option>
+            </select>
+          </div>
+          <div class="form-group full"><label>Konten Testimoni *</label><textarea id="tContent" rows="4"
+              placeholder="Tulis isi testimoni..."></textarea></div>
+          <div class="form-group"><label>Referensi Produk</label><input type="text" id="tRef"
+              placeholder="Sofa Jati Premium"></div>
+          <div class="form-group"><label>Urutan</label><input type="number" id="tOrder" value="0"></div>
+          <div class="form-group full"><label class="form-check"><input type="checkbox" id="tActive" checked> Tampilkan
+              di Website</label></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalTesti')">Batal</button>
+        <button class="btn btn-primary" onclick="saveTestimonial()">💾 Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Service -->
+  <div class="modal-overlay" id="modalService">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalSvcTitle">Tambah Layanan</h3><button class="modal-close-btn"
+          onclick="closeModal('modalService')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group full"><label>Nama Layanan *</label><input type="text" id="svName"
+              placeholder="Furniture Custom"></div>
+          <div class="form-group"><label>Ikon (Emoji)</label><input type="text" id="svIcon" value="🛠" maxlength="2">
+          </div>
+          <div class="form-group"><label>Slug</label><input type="text" id="svSlug" placeholder="furniture-custom">
+          </div>
+          <div class="form-group full"><label>Deskripsi Singkat</label><textarea id="svShort" rows="2"
+              placeholder="Singkat menarik..."></textarea></div>
+          <div class="form-group full"><label>Deskripsi Lengkap</label><textarea id="svDesc" rows="5"
+              placeholder="Detail layanan..."></textarea></div>
+          <div class="form-group full"><label>Info (pisah dengan |)</label><input type="text" id="svInfo"
+              placeholder="Estimasi: 3–8 minggu|Area: Yogyakarta"></div>
+          <div class="form-group"><label>Warna Awal</label><input type="color" id="svColorFrom" value="#5C2E0E"></div>
+          <div class="form-group"><label>Warna Akhir</label><input type="color" id="svColorTo" value="#C49A6C"></div>
+          <div class="form-group"><label>Gambar</label><input type="file" id="svImage" accept="image/*"></div>
+          <div class="form-group"><label>Urutan</label><input type="number" id="svOrder" value="0"></div>
+          <div class="form-group full"><label class="form-check"><input type="checkbox" id="svActive" checked>
+              Aktif</label></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalService')">Batal</button>
+        <button class="btn btn-primary" onclick="saveService()">💾 Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toastContainer"
+    style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+
+</html>

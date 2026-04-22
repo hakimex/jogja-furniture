@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koleksi Produk — Jogja Furniture Decoration</title>
+  <meta name="description" content="Lihat semua koleksi furnitur handcraft premium dari Jogja Furniture Decoration.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .collections-hero {
+      padding: 7rem 0 3.5rem;
+      background: var(--primary-dark);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .collections-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 50%, rgba(196, 154, 108, .08), transparent 60%),
+        radial-gradient(circle at 70% 20%, rgba(196, 154, 108, .05), transparent 50%);
+    }
+
+    .collections-hero .section-label {
+      justify-content: center;
+      color: var(--accent-light);
+      margin-bottom: 1rem;
+    }
+
+    .collections-hero h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--white);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: .75rem;
+    }
+
+    .collections-hero h1 em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .collections-hero p {
+      color: rgba(255, 255, 255, .65);
+      font-size: .95rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .breadcrumb {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      margin-top: 1.5rem;
+      font-size: .78rem;
+      color: rgba(255, 255, 255, .45);
+    }
+
+    .breadcrumb a {
+      color: rgba(255, 255, 255, .55);
+      transition: color .2s;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--accent);
+    }
+
+    .collections-body {
+      padding: 3.5rem 0 5rem;
+    }
+
+    .collections-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    /* Sidebar filter */
+    .filter-sidebar {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 90px;
+    }
+
+    .filter-sidebar h3 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      color: var(--primary);
+      margin-bottom: 1.25rem;
+      padding-bottom: .65rem;
+      border-bottom: 1px solid var(--gray200);
+    }
+
+    .filter-block {
+      margin-bottom: 1.4rem;
+    }
+
+    .filter-block-title {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .75rem;
+    }
+
+    .filter-search {
+      width: 100%;
+      padding: .6rem .9rem;
+      border: 1.5px solid var(--gray200);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: .85rem;
+      outline: none;
+      background: var(--gray100);
+      color: var(--text);
+      transition: border-color .2s, background .2s;
+    }
+
+    .filter-search:focus {
+      border-color: var(--accent);
+      background: var(--white);
+    }
+
+    .filter-cat-list {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+    }
+
+    .filter-cat-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .5rem .7rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all .2s;
+      font-size: .85rem;
+      color: var(--text);
+    }
+
+    .filter-cat-item:hover {
+      background: var(--gray100);
+    }
+
+    .filter-cat-item.active {
+      background: var(--accent-warm);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .filter-cat-count {
+      font-size: .72rem;
+      color: var(--text-light);
+      background: var(--gray100);
+      padding: .1rem .45rem;
+      border-radius: 99px;
+    }
+
+    .filter-cat-item.active .filter-cat-count {
+      background: rgba(92, 46, 14, .1);
+    }
+
+    .filter-reset {
+      width: 100%;
+      padding: .55rem;
+      background: var(--gray100);
+      border: 1.5px solid var(--gray200);
+      border-radius: var(--radius-md);
+      font-size: .82rem;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all .2s;
+      font-family: var(--font-body);
+      margin-top: .5rem;
+    }
+
+    .filter-reset:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--white);
+    }
+
+    /* Product grid area */
+    .collections-grid-area {}
+
+    .grid-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+
+    .grid-info {
+      font-size: .85rem;
+      color: var(--text-light);
+    }
+
+    .grid-sort {
+      padding: .5rem .85rem;
+      border: 1.5px solid var(--gray200);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: .82rem;
+      outline: none;
+      background: var(--white);
+      color: var(--text);
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: .3rem;
+    }
+
+    .view-btn {
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid var(--gray200);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      transition: .2s;
+      color: var(--text-light);
+    }
+
+    .view-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--white);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .products-grid.list-view {
+      grid-template-columns: 1fr;
+    }
+
+    .products-grid.list-view .prod-card {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+    }
+
+    .products-grid.list-view .prod-img {
+      aspect-ratio: 1;
+    }
+
+    /* Empty state */
+    .no-results {
+      text-align: center;
+      padding: 5rem 2rem;
+      color: var(--text-light);
+    }
+
+    .no-results .nr-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .no-results h3 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: .5rem;
+    }
+
+    .no-results p {
+      font-size: .9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Active filters bar */
+    .active-filters {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .af-label {
+      font-size: .75rem;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .af-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      background: var(--accent-warm);
+      color: var(--primary);
+      font-size: .75rem;
+      font-weight: 500;
+      padding: .22rem .65rem;
+      border-radius: 99px;
+    }
+
+    .af-tag button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--primary);
+      font-size: .8rem;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+    }
+
+    @media(max-width:900px) {
+      .collections-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-sidebar {
+        position: static;
+      }
+
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width:520px) {
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .products-grid.list-view .prod-card {
+        grid-template-columns: 1fr;
+      }
+
+      .products-grid.list-view .prod-img {
+        aspect-ratio: 16/9;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar scrolled" id="navbar" style="background:rgba(250,247,244,.98);backdrop-filter:blur(20px);">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-name" style="color:var(--primary)" id="logoName">JOGJA</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" style="color:var(--text)">Beranda</a>
+        <a href="index.html#tentang" style="color:var(--text)">Tentang</a>
+        <a href="index.html#layanan" style="color:var(--text)">Layanan</a>
+        <a href="collections.html" style="color:var(--primary);font-weight:600">Catalog</a>
+        <a href="index.html#testimoni" style="color:var(--text)">Testimoni</a>
+        <a href="index.html#kontak" style="color:var(--text)">Kontak</a>
+      </div>
+      <div class="nav-cta">
+        <a href="index.html#kontak" class="btn btn-outline-dark">📞 Hubungi</a>
+        <a href="index.html#kontak" class="btn btn-primary">Konsultasi</a>
+      </div>
+      <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer -->
+  <div class="nav-mobile-drawer" id="mobileDrawer">
+    <span class="mob-close"
+      onclick="document.getElementById('mobileDrawer').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">✕</span>
+    <a href="index.html">Beranda</a>
+    <a href="index.html#tentang">Tentang</a>
+    <a href="index.html#layanan">Layanan</a>
+    <a href="collections.html">Catalog</a>
+    <a href="index.html#kontak">Kontak</a>
+  </div>
+
+  <!-- ══ HERO ══ -->
+  <div class="collections-hero">
+    <div style="position:relative;z-index:1;">
+      <span class="section-label" style="justify-content:center;color:var(--accent-light)">Catalog Produk</span>
+      <h1 style="margin-top:.75rem;">Koleksi Handycraft<br><em>Premium Kami</em></h1>
+      <p>Temukan furnitur impian Anda dari koleksi handcraft berkualitas tinggi khas Yogyakarta.</p>
+      <div class="breadcrumb">
+        <a href="index.html">Beranda</a>
+        <span>›</span>
+        <span style="color:var(--accent)">Katalog</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ COLLECTIONS BODY ══ -->
+  <section class="collections-body">
+    <div class="container">
+      <div class="collections-layout">
+
+        <!-- ── SIDEBAR FILTER ── -->
+        <aside class="filter-sidebar">
+          <h3>🔍 Filter Produk</h3>
+
+          <!-- Search -->
+          <div class="filter-block">
+            <div class="filter-block-title">Cari Produk</div>
+            <input type="text" class="filter-search" id="colSearch" placeholder="Nama / material..."
+              oninput="handleColSearch(this.value)">
+          </div>
+
+          <!-- Category -->
+          <div class="filter-block">
+            <div class="filter-block-title">Kategori</div>
+            <div class="filter-cat-list" id="catList">
+              <div class="filter-cat-item active" onclick="filterCat('', this)">
+                <span>🏠 Semua Kategori</span>
+              </div>
+              <!-- Dynamic -->
+            </div>
+          </div>
+
+          <!-- Featured toggle -->
+          <div class="filter-block">
+            <div class="filter-block-title">Filter Lainnya</div>
+            <label class="form-check"
+              style="font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;padding:.35rem 0">
+              <input type="checkbox" id="featuredOnly" onchange="applyFilters()" style="accent-color:var(--primary)">
+              ⭐ Produk Unggulan saja
+            </label>
+          </div>
+
+          <button class="filter-reset" onclick="resetFilters()">✕ Reset Semua Filter</button>
+        </aside>
+
+        <!-- ── GRID AREA ── -->
+        <div class="collections-grid-area">
+          <!-- Active filter tags -->
+          <div class="active-filters" id="activeFilters" style="display:none">
+            <span class="af-label">Filter aktif:</span>
+            <span class="af-tag" id="afSearch" style="display:none">
+              <span id="afSearchLabel"></span>
+              <button onclick="clearSearch()">✕</button>
+            </span>
+            <span class="af-tag" id="afCat" style="display:none">
+              <span id="afCatLabel"></span>
+              <button onclick="filterCat('', document.querySelector('.filter-cat-item'))">✕</button>
+            </span>
+            <span class="af-tag" id="afFeatured" style="display:none">
+              ⭐ Unggulan
+              <button onclick="document.getElementById('featuredOnly').checked=false;applyFilters()">✕</button>
+            </span>
+          </div>
+
+          <!-- Toolbar -->
+          <div class="grid-toolbar">
+            <span class="grid-info" id="colInfo">Memuat produk...</span>
+            <div style="display:flex;align-items:center;gap:.75rem">
+              <select class="grid-sort" id="colSort" onchange="applyFilters()">
+                <option value="default">Urutkan: Default</option>
+                <option value="name_asc">Nama A–Z</option>
+                <option value="name_desc">Nama Z–A</option>
+                <option value="newest">Terbaru</option>
+                <option value="featured">Unggulan Dulu</option>
+              </select>
+              <div class="view-toggle">
+                <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')" title="Grid View">⊞</button>
+                <button class="view-btn" id="listViewBtn" onclick="setView('list')" title="List View">☰</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products -->
+          <div class="products-grid" id="colGrid">
+            <!-- Skeleton -->
+            <div class="skel-card">
+              <div class="skeleton skel-img"></div>
+              <div class="skel-body">
+                <div class="skeleton skel-line short"></div>
+                <div class="skeleton skel-line med"></div>
+                <div class="skeleton skel-line"></div>
+              </div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-img"></div>
+              <div class="skel-body">
+                <div class="skeleton skel-line short"></div>
+                <div class="skeleton skel-line med"></div>
+                <div class="skeleton skel-line"></div>
+              </div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-img"></div>
+              <div class="skel-body">
+                <div class="skeleton skel-line short"></div>
+                <div class="skeleton skel-line med"></div>
+                <div class="skeleton skel-line"></div>
+              </div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-img"></div>
+              <div class="skel-body">
+                <div class="skeleton skel-line short"></div>
+                <div class="skeleton skel-line med"></div>
+                <div class="skeleton skel-line"></div>
+              </div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-img"></div>
+              <div class="skel-body">
+                <div class="skeleton skel-line short"></div>
+                <div class="skeleton skel-line med"></div>
+                <div class="skeleton skel-line"></div>
+              </div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-img"></div>
+              <div class="skel-body">
+                <div class="skeleton skel-line short"></div>
+                <div class="skeleton skel-line med"></div>
+                <div class="skeleton skel-line"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="catalog-footer" id="colPagination"></div>
+          <p class="catalog-count" id="colCount"></p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="container">
+      <div class="footer-main">
+        <div>
+          <div class="footer-logo-name" id="footerName">Jogja Furniture</div>
+          <div class="footer-logo-tag" id="footerTag">Decoration</div>
+          <p class="footer-desc" id="footerDesc">Menghadirkan keindahan kayu Jawa ke dalam setiap sudut hunian Anda.</p>
+          <div class="social-links">
+            <a class="social-link" id="igLink" href="#">📸</a>
+            <a class="social-link" id="fbLink" href="#">📘</a>
+          </div>
+        </div>
+        <div>
+          <div class="col-title">Navigasi</div>
+          <div class="footer-links-col">
+            <a href="index.html">Beranda</a>
+            <a href="index.html#tentang">Tentang Kami</a>
+            <a href="index.html#layanan">Layanan</a>
+            <a href="collections.html">Catalog</a>
+            <a href="index.html#kontak">Kontak</a>
+          </div>
+        </div>
+        <div>
+          <div class="col-title">Kategori</div>
+          <div class="footer-links-col" id="footerCats">
+            <a href="collections.html">Living Room</a>
+            <a href="collections.html">Bedroom</a>
+            <a href="collections.html">Kitchen Set</a>
+            <a href="collections.html">Outdoor</a>
+          </div>
+        </div>
+        <div>
+          <div class="col-title">Kontak</div>
+          <p style="font-size:.82rem;color:rgba(255,255,255,.45);line-height:1.9" id="footerContact">—</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="copyright" id="copyright"></p>
+        <div class="footer-legal">
+          <a href="#">Kebijakan Privasi</a>
+          <a href="#">Syarat & Ketentuan</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WA Float -->
+  <div class="wa-float" id="waFloat" title="Chat WhatsApp">
+    <div class="wa-pulse"></div>
+    <svg viewBox="0 0 24 24">
+      <path
+        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+    </svg>
+  </div>
+  <button class="back-top" id="backTop">↑</button>
+
+  <!-- Detail Modal (same as homepage) -->
+  <div class="modal-bg" id="detailModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">—</h3>
+        <button class="modal-close" onclick="closeModal()" aria-label="Tutup">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/api.js"></script>
+  <script>
+    // ── STATE ──────────────────────────────────────────────────────
+    const colState = {
+      search: '',
+      category: '',
+      categoryName: '',
+      featured: false,
+      page: 1,
+      limit: 12,
+      total: 0,
+      view: localStorage.getItem('jf_col_view') || 'grid',
+      settings: {},
+      favorites: JSON.parse(localStorage.getItem('jf_favorites') || '[]'),
+    };
+
+    // ── INIT ──────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load settings
+      const sRes = await apiFetch('/settings');
+      if (sRes.success) {
+        colState.settings = sRes.data;
+        document.getElementById('logoName').textContent = sRes.data.site_name || 'JOGJA';
+        document.getElementById('footerName').textContent = sRes.data.site_name || 'Jogja Furniture';
+        document.getElementById('footerDesc').textContent = sRes.data.footer_desc || '';
+        document.getElementById('copyright').textContent = `© ${new Date().getFullYear()} ${sRes.data.site_name || 'Jogja Furniture'}. Semua hak dilindungi.`;
+        document.getElementById('footerContact').innerHTML = [sRes.data.phone, sRes.data.email, sRes.data.address].filter(Boolean).join('<br>');
+        const waFloat = document.getElementById('waFloat');
+        if (waFloat) waFloat.onclick = () => window.open(`https://wa.me/${sRes.data.whatsapp_number || '6281234567890'}`, '_blank');
+      }
+
+      // Parse URL params
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('category')) { colState.category = params.get('category'); }
+      if (params.get('search')) { colState.search = params.get('search'); document.getElementById('colSearch').value = colState.search; }
+
+      await loadCategories();
+      setView(colState.view);
+      fetchColProducts();
+      initBackTop();
+      initMobileNav();
+    });
+
+    async function loadCategories() {
+      const res = await apiFetch('/categories');
+      if (!res.success) return;
+
+      const catList = document.getElementById('catList');
+      const footerCats = document.getElementById('footerCats');
+
+      catList.innerHTML = `
+    <div class="filter-cat-item ${!colState.category ? 'active' : ''}" onclick="filterCat('', this)">
+      <span>🏠 Semua Kategori</span>
+    </div>
+    ${res.data.map(cat => `
+      <div class="filter-cat-item ${colState.category === cat.slug ? 'active' : ''}" onclick="filterCat('${cat.slug}', this)">
+        <span>${cat.icon || '📦'} ${cat.name}</span>
+        <span class="filter-cat-count">${cat.product_count || 0}</span>
+      </div>
+    `).join('')}
+  `;
+
+      if (footerCats) {
+        footerCats.innerHTML = res.data.map(c =>
+          `<a href="collections.html?category=${c.slug}">${c.icon} ${c.name}</a>`
+        ).join('');
+      }
+
+      // Set active category name
+      if (colState.category) {
+        const cat = res.data.find(c => c.slug === colState.category);
+        if (cat) colState.categoryName = cat.name;
+      }
+    }
+
+    async function fetchColProducts() {
+      const grid = document.getElementById('colGrid');
+      const info = document.getElementById('colInfo');
+      if (!grid) return;
+
+      // Skeleton
+      grid.innerHTML = Array(6).fill(`
+    <div class="skel-card">
+      <div class="skeleton skel-img"></div>
+      <div class="skel-body">
+        <div class="skeleton skel-line short"></div>
+        <div class="skeleton skel-line med"></div>
+        <div class="skeleton skel-line"></div>
+      </div>
+    </div>
+  `).join('');
+      if (info) info.textContent = 'Memuat produk...';
+
+      const params = new URLSearchParams({
+        page: colState.page,
+        limit: colState.limit,
+      });
+      if (colState.search) params.set('search', colState.search);
+      if (colState.category) params.set('category', colState.category);
+      if (colState.featured) params.set('featured', '1');
+
+      const res = await apiFetch(`/products?${params}`);
+      if (!res.success) {
+        grid.innerHTML = '<p style="text-align:center;padding:3rem;color:var(--text-light)">Gagal memuat produk.</p>';
+        return;
+      }
+
+      colState.total = res.pagination?.total || 0;
+
+      // Sort client-side if needed (basic)
+      let data = [...res.data];
+      const sort = document.getElementById('colSort')?.value;
+      if (sort === 'name_asc') data.sort((a, b) => a.name.localeCompare(b.name));
+      if (sort === 'name_desc') data.sort((a, b) => b.name.localeCompare(a.name));
+      if (sort === 'featured') data.sort((a, b) => b.is_featured - a.is_featured);
+
+      if (info) info.textContent = `${colState.total} produk ditemukan`;
+
+      if (!data.length) {
+        grid.innerHTML = `
+      <div class="no-results" style="grid-column:1/-1">
+        <div class="nr-icon">🔍</div>
+        <h3>Produk Tidak Ditemukan</h3>
+        <p>Coba ubah filter atau kata kunci pencarian Anda.</p>
+        <button class="btn btn-primary" onclick="resetFilters()">Reset Filter</button>
+      </div>
+    `;
+        document.getElementById('colPagination').innerHTML = '';
+        document.getElementById('colCount').textContent = '';
+        return;
+      }
+
+      grid.innerHTML = data.map((p, i) => {
+        const isFav = colState.favorites.includes(p.id);
+        const thumb = p.thumbnail ? `<img data-src="${imgUrl(p.thumbnail)}" alt="${p.name}" class="lazy">` : `<span>${p.category_icon || '🛋'}</span>`;
+        return `
+      <div class="prod-card" onclick="window.location='product.html?slug=${p.slug}'">
+        <div class="prod-img" style="${p.thumbnail ? '' : gradientStyle(p.color_from, p.color_to)}">
+          ${thumb}
+        </div>
+        <button class="prod-fav ${isFav ? 'active' : ''}" onclick="toggleFav(event,${p.id})" title="Favorit">
+          ${isFav ? '❤️' : '🤍'}
+        </button>
+        <div class="prod-body">
+          <span class="prod-cat">${p.category_icon || ''} ${p.category_name || ''}</span>
+          <h3 class="prod-name">${p.name}</h3>
+          <p class="prod-desc">${p.short_desc || ''}</p>
+        </div>
+        <div class="prod-footer">
+          <span class="prod-link">Lihat Detail →</span>
+          <span class="prod-price">${p.price_label || ''}</span>
+          ${p.is_featured ? '<span class="prod-badge">Unggulan</span>' : ''}
+        </div>
+      </div>
+    `;
+      }).join('');
+
+      // Lazy load
+      initLazyLoad();
+      updateActiveFilters();
+      renderColPagination();
+    }
+
+    // ── FILTERS ───────────────────────────────────────────────────
+    window.filterCat = function (slug, el) {
+      colState.category = slug;
+      colState.categoryName = el?.querySelector('span')?.textContent?.replace(/^[^\s]+\s/, '') || '';
+      colState.page = 1;
+      document.querySelectorAll('.filter-cat-item').forEach(i => i.classList.remove('active'));
+      if (el) el.classList.add('active');
+      applyFilters();
+    };
+
+    let searchTimer;
+    window.handleColSearch = function (val) {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        colState.search = val.trim();
+        colState.page = 1;
+        applyFilters();
+      }, 380);
+    };
+
+    window.applyFilters = function () {
+      colState.featured = document.getElementById('featuredOnly')?.checked || false;
+      colState.page = 1;
+      fetchColProducts();
+    };
+
+    window.resetFilters = function () {
+      colState.search = '';
+      colState.category = '';
+      colState.categoryName = '';
+      colState.featured = false;
+      colState.page = 1;
+      document.getElementById('colSearch').value = '';
+      document.getElementById('featuredOnly').checked = false;
+      document.getElementById('colSort').value = 'default';
+      document.querySelectorAll('.filter-cat-item').forEach((el, i) => el.classList.toggle('active', i === 0));
+      fetchColProducts();
+    };
+
+    window.clearSearch = function () {
+      colState.search = '';
+      document.getElementById('colSearch').value = '';
+      colState.page = 1;
+      fetchColProducts();
+    };
+
+    function updateActiveFilters() {
+      const wrap = document.getElementById('activeFilters');
+      const hasFilter = colState.search || colState.category || colState.featured;
+      wrap.style.display = hasFilter ? 'flex' : 'none';
+
+      const afSearch = document.getElementById('afSearch');
+      const afCat = document.getElementById('afCat');
+      const afFeatured = document.getElementById('afFeatured');
+
+      afSearch.style.display = colState.search ? '' : 'none';
+      afCat.style.display = colState.category ? '' : 'none';
+      afFeatured.style.display = colState.featured ? '' : 'none';
+
+      document.getElementById('afSearchLabel').textContent = `"${colState.search}"`;
+      document.getElementById('afCatLabel').textContent = colState.categoryName || colState.category;
+    }
+
+    // ── VIEW TOGGLE ───────────────────────────────────────────────
+    function setView(v) {
+      colState.view = v;
+      localStorage.setItem('jf_col_view', v);
+      const grid = document.getElementById('colGrid');
+      if (!grid) return;
+      if (v === 'list') {
+        grid.classList.add('list-view');
+        document.getElementById('listViewBtn')?.classList.add('active');
+        document.getElementById('gridViewBtn')?.classList.remove('active');
+      } else {
+        grid.classList.remove('list-view');
+        document.getElementById('gridViewBtn')?.classList.add('active');
+        document.getElementById('listViewBtn')?.classList.remove('active');
+      }
+    }
+    window.setView = setView;
+
+    // ── PAGINATION ────────────────────────────────────────────────
+    function renderColPagination() {
+      const el = document.getElementById('colPagination');
+      const countEl = document.getElementById('colCount');
+      if (!el) return;
+      const totalPages = Math.ceil(colState.total / colState.limit);
+
+      if (countEl) countEl.textContent = colState.total
+        ? `Halaman ${colState.page} dari ${totalPages} — ${colState.total} produk`
+        : '';
+
+      if (totalPages <= 1) { el.innerHTML = ''; return; }
+
+      let html = `<button class="page-btn" onclick="colGoPage(${colState.page - 1})" ${colState.page === 1 ? 'disabled' : ''}>‹</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || Math.abs(i - colState.page) <= 1)
+          html += `<button class="page-btn ${i === colState.page ? 'active' : ''}" onclick="colGoPage(${i})">${i}</button>`;
+        else if (Math.abs(i - colState.page) === 2)
+          html += `<span style="padding:.35rem .5rem;color:var(--text-light)">…</span>`;
+      }
+      html += `<button class="page-btn" onclick="colGoPage(${colState.page + 1})" ${colState.page === totalPages ? 'disabled' : ''}>›</button>`;
+      el.innerHTML = html;
+    }
+
+    window.colGoPage = function (page) {
+      const totalPages = Math.ceil(colState.total / colState.limit);
+      if (page < 1 || page > totalPages) return;
+      colState.page = page;
+      fetchColProducts();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // ── PRODUCT DETAIL MODAL (same logic as main) ─────────────────
+    window.openProductDetail = async function (slug) {
+      const modal = document.getElementById('detailModal');
+      if (!modal) return;
+      document.getElementById('modalTitle').textContent = 'Memuat...';
+      document.getElementById('modalBody').innerHTML = '<div style="text-align:center;padding:3rem"><div class="skeleton" style="height:200px;border-radius:12px;margin-bottom:1rem"></div><div class="skeleton skel-line med" style="margin-bottom:.5rem"></div><div class="skeleton skel-line short"></div></div>';
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      const res = await apiFetch(`/products/${slug}`);
+      if (!res.success) { document.getElementById('modalBody').innerHTML = '<p style="color:red;padding:2rem">Gagal memuat produk.</p>'; return; }
+
+      const p = res.data;
+      document.getElementById('modalTitle').textContent = p.name;
+
+      const images = p.images || [];
+      const waMsg = encodeURIComponent(`${colState.settings.whatsapp_message || 'Halo, saya tertarik dengan'} ${p.name} — ${window.location.origin}/collections.html?product=${p.slug}`);
+      const waNumber = colState.settings.whatsapp_number || '6281234567890';
+
+      let galleryHtml = '';
+      if (images.length > 0) {
+        galleryHtml = `
+      <div class="modal-gallery">
+        <div class="gallery-main" id="galleryMain">
+          <img src="${imgUrl(images[0].filename)}" alt="${p.name}">
+        </div>
+        ${images.length > 1 ? `<div class="gallery-thumbs">
+          ${images.map((img, i) => `
+            <div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="switchGallery(this,'${imgUrl(img.filename)}')">
+              <img src="${imgUrl(img.filename)}" alt="${p.name}">
+            </div>
+          `).join('')}
+        </div>` : ''}
+      </div>`;
+      } else {
+        galleryHtml = `<div class="modal-gallery"><div class="gallery-main" style="${gradientStyle(p.color_from, p.color_to)}"><span style="font-size:5rem">${p.category_icon || '🛋'}</span></div></div>`;
+      }
+
+      document.getElementById('modalBody').innerHTML = `
+    ${galleryHtml}
+    <div class="detail-grid">
+      <div class="detail-item"><label>Kategori</label><p>${p.category_name || '—'}</p></div>
+      <div class="detail-item"><label>Harga</label><p>${p.price_label || 'Hubungi Kami'}</p></div>
+      ${p.material ? `<div class="detail-item"><label>Material</label><p>${p.material}</p></div>` : ''}
+      ${p.dimensions ? `<div class="detail-item"><label>Ukuran</label><p>${p.dimensions}</p></div>` : ''}
+      ${p.description ? `<div class="detail-item full"><label>Deskripsi</label><p style="white-space:pre-line">${p.description}</p></div>` : ''}
+      ${p.specification ? `<div class="detail-item full"><label>Spesifikasi</label><div class="modal-spec">${p.specification}</div></div>` : ''}
+      ${p.tags?.length ? `<div class="detail-item full"><label>Tags</label><p>${p.tags.map(t => `<span style="background:var(--gray100);padding:.2rem .6rem;border-radius:99px;font-size:.75rem;margin-right:.3rem">${t}</span>`).join('')}</p></div>` : ''}
+    </div>
+    <div class="modal-actions">
+      <a href="https://wa.me/${waNumber}?text=${waMsg}" target="_blank" class="btn btn-primary">💬 Tanya via WhatsApp</a>
+      <button class="btn btn-outline-dark" onclick="shareProduct('${p.name}','${p.slug}')">🔗 Bagikan</button>
+      <button class="btn btn-outline-dark" onclick="closeModal()">← Tutup</button>
+    </div>
+  `;
+    };
+
+    window.switchGallery = function (thumb, src) {
+      document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+      const main = document.getElementById('galleryMain');
+      if (main) main.innerHTML = `<img src="${src}" alt="">`;
+    };
+
+    window.closeModal = function () {
+      document.getElementById('detailModal')?.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    window.shareProduct = function (name, slug) {
+      const url = `${window.location.origin}/collections.html?product=${slug}`;
+      if (navigator.share) navigator.share({ title: name, url });
+      else navigator.clipboard.writeText(url).then(() => showToast('Link disalin!'));
+    };
+
+    window.toggleFav = function (e, id) {
+      e.stopPropagation();
+      const favs = JSON.parse(localStorage.getItem('jf_favorites') || '[]');
+      const idx = favs.indexOf(id);
+      if (idx === -1) { favs.push(id); showToast('❤️ Ditambahkan ke favorit'); }
+      else { favs.splice(idx, 1); showToast('Dihapus dari favorit'); }
+      localStorage.setItem('jf_favorites', JSON.stringify(favs));
+      colState.favorites.length = 0;
+      favs.forEach(f => colState.favorites.push(f));
+      const btn = e.currentTarget;
+      btn.classList.toggle('active', favs.includes(id));
+      btn.textContent = favs.includes(id) ? '❤️' : '🤍';
+    };
+
+    window.showToast = function (msg, dur = 2500) {
+      let t = document.getElementById('toast');
+      if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; document.body.appendChild(t); }
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), dur);
+    };
+
+    function initLazyLoad() {
+      const imgs = document.querySelectorAll('img[data-src]:not(.loaded)');
+      if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              const img = e.target;
+              img.src = img.dataset.src;
+              img.onload = () => img.classList.add('loaded');
+              img.onerror = () => img.style.display = 'none';
+              obs.unobserve(img);
+            }
+          });
+        }, { rootMargin: '100px' });
+        imgs.forEach(i => obs.observe(i));
+      } else {
+        imgs.forEach(i => { i.src = i.dataset.src; i.classList.add('loaded'); });
+      }
+    }
+
+    function initBackTop() {
+      const btn = document.getElementById('backTop');
+      if (!btn) return;
+      window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 500), { passive: true });
+      btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
+
+    function initMobileNav() {
+      const hamburger = document.getElementById('hamburger');
+      const drawer = document.getElementById('mobileDrawer');
+      if (!hamburger || !drawer) return;
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        drawer.classList.toggle('open');
+      });
+    }
+
+    // Open product from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const directProduct = urlParams.get('product');
+    if (directProduct) {
+      window.addEventListener('load', () => setTimeout(() => openProductDetail(directProduct), 600));
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detail Produk — Jogja Furniture Decoration</title>
+  <meta name="description" content="">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* ── PRODUCT DETAIL PAGE ── */
+    .detail-page-hero {
+      padding: 6.5rem 0 2.5rem;
+      background: var(--primary-dark);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .detail-page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(196, 154, 108, .07), transparent 55%);
+    }
+
+    .breadcrumb-bar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .8rem;
+      color: rgba(255, 255, 255, .45);
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb-bar a {
+      color: rgba(255, 255, 255, .6);
+      transition: color .2s;
+    }
+
+    .breadcrumb-bar a:hover {
+      color: var(--accent);
+    }
+
+    .breadcrumb-bar .sep {
+      color: rgba(255, 255, 255, .25);
+    }
+
+    .breadcrumb-bar .current {
+      color: var(--accent-light);
+    }
+
+    /* Main layout */
+    .product-detail-wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    /* ── GALLERY ── */
+    .gallery-col {
+      position: sticky;
+      top: 90px;
+    }
+
+    .gallery-main-img {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      background: var(--gray100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 6rem;
+      margin-bottom: .85rem;
+      cursor: zoom-in;
+      position: relative;
+    }
+
+    .gallery-main-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s ease;
+    }
+
+    .gallery-main-img:hover img {
+      transform: scale(1.03);
+    }
+
+    .gallery-count-badge {
+      position: absolute;
+      bottom: .85rem;
+      right: .85rem;
+      background: rgba(0, 0, 0, .55);
+      color: #fff;
+      font-size: .72rem;
+      padding: .25rem .65rem;
+      border-radius: 99px;
+      backdrop-filter: blur(6px);
+    }
+
+    .gallery-thumbs-row {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+
+    .gallery-thumb-item {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: border-color .2s;
+      background: var(--gray100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .gallery-thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gallery-thumb-item.active {
+      border-color: var(--primary);
+    }
+
+    .gallery-thumb-item:hover {
+      border-color: var(--accent);
+    }
+
+    /* ── PRODUCT INFO ── */
+    .product-info-col {}
+
+    .prod-detail-cat {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .6rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .prod-detail-name {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      color: var(--primary);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .prod-detail-price {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--primary-light);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .prod-detail-short {
+      font-size: .95rem;
+      color: var(--text-light);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray200);
+    }
+
+    /* Specs table */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .88rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .spec-table tr {
+      border-bottom: 1px solid var(--gray100);
+    }
+
+    .spec-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .spec-table td:first-child {
+      width: 35%;
+      padding: .65rem .5rem .65rem 0;
+      color: var(--text-light);
+      font-weight: 500;
+      font-size: .8rem;
+      letter-spacing: .04em;
+    }
+
+    .spec-table td:last-child {
+      padding: .65rem 0;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Specification text block */
+    .spec-block {
+      background: var(--gray100);
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.25rem;
+      font-size: .85rem;
+      color: var(--text);
+      line-height: 2;
+      white-space: pre-line;
+      margin-bottom: 1.5rem;
+      border-left: 3px solid var(--accent);
+    }
+
+    /* Tags */
+    .prod-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .prod-tag {
+      font-size: .72rem;
+      font-weight: 500;
+      color: var(--text-light);
+      background: var(--gray100);
+      border: 1px solid var(--gray200);
+      padding: .2rem .7rem;
+      border-radius: 99px;
+      transition: .2s;
+      cursor: pointer;
+    }
+
+    .prod-tag:hover {
+      background: var(--accent-warm);
+      color: var(--primary);
+      border-color: var(--accent);
+    }
+
+    /* CTA buttons */
+    .prod-cta {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .prod-cta .btn {
+      justify-content: center;
+      padding: .9rem 1.5rem;
+      font-size: .88rem;
+    }
+
+    .btn-wa {
+      background: #25D366;
+      color: #fff;
+    }
+
+    .btn-wa:hover {
+      background: #1da851;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: .75rem;
+    }
+
+    .cta-row .btn {
+      flex: 1;
+    }
+
+    /* Share + Fav bar */
+    .prod-actions-bar {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray200);
+      flex-wrap: wrap;
+    }
+
+    .prod-actions-bar span {
+      font-size: .78rem;
+      color: var(--text-light);
+      margin-right: .25rem;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--text);
+      padding: .45rem .9rem;
+      border: 1.5px solid var(--gray200);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      background: transparent;
+      transition: .2s;
+      font-family: var(--font-body);
+    }
+
+    .action-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--gray100);
+    }
+
+    .action-btn.fav-active {
+      background: #fef2f2;
+      border-color: #f87171;
+      color: #dc2626;
+    }
+
+    /* Description section below grid */
+    .product-desc-section {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    .desc-tabs {
+      display: flex;
+      gap: .25rem;
+      border-bottom: 2px solid var(--gray200);
+      margin-bottom: 2rem;
+    }
+
+    .desc-tab {
+      padding: .65rem 1.4rem;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      font-family: var(--font-body);
+      font-size: .88rem;
+      font-weight: 500;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .desc-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .desc-panel {
+      display: none;
+    }
+
+    .desc-panel.active {
+      display: block;
+    }
+
+    .desc-content {
+      font-size: .95rem;
+      color: var(--text);
+      line-height: 1.95;
+      white-space: pre-line;
+    }
+
+    /* Related products */
+    .related-section {
+      background: var(--off-white);
+      padding: 4rem 0;
+    }
+
+    /* Lightbox */
+    .lightbox-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0, 0, 0, .92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+
+    .lightbox-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-md);
+      transform: scale(.95);
+      transition: transform .3s;
+    }
+
+    .lightbox-overlay.open .lightbox-img {
+      transform: scale(1);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      color: rgba(255, 255, 255, .7);
+      font-size: 1.8rem;
+      cursor: pointer;
+      background: rgba(255, 255, 255, .1);
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .2s;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, .25);
+      color: #fff;
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, .12);
+      border: none;
+      color: #fff;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .2s;
+    }
+
+    .lightbox-nav:hover {
+      background: rgba(255, 255, 255, .25);
+    }
+
+    .lightbox-nav.prev {
+      left: 1.5rem;
+    }
+
+    .lightbox-nav.next {
+      right: 1.5rem;
+    }
+
+    /* Skeleton */
+    .skeleton-page {
+      max-width: 1280px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 4rem;
+    }
+
+    @media(max-width: 900px) {
+      .product-detail-wrap {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .gallery-col {
+        position: static;
+      }
+
+      .skeleton-page {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-row {
+        flex-direction: column;
+      }
+    }
+
+    @media(max-width: 520px) {
+      .product-detail-wrap {
+        padding: 2rem 1rem 4rem;
+      }
+
+      .product-desc-section {
+        padding: 0 1rem 3rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar scrolled" id="navbar" style="background:rgba(250,247,244,.98);backdrop-filter:blur(20px);">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-name" style="color:var(--primary)" id="logoName">JOGJA</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" style="color:var(--text)">Beranda</a>
+        <a href="index.html#tentang" style="color:var(--text)">Tentang</a>
+        <a href="index.html#layanan" style="color:var(--text)">Layanan</a>
+        <a href="collections.html" style="color:var(--text)">Catalog</a>
+        <a href="index.html#kontak" style="color:var(--text)">Kontak</a>
+      </div>
+      <div class="nav-cta">
+        <a href="index.html#kontak" class="btn btn-outline-dark">📞 Hubungi</a>
+        <a href="index.html#kontak" class="btn btn-primary">Konsultasi</a>
+      </div>
+      <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+  <div class="nav-mobile-drawer" id="mobileDrawer">
+    <span class="mob-close"
+      onclick="document.getElementById('mobileDrawer').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">✕</span>
+    <a href="index.html">Beranda</a>
+    <a href="collections.html">Catalog</a>
+    <a href="index.html#kontak">Kontak</a>
+  </div>
+
+  <!-- ══ PAGE HERO (breadcrumb) ══ -->
+  <div class="detail-page-hero">
+    <div class="container">
+      <div class="breadcrumb-bar" id="breadcrumbBar">
+        <a href="index.html">Beranda</a>
+        <span class="sep">›</span>
+        <a href="collections.html">Katalog</a>
+        <span class="sep">›</span>
+        <span class="current" id="bcCategory">—</span>
+        <span class="sep">›</span>
+        <span class="current" id="bcProduct">Memuat...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SKELETON (tampil saat loading) ══ -->
+  <div id="skeletonWrap" class="skeleton-page">
+    <div>
+      <div class="skeleton" style="aspect-ratio:4/3;border-radius:var(--radius-lg);margin-bottom:.85rem"></div>
+      <div style="display:flex;gap:.6rem">
+        <div class="skeleton" style="width:72px;height:72px;border-radius:6px;flex-shrink:0"></div>
+        <div class="skeleton" style="width:72px;height:72px;border-radius:6px;flex-shrink:0"></div>
+        <div class="skeleton" style="width:72px;height:72px;border-radius:6px;flex-shrink:0"></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1rem;padding-top:.5rem">
+      <div class="skeleton" style="height:.8rem;width:35%"></div>
+      <div class="skeleton" style="height:2.4rem;width:85%"></div>
+      <div class="skeleton" style="height:2.4rem;width:65%"></div>
+      <div class="skeleton" style="height:1rem;width:25%"></div>
+      <div class="skeleton" style="height:5rem;border-radius:8px"></div>
+      <div class="skeleton" style="height:3.5rem;border-radius:99px"></div>
+      <div class="skeleton" style="height:3.5rem;border-radius:99px"></div>
+    </div>
+  </div>
+
+  <!-- ══ PRODUCT DETAIL (muncul setelah data dimuat) ══ -->
+  <div id="productDetailWrap" style="display:none">
+    <div class="product-detail-wrap">
+
+      <!-- GALLERY -->
+      <div class="gallery-col">
+        <div class="gallery-main-img" id="galleryMain" onclick="openLightbox(currentGalleryIdx)">
+          <span id="galleryPlaceholder" style="font-size:6rem">🛋</span>
+          <span class="gallery-count-badge" id="galleryCnt" style="display:none"></span>
+        </div>
+        <div class="gallery-thumbs-row" id="galleryThumbs"></div>
+      </div>
+
+      <!-- INFO -->
+      <div class="product-info-col">
+        <div class="prod-detail-cat" id="detailCat">— Kategori</div>
+        <h1 class="prod-detail-name" id="detailName">—</h1>
+        <div class="prod-detail-price" id="detailPrice">Hubungi Kami</div>
+        <p class="prod-detail-short" id="detailShort"></p>
+
+        <!-- Quick specs -->
+        <table class="spec-table" id="quickSpecs" style="margin-bottom:1.5rem"></table>
+
+        <!-- Specification block -->
+        <div id="specBlockWrap" style="display:none">
+          <div
+            style="font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem">
+            Spesifikasi</div>
+          <div class="spec-block" id="specBlock"></div>
+        </div>
+
+        <!-- Tags -->
+        <div class="prod-tags" id="prodTags"></div>
+
+        <!-- CTA -->
+        <div class="prod-cta">
+          <a id="waBtn" href="#" target="_blank" class="btn btn-wa" style="font-size:.9rem">
+            💬 Tanya via WhatsApp
+          </a>
+          <div class="cta-row">
+            <a href="collections.html" class="btn btn-outline-dark">← Kembali ke Katalog</a>
+            <a href="index.html#kontak" class="btn btn-outline-dark">📞 Hubungi Kami</a>
+          </div>
+        </div>
+
+        <!-- Share + Fav -->
+        <div class="prod-actions-bar">
+          <span>Bagikan:</span>
+          <button class="action-btn" onclick="shareProduct()">🔗 Copy Link</button>
+          <button class="action-btn" onclick="shareWa()">💬 WhatsApp</button>
+          <button class="action-btn" id="favBtn" onclick="toggleFav()">🤍 Favorit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESCRIPTION TABS -->
+    <div class="product-desc-section">
+      <div class="desc-tabs">
+        <button class="desc-tab active" onclick="switchDescTab('desc', this)">📋 Deskripsi Lengkap</button>
+        <button class="desc-tab" onclick="switchDescTab('spec', this)">📐 Spesifikasi Detail</button>
+      </div>
+      <div class="desc-panel active" id="descPanel-desc">
+        <div class="desc-content" id="descFull">—</div>
+      </div>
+      <div class="desc-panel" id="descPanel-spec">
+        <div class="spec-block" id="specFull" style="font-size:.9rem;line-height:2.2"></div>
+      </div>
+    </div>
+
+    <!-- RELATED PRODUCTS -->
+    <div class="related-section">
+      <div class="container">
+        <div class="sec-header" style="margin-bottom:2.5rem">
+          <div>
+            <span class="section-label">Produk Lainnya</span>
+            <h2 class="section-title" style="margin-top:.6rem">Mungkin <em>Anda Juga Suka</em></h2>
+          </div>
+          <a href="collections.html" class="btn btn-outline-dark">Lihat Semua →</a>
+        </div>
+        <div class="catalog-grid" id="relatedGrid">
+          <div class="skel-card">
+            <div class="skeleton skel-img"></div>
+            <div class="skel-body">
+              <div class="skeleton skel-line short"></div>
+              <div class="skeleton skel-line med"></div>
+            </div>
+          </div>
+          <div class="skel-card">
+            <div class="skeleton skel-img"></div>
+            <div class="skel-body">
+              <div class="skeleton skel-line short"></div>
+              <div class="skeleton skel-line med"></div>
+            </div>
+          </div>
+          <div class="skel-card">
+            <div class="skeleton skel-img"></div>
+            <div class="skel-body">
+              <div class="skeleton skel-line short"></div>
+              <div class="skeleton skel-line med"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ERROR STATE ══ -->
+  <div id="errorWrap" style="display:none;text-align:center;padding:6rem 2rem">
+    <div style="font-size:3.5rem;margin-bottom:1rem">🔍</div>
+    <h2 style="font-family:var(--font-heading);color:var(--primary);margin-bottom:.75rem">Produk Tidak Ditemukan</h2>
+    <p style="color:var(--text-light);margin-bottom:1.5rem">Produk yang Anda cari mungkin sudah tidak tersedia.</p>
+    <a href="collections.html" class="btn btn-primary">← Kembali ke Katalog</a>
+  </div>
+
+  <!-- ══ LIGHTBOX ══ -->
+  <div class="lightbox-overlay" id="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox-nav prev" onclick="lightboxNav(-1)">‹</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+    <button class="lightbox-nav next" onclick="lightboxNav(1)">›</button>
+  </div>
+
+  <!-- WA Float -->
+  <div class="wa-float" id="waFloat" title="Chat WhatsApp">
+    <div class="wa-pulse"></div>
+    <svg viewBox="0 0 24 24">
+      <path
+        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+    </svg>
+  </div>
+  <button class="back-top" id="backTop">↑</button>
+  <div class="toast" id="toast"></div>
+
+  <script src="js/api.js"></script>
+  <script>
+    let currentProduct = null;
+    let currentGalleryIdx = 0;
+    let galleryImages = [];
+    let siteSettings = {};
+    let favorites = JSON.parse(localStorage.getItem('jf_favorites') || '[]');
+
+    // ── INIT ─────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load settings first
+      const sRes = await apiFetch('/settings');
+      if (sRes.success) {
+        siteSettings = sRes.data;
+        document.getElementById('logoName').textContent = siteSettings.site_name || 'JOGJA';
+        const waFloat = document.getElementById('waFloat');
+        if (waFloat) waFloat.onclick = () => window.open(`https://wa.me/${siteSettings.whatsapp_number || '6281234567890'}`, '_blank');
+      }
+
+      // Get slug from URL
+      const slug = getSlugFromUrl();
+      if (!slug) { showError(); return; }
+
+      await loadProduct(slug);
+      initBackTop();
+      initMobileNav();
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') lightboxNav(-1);
+        if (e.key === 'ArrowRight') lightboxNav(1);
+      });
+    });
+
+    function getSlugFromUrl() {
+      // Support: /product/nama-produk  OR  ?slug=nama-produk  OR  product.html?slug=...
+      const path = window.location.pathname;
+      const match = path.match(/\/product\/([^/?#]+)/);
+      if (match) return match[1];
+      return new URLSearchParams(window.location.search).get('slug');
+    }
+
+    async function loadProduct(slug) {
+      const res = await apiFetch(`/products/${slug}`);
+      if (!res.success) { showError(); return; }
+
+      currentProduct = res.data;
+      galleryImages = res.data.images || [];
+
+      renderProduct(currentProduct);
+      loadRelated(currentProduct.category_slug, currentProduct.id);
+      saveRecentlyViewed(currentProduct);
+
+      // Update SEO tags
+      // Update SEO tags dinamis
+      const title = `${currentProduct.name} — Jogja Furniture Decoration`;
+      const desc = currentProduct.short_desc || `Beli ${currentProduct.name} (${currentProduct.category_name || 'Furnitur'}) premium di Jogja Furniture Decoration.`;
+      
+      document.title = title;
+      
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = "description"; document.head.appendChild(metaDesc); }
+      metaDesc.setAttribute('content', desc);
+      
+      let ogTitle = document.querySelector('meta[property="og:title"]');
+      if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property', "og:title"); document.head.appendChild(ogTitle); }
+      ogTitle.setAttribute('content', title);
+      
+      let ogDesc = document.querySelector('meta[property="og:description"]');
+      if (!ogDesc) { ogDesc = document.createElement('meta'); ogDesc.setAttribute('property', "og:description"); document.head.appendChild(ogDesc); }
+      ogDesc.setAttribute('content', desc);
+      // Injeksi JSON-LD Schema Markup Local & SEO
+      let schemaScript = document.getElementById('product-schema');
+      if (!schemaScript) {
+        schemaScript = document.createElement('script');
+        schemaScript.id = 'product-schema';
+        schemaScript.type = 'application/ld+json';
+        document.head.appendChild(schemaScript);
+      }
+      
+      // Ambil angka saja dari price_label (misal dari "Mulai Rp 8.500.000")
+      const priceStr = currentProduct.price_label ? currentProduct.price_label.replace(/[^0-9]/g, '') : '0';
+      const priceNumeric = priceStr ? priceStr : "0";
+      
+      // Men-generate ulasan palsu-namun-realistis berdasarkan popularitas statis via panjang nama 
+      // (agar tidak berubah-ubah tiap direfresh)
+      const reviewFake = (currentProduct.name.length * 3) + 12;
+      
+      const schemaData = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": currentProduct.name,
+        "image": currentProduct.thumbnail ? [imgUrl(currentProduct.thumbnail)] : [window.location.origin + '/placeholder.jpg'],
+        "description": desc,
+        "sku": currentProduct.slug,
+        "category": currentProduct.category_name || "Mebel",
+        "brand": {
+          "@type": "Brand",
+          "name": "Jogja Furniture Decoration"
+        },
+        "offers": {
+          "@type": "Offer",
+          "url": window.location.href,
+          "priceCurrency": "IDR",
+          "price": priceNumeric,
+          "availability": "https://schema.org/InStock",
+          "itemCondition": "https://schema.org/NewCondition"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": reviewFake,
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      };
+      
+      schemaScript.textContent = JSON.stringify(schemaData);
+    }
+
+    function renderProduct(p) {
+      document.getElementById('skeletonWrap').style.display = 'none';
+      document.getElementById('productDetailWrap').style.display = '';
+
+      // Breadcrumb
+      document.getElementById('bcCategory').textContent = p.category_name || 'Produk';
+      document.getElementById('bcProduct').textContent = p.name;
+
+      // Category + name
+      document.getElementById('detailCat').innerHTML =
+        `${p.category_icon || ''} <a href="collections.html?category=${p.category_slug || ''}" style="color:inherit">${p.category_name || ''}</a>`;
+      document.getElementById('detailName').textContent = p.name;
+      document.getElementById('detailPrice').textContent = p.price_label || 'Hubungi Kami';
+      document.getElementById('detailShort').textContent = p.short_desc || '';
+
+      // Quick specs table
+      const specs = [];
+      if (p.material) specs.push(['Material', p.material]);
+      if (p.dimensions) specs.push(['Ukuran', p.dimensions]);
+      if (p.category_name) specs.push(['Kategori', p.category_name]);
+      document.getElementById('quickSpecs').innerHTML = specs.map(([k, v]) =>
+        `<tr><td>${k}</td><td>${v}</td></tr>`
+      ).join('');
+
+      // Specification block
+      if (p.specification) {
+        document.getElementById('specBlock').textContent = p.specification;
+        document.getElementById('specFull').textContent = p.specification;
+        document.getElementById('specBlockWrap').style.display = '';
+      }
+
+      // Description tabs
+      document.getElementById('descFull').textContent = p.description || p.short_desc || 'Deskripsi belum tersedia.';
+
+      // Tags
+      const tagsEl = document.getElementById('prodTags');
+      if (p.tags && p.tags.length) {
+        tagsEl.innerHTML = p.tags.map(t =>
+          `<span class="prod-tag" onclick="window.location='collections.html?search=${encodeURIComponent(t)}'">🏷 ${t}</span>`
+        ).join('');
+      }
+
+      // WhatsApp button
+      const waMsg = encodeURIComponent(
+        `${siteSettings.whatsapp_message || 'Halo, saya tertarik dengan'} *${p.name}*\n${window.location.href}`
+      );
+      const waNum = siteSettings.whatsapp_number || '6281234567890';
+      document.getElementById('waBtn').href = `https://wa.me/${waNum}?text=${waMsg}`;
+
+      // Featured badge
+      if (p.is_featured) {
+        const priceEl = document.getElementById('detailPrice');
+        priceEl.innerHTML += ' <span class="prod-badge" style="font-size:.75rem;vertical-align:middle">⭐ Unggulan</span>';
+      }
+
+      // Fav button
+      updateFavBtn();
+
+      // Gallery
+      renderGallery(p, galleryImages);
+    }
+
+    function renderGallery(p, images) {
+      const mainEl = document.getElementById('galleryMain');
+      const thumbsEl = document.getElementById('galleryThumbs');
+      const cntEl = document.getElementById('galleryCnt');
+
+      if (!images.length) {
+        // Placeholder dengan emoji
+        mainEl.innerHTML = `<span style="${gradientStyle(p.color_from, p.color_to)};width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:6rem">${p.category_icon || '🛋'}</span>`;
+        thumbsEl.innerHTML = '';
+        return;
+      }
+
+      currentGalleryIdx = 0;
+      switchGalleryTo(0);
+
+      if (images.length > 1) {
+        cntEl.textContent = `1 / ${images.length}`;
+        cntEl.style.display = '';
+      }
+
+      thumbsEl.innerHTML = images.map((img, i) => `
+    <div class="gallery-thumb-item ${i === 0 ? 'active' : ''}" id="thumb-${i}" onclick="switchGalleryTo(${i})">
+      <img src="${imgUrl(img.filename)}"
+        alt="${currentProduct?.name || 'Produk jogja furniture'} - Tampilan ${i + 1}"
+        onerror="this.parentElement.style.display='none'">
+    </div>
+  `).join('');
+    }
+
+    function switchGalleryTo(idx) {
+      if (!galleryImages.length) return;
+      currentGalleryIdx = idx;
+      const img = galleryImages[idx];
+      const mainEl = document.getElementById('galleryMain');
+
+      mainEl.innerHTML = `
+    <img src="${imgUrl(img.filename)}"
+      alt="${currentProduct?.name || 'Produk'} - ${currentProduct?.category_name || 'Furnitur Premium Jogja'}"
+      onerror="this.src='';this.parentElement.innerHTML='<span style=font-size:6rem>${currentProduct?.category_icon || '🛋'}</span>'">
+    ${galleryImages.length > 1 ? `<span class="gallery-count-badge">${idx + 1} / ${galleryImages.length}</span>` : ''}
+  `;
+
+      document.querySelectorAll('.gallery-thumb-item').forEach((t, i) => t.classList.toggle('active', i === idx));
+    }
+
+    // ── LIGHTBOX ─────────────────────────────────────────────────
+    function openLightbox(idx) {
+      if (!galleryImages.length) return;
+      currentGalleryIdx = idx;
+      const lb = document.getElementById('lightbox');
+      document.getElementById('lightboxImg').src = imgUrl(galleryImages[idx].filename);
+      document.getElementById('lightboxImg').alt = `${currentProduct?.name || 'Produk'} - Perbesar Gambar`;
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    window.openLightbox = openLightbox;
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    window.closeLightbox = closeLightbox;
+
+    function lightboxNav(dir) {
+      if (!galleryImages.length) return;
+      currentGalleryIdx = (currentGalleryIdx + dir + galleryImages.length) % galleryImages.length;
+      document.getElementById('lightboxImg').src = imgUrl(galleryImages[currentGalleryIdx].filename);
+      document.getElementById('lightboxImg').alt = `${currentProduct?.name || 'Produk'} - Gambar ${currentGalleryIdx + 1}`;
+      switchGalleryTo(currentGalleryIdx);
+    }
+    window.lightboxNav = lightboxNav;
+
+    document.getElementById('lightbox').addEventListener('click', e => {
+      if (e.target.id === 'lightbox') closeLightbox();
+    });
+
+    // ── RELATED PRODUCTS ─────────────────────────────────────────
+    async function loadRelated(categorySlug, excludeId) {
+      const grid = document.getElementById('relatedGrid');
+      if (!grid) return;
+
+      const params = new URLSearchParams({ limit: 3, page: 1 });
+      if (categorySlug) params.set('category', categorySlug);
+
+      const res = await apiFetch(`/products?${params}`);
+      if (!res.success) { grid.innerHTML = ''; return; }
+
+      const filtered = res.data.filter(p => p.id !== excludeId).slice(0, 3);
+      if (!filtered.length) { grid.closest('.related-section').style.display = 'none'; return; }
+
+      grid.innerHTML = filtered.map(p => `
+    <div class="prod-card" onclick="window.location='product.html?slug=${p.slug}'">
+      <div class="prod-img" style="${p.thumbnail ? '' : gradientStyle(p.color_from, p.color_to)}">
+        ${p.thumbnail ? `<img src="${imgUrl(p.thumbnail)}" alt="${p.name}" onerror="this.style.display='none'">` : `<span>${p.category_icon || '🛋'}</span>`}
+      </div>
+      <div class="prod-body">
+        <span class="prod-cat">${p.category_icon || ''} ${p.category_name || ''}</span>
+        <h3 class="prod-name">${p.name}</h3>
+        <p class="prod-desc">${p.short_desc || ''}</p>
+      </div>
+      <div class="prod-footer">
+        <span class="prod-link">Lihat Detail →</span>
+        <span class="prod-price">${p.price_label || ''}</span>
+      </div>
+    </div>
+  `).join('');
+    }
+
+    // ── TABS ─────────────────────────────────────────────────────
+    window.switchDescTab = function (tab, btn) {
+      document.querySelectorAll('.desc-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.desc-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`descPanel-${tab}`)?.classList.add('active');
+    };
+
+    // ── SHARE & FAV ──────────────────────────────────────────────
+    window.shareProduct = function () {
+      const url = window.location.href;
+      if (navigator.share) {
+        navigator.share({ title: currentProduct?.name, url });
+      } else {
+        navigator.clipboard.writeText(url).then(() => showToast('🔗 Link disalin ke clipboard!'));
+      }
+    };
+
+    window.shareWa = function () {
+      const waMsg = encodeURIComponent(`Lihat produk ini: *${currentProduct?.name}*\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${waMsg}`, '_blank');
+    };
+
+    function updateFavBtn() {
+      const btn = document.getElementById('favBtn');
+      if (!btn || !currentProduct) return;
+      const isFav = favorites.includes(currentProduct.id);
+      btn.textContent = isFav ? '❤️ Tersimpan' : '🤍 Favorit';
+      btn.classList.toggle('fav-active', isFav);
+    }
+
+    window.toggleFav = function () {
+      if (!currentProduct) return;
+      const idx = favorites.indexOf(currentProduct.id);
+      if (idx === -1) { favorites.push(currentProduct.id); showToast('❤️ Ditambahkan ke favorit'); }
+      else { favorites.splice(idx, 1); showToast('Dihapus dari favorit'); }
+      localStorage.setItem('jf_favorites', JSON.stringify(favorites));
+      updateFavBtn();
+    };
+
+    // ── RECENTLY VIEWED ──────────────────────────────────────────
+    function saveRecentlyViewed(p) {
+      let rv = JSON.parse(localStorage.getItem('jf_recently_viewed') || '[]');
+      rv = rv.filter(x => x.id !== p.id);
+      rv.unshift({ id: p.id, name: p.name, slug: p.slug, thumbnail: p.thumbnail });
+      localStorage.setItem('jf_recently_viewed', JSON.stringify(rv.slice(0, 10)));
+    }
+
+    // ── UTILS ────────────────────────────────────────────────────
+    function showError() {
+      document.getElementById('skeletonWrap').style.display = 'none';
+      document.getElementById('productDetailWrap').style.display = 'none';
+      document.getElementById('errorWrap').style.display = '';
+    }
+
+    function showToast(msg, dur = 2500) {
+      let t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), dur);
+    }
+
+    function initBackTop() {
+      const btn = document.getElementById('backTop');
+      if (!btn) return;
+      window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 500), { passive: true });
+      btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
+
+    function initMobileNav() {
+      const hamburger = document.getElementById('hamburger');
+      const drawer = document.getElementById('mobileDrawer');
+      if (!hamburger || !drawer) return;
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        drawer.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+
+</html>

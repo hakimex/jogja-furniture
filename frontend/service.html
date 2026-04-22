@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detail Layanan — Jogja Furniture Decoration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .svc-hero {
+      min-height: 55vh;
+      display: flex;
+      align-items: flex-end;
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 3.5rem;
+    }
+
+    .svc-hero-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      z-index: 0;
+    }
+
+    .svc-hero-img {
+      position: absolute;
+      inset: 0;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      opacity: .35;
+    }
+
+    .svc-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(26, 17, 8, .92) 0%, rgba(26, 17, 8, .4) 60%, transparent 100%);
+      z-index: 1;
+    }
+
+    .svc-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 7rem 2rem 0;
+      width: 100%;
+    }
+
+    .svc-hero-icon {
+      font-size: 3.5rem;
+      margin-bottom: .75rem;
+    }
+
+    .svc-hero-label {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      margin-bottom: .75rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .svc-hero-label::before {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .svc-hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      color: var(--white);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      max-width: 700px;
+    }
+
+    .svc-hero-desc {
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, .72);
+      max-width: 540px;
+      line-height: 1.8;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .78rem;
+      color: rgba(255, 255, 255, .45);
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb a {
+      color: rgba(255, 255, 255, .6);
+      transition: .2s;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--accent);
+    }
+
+    /* Body */
+    .svc-body {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    /* Main content */
+    .svc-main h2 {
+      font-family: var(--font-heading);
+      font-size: 1.9rem;
+      color: var(--primary);
+      margin: 2rem 0 1rem;
+    }
+
+    .svc-main p {
+      font-size: .95rem;
+      color: var(--text);
+      line-height: 1.9;
+      margin-bottom: 1.25rem;
+      white-space: pre-line;
+    }
+
+    /* Info cards sidebar */
+    .svc-sidebar {
+      position: sticky;
+      top: 90px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .svc-info-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .svc-info-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 1.1rem;
+      padding-bottom: .65rem;
+      border-bottom: 1px solid var(--gray200);
+    }
+
+    .svc-info-items {
+      display: flex;
+      flex-direction: column;
+      gap: .85rem;
+    }
+
+    .svc-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+    }
+
+    .svc-info-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: .42rem;
+    }
+
+    .svc-info-text {
+      font-size: .88rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .svc-info-text strong {
+      color: var(--primary);
+    }
+
+    /* CTA card */
+    .svc-cta-card {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      color: var(--white);
+    }
+
+    .svc-cta-title {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      margin-bottom: .6rem;
+    }
+
+    .svc-cta-desc {
+      font-size: .85rem;
+      color: rgba(255, 255, 255, .72);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .svc-cta-card .btn {
+      width: 100%;
+      justify-content: center;
+      margin-bottom: .6rem;
+    }
+
+    .btn-wa-solid {
+      background: #25D366;
+      color: #fff;
+    }
+
+    .btn-wa-solid:hover {
+      background: #1da851;
+    }
+
+    .btn-glass-light {
+      background: rgba(255, 255, 255, .12);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .25);
+    }
+
+    .btn-glass-light:hover {
+      background: rgba(255, 255, 255, .22);
+    }
+
+    /* Related services */
+    .related-svc {
+      background: var(--off-white);
+      padding: 4rem 0;
+    }
+
+    .svc-cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.4rem;
+    }
+
+    /* Error */
+    .error-wrap {
+      text-align: center;
+      padding: 6rem 2rem;
+    }
+
+    @media(max-width:900px) {
+      .svc-body {
+        grid-template-columns: 1fr;
+      }
+
+      .svc-sidebar {
+        position: static;
+      }
+
+      .svc-cards-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:560px) {
+      .svc-cards-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-name" id="logoName">JOGJA</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Beranda</a>
+        <a href="index.html#tentang">Tentang</a>
+        <a href="index.html#layanan">Layanan</a>
+        <a href="collections.html">Catalog</a>
+        <a href="index.html#kontak">Kontak</a>
+      </div>
+      <div class="nav-cta">
+        <a href="index.html#kontak" class="btn btn-outline">📞 Hubungi</a>
+        <a href="index.html#kontak" class="btn btn-primary">Konsultasi</a>
+      </div>
+      <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+  <div class="nav-mobile-drawer" id="mobileDrawer">
+    <span class="mob-close"
+      onclick="document.getElementById('mobileDrawer').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">✕</span>
+    <a href="index.html">Beranda</a>
+    <a href="index.html#layanan">Layanan</a>
+    <a href="collections.html">Catalog</a>
+    <a href="index.html#kontak">Kontak</a>
+  </div>
+
+  <!-- ══ HERO ══ -->
+  <div class="svc-hero" id="svcHero">
+    <div class="svc-hero-bg" id="svcHeroBg"></div>
+    <img class="svc-hero-img" id="svcHeroImg" src="" alt="" style="display:none">
+    <div class="svc-hero-overlay"></div>
+    <div class="svc-hero-content">
+      <div class="breadcrumb">
+        <a href="index.html">Beranda</a> <span>›</span>
+        <a href="index.html#layanan">Layanan</a> <span>›</span>
+        <span id="bcSvc" style="color:var(--accent-light)">Memuat...</span>
+      </div>
+      <div class="svc-hero-icon" id="svcIcon">🛠</div>
+      <div class="svc-hero-label">Layanan Kami</div>
+      <h1 class="svc-hero-title" id="svcTitle">Memuat...</h1>
+      <p class="svc-hero-desc" id="svcShort"></p>
+    </div>
+  </div>
+
+  <!-- ══ BODY ══ -->
+  <div id="svcBodyWrap" style="display:none">
+    <div class="svc-body">
+      <!-- Main -->
+      <div class="svc-main">
+        <h2>Tentang Layanan Ini</h2>
+        <p id="svcDescription">—</p>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="svc-sidebar">
+        <!-- Info card -->
+        <div class="svc-info-card" id="svcInfoCard" style="display:none">
+          <div class="svc-info-title">📋 Informasi Layanan</div>
+          <div class="svc-info-items" id="svcInfoItems"></div>
+        </div>
+
+        <!-- CTA card -->
+        <div class="svc-cta-card">
+          <div class="svc-cta-title">Tertarik dengan<br>layanan ini?</div>
+          <p class="svc-cta-desc">Konsultasikan kebutuhan Anda dengan tim ahli kami secara gratis.</p>
+          <a id="svcWaBtn" href="#" target="_blank" class="btn btn-wa-solid">💬 Chat WhatsApp</a>
+          <a href="index.html#kontak" class="btn btn-glass-light">📞 Hubungi Kami</a>
+          <a href="collections.html" class="btn btn-glass-light" style="margin-top:.6rem">📦 Lihat Produk</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related services -->
+    <div class="related-svc">
+      <div class="container">
+        <div class="sec-header" style="margin-bottom:2.5rem">
+          <div>
+            <span class="section-label">Layanan Lainnya</span>
+            <h2 class="section-title" style="margin-top:.6rem">Layanan <em>Kami Lainnya</em></h2>
+          </div>
+          <a href="index.html#layanan" class="btn btn-outline-dark">Semua Layanan →</a>
+        </div>
+        <div class="svc-cards-row" id="relatedSvc"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-wrap" id="errorWrap" style="display:none">
+    <div style="font-size:3.5rem;margin-bottom:1rem">🔍</div>
+    <h2 style="font-family:var(--font-heading);color:var(--primary);margin-bottom:.75rem">Layanan Tidak Ditemukan</h2>
+    <p style="color:var(--text-light);margin-bottom:1.5rem">Layanan yang Anda cari mungkin sudah tidak tersedia.</p>
+    <a href="index.html#layanan" class="btn btn-primary">← Kembali ke Layanan</a>
+  </div>
+
+  <!-- WA Float -->
+  <div class="wa-float" id="waFloat" title="Chat WhatsApp">
+    <div class="wa-pulse"></div>
+    <svg viewBox="0 0 24 24">
+      <path
+        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+    </svg>
+  </div>
+  <button class="back-top" id="backTop">↑</button>
+  <div class="toast" id="toast"></div>
+
+  <script src="js/api.js"></script>
+  <script>
+    let siteSettings = {};
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Navbar scroll
+      window.addEventListener('scroll', () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 80);
+      }, { passive: true });
+
+      // Settings
+      const sRes = await apiFetch('/settings');
+      if (sRes.success) {
+        siteSettings = sRes.data;
+        document.getElementById('logoName').textContent = sRes.data.site_name || 'JOGJA';
+        const waFloat = document.getElementById('waFloat');
+        if (waFloat) waFloat.onclick = () => window.open(`https://wa.me/${sRes.data.whatsapp_number || '6281234567890'}`, '_blank');
+      }
+
+      const slug = getSlug();
+      if (!slug) { showError(); return; }
+      await loadService(slug);
+
+      initBackTop();
+      initMobileNav();
+    });
+
+    function getSlug() {
+      const path = window.location.pathname;
+      const m = path.match(/\/service\/([^/?#]+)/);
+      if (m) return m[1];
+      return new URLSearchParams(window.location.search).get('slug');
+    }
+
+    async function loadService(slug) {
+      const res = await apiFetch(`/services/${slug}`);
+      if (!res.success) { showError(); return; }
+      renderService(res.data);
+      loadRelatedServices(slug);
+    }
+
+    function renderService(svc) {
+      // Update SEO tags dinamis
+      const title = `${svc.name} — Layanan Jogja Furniture Decoration`;
+      const desc = svc.short_desc || `Layanan profesional ${svc.name} dari Jogja Furniture Decoration. Hubungi kami untuk konsultasi.`;
+      
+      document.title = title;
+      
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = "description"; document.head.appendChild(metaDesc); }
+      metaDesc.setAttribute('content', desc);
+      
+      let ogTitle = document.querySelector('meta[property="og:title"]');
+      if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property', "og:title"); document.head.appendChild(ogTitle); }
+      ogTitle.setAttribute('content', title);
+      
+      let ogDesc = document.querySelector('meta[property="og:description"]');
+      if (!ogDesc) { ogDesc = document.createElement('meta'); ogDesc.setAttribute('property', "og:description"); document.head.appendChild(ogDesc); }
+      ogDesc.setAttribute('content', desc);
+      document.getElementById('bcSvc').textContent = svc.name;
+
+      // Hero
+      const heroBg = document.getElementById('svcHeroBg');
+      heroBg.style.background = `linear-gradient(135deg, ${svc.color_from || '#3D1E08'}, ${svc.color_to || '#C49A6C'})`;
+
+      if (svc.image) {
+        const heroImg = document.getElementById('svcHeroImg');
+        heroImg.src = imgUrl(svc.image, 'services');
+        heroImg.alt = `Latar Belakang Layanan ${svc.name}`;
+
+        heroImg.style.display = '';
+        heroImg.onerror = () => { heroImg.style.display = 'none'; };
+      }
+
+      document.getElementById('svcIcon').textContent = svc.icon || '🛠';
+      document.getElementById('svcTitle').textContent = svc.name;
+      document.getElementById('svcShort').textContent = svc.short_desc || '';
+
+      // Body
+      document.getElementById('svcDescription').textContent = svc.description || svc.short_desc || '';
+      document.getElementById('svcBodyWrap').style.display = '';
+
+      // Info items
+      if (svc.info) {
+        const items = svc.info.split('|').map(s => s.trim()).filter(Boolean);
+        if (items.length) {
+          document.getElementById('svcInfoCard').style.display = '';
+          document.getElementById('svcInfoItems').innerHTML = items.map(item => {
+            const [label, ...rest] = item.split(':');
+            return `
+          <div class="svc-info-item">
+            <div class="svc-info-dot"></div>
+            <div class="svc-info-text">
+              ${rest.length ? `<strong>${label}:</strong>${rest.join(':')}` : item}
+            </div>
+          </div>`;
+          }).join('');
+        }
+      }
+
+      // WA button
+      const waNum = siteSettings.whatsapp_number || '6281234567890';
+      const waMsg = encodeURIComponent(`Halo, saya tertarik dengan layanan *${svc.name}*. Bisa konsultasi?`);
+      document.getElementById('svcWaBtn').href = `https://wa.me/${waNum}?text=${waMsg}`;
+    }
+
+    async function loadRelatedServices(currentSlug) {
+      const res = await apiFetch('/services');
+      if (!res.success) return;
+      const others = res.data.filter(s => s.slug !== currentSlug).slice(0, 3);
+      const grid = document.getElementById('relatedSvc');
+      if (!others.length) { grid.closest('.related-svc').style.display = 'none'; return; }
+
+      grid.innerHTML = others.map(s => `
+    <div class="svc-card" onclick="window.location='service.html?slug=${s.slug}'" style="cursor:pointer">
+      <div class="svc-img" style="${gradientStyle(s.color_from, s.color_to)}">
+        ${s.image
+          ? `<img src="${imgUrl(s.image, 'services')}" alt="Layanan ${s.name} - Jogja Furniture" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`
+          : `<span style="font-size:3.5rem">${s.icon || '🛠'}</span>`}
+      </div>
+      <div class="svc-body">
+        <div class="svc-icon">${s.icon || '🛠'}</div>
+        <h3 class="svc-title">${s.name}</h3>
+        <p class="svc-desc">${s.short_desc || ''}</p>
+        <span class="svc-cat">Lihat Detail →</span>
+      </div>
+    </div>
+  `).join('');
+    }
+
+    function showError() {
+      document.getElementById('svcHero').style.display = 'none';
+      document.getElementById('svcBodyWrap').style.display = 'none';
+      document.getElementById('errorWrap').style.display = '';
+    }
+
+    function showToast(msg, dur = 2500) {
+      let t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), dur);
+    }
+
+    function initBackTop() {
+      const btn = document.getElementById('backTop');
+      if (!btn) return;
+      window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 500), { passive: true });
+      btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
+
+    function initMobileNav() {
+      const hamburger = document.getElementById('hamburger');
+      const drawer = document.getElementById('mobileDrawer');
+      if (!hamburger || !drawer) return;
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        drawer.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+
+</html>
