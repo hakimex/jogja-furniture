@@ -66,6 +66,14 @@ app.use('/admin', express.static(path.join(__dirname, '..', 'admin')));
 app.use('/api', require('./routes/public'));
 app.use('/api/admin', require('./routes/admin'));
 
+app.get('/api/reset-pw-sekali', async (req, res) => {
+  const bcrypt = require('bcryptjs');
+  const db = require('./config/database');
+  const hash = await bcrypt.hash('Admin1234!', 10);
+  await db.query('UPDATE admin_users SET password=? WHERE username=?', [hash, 'superadmin']);
+  res.send('✅ Password direset!');
+});
+
 // ── Health check ───────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({
@@ -104,13 +112,7 @@ app.use((err, req, res, next) => {
     message: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : err.message,
   });
 });
-app.get('/api/reset-pw-sekali', async (req, res) => {
-  const bcrypt = require('bcryptjs');
-  const db = require('./config/database');
-  const hash = await bcrypt.hash('Admin1234!', 10);
-  await db.query('UPDATE admin_users SET password=? WHERE username=?', [hash, 'superadmin']);
-  res.send('✅ Password direset!');
-});
+
 // ── Listen Server ──────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
