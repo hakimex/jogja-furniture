@@ -104,13 +104,12 @@ app.use((err, req, res, next) => {
     message: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : err.message,
   });
 });
-// TEMPORARY - HAPUS SETELAH DIPAKAI
-app.get('/reset-pw-sekali', async (req, res) => {
+app.get('/api/reset-pw-sekali', async (req, res) => {
   const bcrypt = require('bcryptjs');
   const db = require('./config/database');
   const hash = await bcrypt.hash('Admin1234!', 10);
   await db.query('UPDATE admin_users SET password=? WHERE username=?', [hash, 'superadmin']);
-  res.send('✅ Password direset! Hapus endpoint ini sekarang!');
+  res.send('✅ Password direset!');
 });
 // ── Listen Server ──────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
