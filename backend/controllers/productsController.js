@@ -1,13 +1,13 @@
 /**
  * productsController.js v2 — Products with Publish Workflow
  */
-const db      = require('../config/database');
-const path    = require('path');
-const fs      = require('fs');
+const db = require('../config/database');
+const path = require('path');
+const fs = require('fs');
 const slugify = require('slugify');
 const { log } = require('../middleware/activityLogger');
 
-const VALID_STATUSES = ['new','draft','review','ready','published','hidden','out_of_stock','archived'];
+const VALID_STATUSES = ['new', 'draft', 'review', 'ready', 'published', 'hidden', 'out_of_stock', 'archived'];
 const getIp = (req) => req.headers['x-forwarded-for'] || req.socket?.remoteAddress || null;
 
 function makeSlug(name) {
@@ -52,7 +52,7 @@ exports.getOne = async (req, res) => {
     if (!rows.length) return res.status(404).json({ success: false, message: 'Produk tidak ditemukan' });
     const product = rows[0];
     const [images] = await db.query('SELECT * FROM product_images WHERE product_id = ? ORDER BY is_primary DESC, sort_order ASC', [product.id]);
-    const [tags]   = await db.query('SELECT tag FROM product_tags WHERE product_id = ?', [product.id]);
+    const [tags] = await db.query('SELECT tag FROM product_tags WHERE product_id = ?', [product.id]);
     await db.query('UPDATE products SET view_count = view_count + 1 WHERE id = ?', [product.id]);
     res.json({ success: true, data: { ...product, images, tags: tags.map(t => t.tag) } });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
@@ -90,7 +90,7 @@ exports.getAdminById = async (req, res) => {
     if (!rows.length) return res.status(404).json({ success: false, message: 'Produk tidak ditemukan' });
     const product = rows[0];
     const [images] = await db.query('SELECT * FROM product_images WHERE product_id = ? ORDER BY is_primary DESC, sort_order ASC', [product.id]);
-    const [tags]   = await db.query('SELECT tag FROM product_tags WHERE product_id = ?', [product.id]);
+    const [tags] = await db.query('SELECT tag FROM product_tags WHERE product_id = ?', [product.id]);
     res.json({ success: true, data: { ...product, images, tags: tags.map(t => t.tag) } });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 };
@@ -113,9 +113,9 @@ exports.getAllAdmin = async (req, res) => {
       where += " AND p.publish_status = 'published'";
     }
 
-    if (search)   { where += ' AND p.name LIKE ?'; params.push(`%${search}%`); }
+    if (search) { where += ' AND p.name LIKE ?'; params.push(`%${search}%`); }
     if (category) { where += ' AND c.slug = ?'; params.push(category); }
-    if (status)   { where += ' AND p.publish_status = ?'; params.push(status); }
+    if (status) { where += ' AND p.publish_status = ?'; params.push(status); }
 
     const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM products p LEFT JOIN categories c ON c.id=p.category_id WHERE ${where}`, params);
     const [rows] = await db.query(
@@ -162,15 +162,15 @@ exports.create = async (req, res) => {
     if (existing.length > 0) slug = `${slug}-${Date.now()}`;
 
     const thumbnail = req.files?.thumbnail?.[0]?.filename || null;
-    const [result]  = await db.query(
+    const [result] = await db.query(
       `INSERT INTO products (category_id, name, slug, sku, short_desc, description, specification, material, dimensions,
         price_label, thumbnail, is_featured, sort_order, meta_title, meta_desc,
         warehouse_stock, unit, cost_price, sell_price, publish_status, is_active, created_by)
        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'new',0,?)`,
       [category_id || null, name, slug, sku || null, short_desc, description, specification, material, dimensions,
-       price_label || 'Hubungi Kami', thumbnail, is_featured ? 1 : 0, sort_order || 0, meta_title, meta_desc,
-       parseInt(warehouse_stock) || 0, unit || 'unit', parseFloat(cost_price) || 0, parseFloat(sell_price) || 0,
-       req.admin.id]
+      price_label || 'Hubungi Kami', thumbnail, (is_featured == 1 || is_featured === 'true') ? 1 : 0, sort_order || 0, meta_title, meta_desc,
+      parseInt(warehouse_stock) || 0, unit || 'unit', parseFloat(cost_price) || 0, parseFloat(sell_price) || 0,
+      req.admin.id]
     );
     const productId = result.insertId;
 
@@ -213,7 +213,7 @@ exports.update = async (req, res) => {
       const [[oldProd]] = await db.query('SELECT thumbnail FROM products WHERE id=?', [id]);
       if (oldProd?.thumbnail) {
         const oldThumbPath = path.join(__dirname, '..', 'uploads', 'products', oldProd.thumbnail);
-        if (fs.existsSync(oldThumbPath)) { try { fs.unlinkSync(oldThumbPath); } catch(e) {} }
+        if (fs.existsSync(oldThumbPath)) { try { fs.unlinkSync(oldThumbPath); } catch (e) { } }
       }
     }
 
@@ -222,7 +222,7 @@ exports.update = async (req, res) => {
       warehouse_stock=?, unit=?, cost_price=?, sell_price=?`;
     const params = [
       category_id || null, name, slug, sku || null, short_desc, description, specification,
-      material, dimensions, price_label, is_featured ? 1 : 0, is_active !== undefined ? is_active : 1,
+      material, dimensions, price_label, (is_featured == 1 || is_featured === 'true') ? 1 : 0, is_active !== undefined ? ((is_active == 1 || is_active === 'true') ? 1 : 0) : 1,
       sort_order || 0, meta_title, meta_desc,
       parseInt(warehouse_stock) || 0, unit || 'unit', parseFloat(cost_price) || 0, parseFloat(sell_price) || 0
     ];
@@ -267,24 +267,24 @@ exports.updateCMS = async (req, res) => {
       const [[oldProd]] = await db.query('SELECT thumbnail FROM products WHERE id=?', [id]);
       if (oldProd?.thumbnail) {
         const oldThumbPath = path.join(__dirname, '..', 'uploads', 'products', oldProd.thumbnail);
-        if (fs.existsSync(oldThumbPath)) { try { fs.unlinkSync(oldThumbPath); } catch(e) {} }
+        if (fs.existsSync(oldThumbPath)) { try { fs.unlinkSync(oldThumbPath); } catch (e) { } }
       }
     }
 
     const fields = [], params = [];
     const addField = (col, val) => { if (val !== undefined) { fields.push(`${col}=?`); params.push(val); } };
 
-    addField('name',           name);
-    addField('slug',           slug);
-    addField('short_desc',     short_desc);
-    addField('description',    description);
-    addField('specification',  specification);
-    addField('material',       material);
-    addField('dimensions',     dimensions);
-    addField('price_label',    price_label);
-    addField('meta_title',     meta_title);
-    addField('meta_desc',      meta_desc);
-    if (is_featured !== undefined) { fields.push('is_featured=?'); params.push(is_featured ? 1 : 0); }
+    addField('name', name);
+    addField('slug', slug);
+    addField('short_desc', short_desc);
+    addField('description', description);
+    addField('specification', specification);
+    addField('material', material);
+    addField('dimensions', dimensions);
+    addField('price_label', price_label);
+    addField('meta_title', meta_title);
+    addField('meta_desc', meta_desc);
+    if (is_featured !== undefined) { fields.push('is_featured=?'); params.push((is_featured == 1 || is_featured === 'true') ? 1 : 0); }
     if (thumbnail) { fields.push('thumbnail=?'); params.push(thumbnail); }
 
     if (fields.length) {
@@ -362,12 +362,12 @@ exports.remove = async (req, res) => {
     const [[prod]] = await db.query('SELECT thumbnail FROM products WHERE id=?', [req.params.id]);
     if (prod?.thumbnail) {
       const thumbPath = path.join(__dirname, '..', 'uploads', 'products', prod.thumbnail);
-      if (fs.existsSync(thumbPath)) { try { fs.unlinkSync(thumbPath); } catch(e) {} }
+      if (fs.existsSync(thumbPath)) { try { fs.unlinkSync(thumbPath); } catch (e) { } }
     }
     const [images] = await db.query('SELECT filename FROM product_images WHERE product_id=?', [req.params.id]);
     images.forEach(img => {
       const filePath = path.join(__dirname, '..', 'uploads', 'products', img.filename);
-      if (fs.existsSync(filePath)) { try { fs.unlinkSync(filePath); } catch(e) {} }
+      if (fs.existsSync(filePath)) { try { fs.unlinkSync(filePath); } catch (e) { } }
     });
     const [result] = await db.query('DELETE FROM products WHERE id=?', [req.params.id]);
     if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Produk tidak ditemukan' });

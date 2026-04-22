@@ -92,7 +92,21 @@ exports.getAllTransactions = async (req, res) => {
        ORDER BY st.created_at DESC LIMIT ? OFFSET ?`,
       [...params, parseInt(limit), offset]
     );
-    res.json({ success: true, data: rows, pagination: { total, page: parseInt(page), limit: parseInt(limit), totalPages: Math.ceil(total / parseInt(limit)) } });
+    // Get company settings for report header
+    const [settings] = await db.query("SELECT `key`, value FROM settings WHERE `key` IN ('site_name','phone','email','address','site_logo')");
+    const company = Object.fromEntries(settings.map(s => [s.key, s.value]));
+
+    res.json({ 
+      success: true, 
+      data: rows, 
+      company,
+      pagination: { 
+        total, 
+        page: parseInt(page), 
+        limit: parseInt(limit), 
+        totalPages: Math.ceil(total / parseInt(limit)) 
+      } 
+    });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 };
 
@@ -185,24 +199,54 @@ exports.stockAdjustment = async (req, res) => {
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 };
 
-// GET stock report summary
+
+// GET stock report summary with pagination
 exports.getStockSummary = async (req, res) => {
   try {
+    const { search = '', page = 1, limit = 25 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const params = [];
+    let where = '1=1';
+    if (search) {
+      where += ' AND (p.name LIKE ? OR p.sku LIKE ?)';
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
+    const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM products p WHERE ${where}`, params);
+    
     const [rows] = await db.query(`
       SELECT p.id, p.sku, p.name, p.warehouse_stock, p.unit, p.cost_price, p.sell_price,
              p.publish_status, c.name as category_name,
-             COALESCE(SUM(CASE WHEN st.type='in' THEN st.qty ELSE 0 END),0) AS total_in,
-             COALESCE(SUM(CASE WHEN st.type='out' THEN st.qty ELSE 0 END),0) AS total_out,
              (p.warehouse_stock * p.cost_price) AS stock_value
       FROM products p
       LEFT JOIN categories c ON c.id=p.category_id
-      LEFT JOIN stock_transactions st ON st.product_id=p.id
-      GROUP BY p.id ORDER BY p.warehouse_stock ASC`
+      WHERE ${where}
+      ORDER BY p.warehouse_stock ASC, p.name ASC
+      LIMIT ? OFFSET ?`,
+      [...params, parseInt(limit), offset]
     );
-    const [[{ total_value }]] = await db.query('SELECT COALESCE(SUM(warehouse_stock * cost_price),0) as total_value FROM products');
-    res.json({ success: true, data: rows, total_stock_value: total_value });
+
+    const [[{ total_value }]] = await db.query('SELECT COALESCE(SUM(warehouse_stock * cost_price), 0) as total_value FROM products');
+    
+    // Get company settings for report header
+    const [settings] = await db.query("SELECT `key`, value FROM settings WHERE `key` IN ('site_name','phone','email','address','site_logo')");
+    const company = Object.fromEntries(settings.map(s => [s.key, s.value]));
+
+    res.json({
+      success: true,
+      data: rows,
+      total_stock_value: total_value,
+      company,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / parseInt(limit))
+      }
+    });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 };
+
 
 // ══════════════════════════════════════════════════════════════
 // SUPPLIERS

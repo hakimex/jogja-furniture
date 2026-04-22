@@ -80,7 +80,7 @@ exports.update = async (req, res) => {
     let query = `UPDATE services SET name=?, slug=?, icon=?, short_desc=?, description=?, info=?,
       color_from=?, color_to=?, sort_order=?, is_active=?`;
     const params = [name, slug, icon, short_desc, description, info, color_from, color_to,
-      sort_order || 0, is_active !== undefined ? is_active : 1];
+      parseInt(sort_order) || 0, (is_active == 1 || is_active === 'true' || is_active === '1') ? 1 : 0];
 
     if (image) { query += ', image=?'; params.push(image); }
     query += ' WHERE id=?';

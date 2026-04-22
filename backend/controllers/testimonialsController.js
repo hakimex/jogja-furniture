@@ -43,8 +43,7 @@ exports.update = async (req, res) => {
     const [result] = await db.query(
       `UPDATE testimonials SET name=?, role=?, initial=?, rating=?, content=?, 
        product_ref=?, sort_order=?, is_active=? WHERE id=?`,
-      [name, role, initial, rating, content, product_ref, sort_order || 0,
-       is_active !== undefined ? is_active : 1, req.params.id]
+
     );
     if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Testimoni tidak ditemukan' });
     res.json({ success: true, message: 'Testimoni berhasil diupdate' });

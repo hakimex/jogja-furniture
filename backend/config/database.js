@@ -1,30 +1,24 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// Aiven MySQL wajib SSL — aktif otomatis kalau DB_SSL=true
-const sslConfig = process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false;
-
 const pool = mysql.createPool({
-  host:             process.env.DB_HOST     || 'jogja-furniture-db-adi-db97.d.aivencloud.com',
-  port:             parseInt(process.env.DB_PORT || '19730'),
-  user:             process.env.DB_USER     || 'avnadmin',
-  password:         process.env.DB_PASSWORD || 'AVNS_lTWcKifVEm7xHG8MZNq',
-  database:         process.env.DB_NAME     || 'jogja_furniture',
-  ssl:              sslConfig,
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'jogja_furniture',
   waitForConnections: true,
-  connectionLimit:  10,
-  queueLimit:       0,
-  connectTimeout:   20000,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
+// Test the connection
 pool.getConnection()
-  .then(conn => {
-    console.log('✅ MySQL connected →', process.env.DB_NAME, process.env.DB_SSL === 'true' ? '(SSL)' : '');
-    conn.release();
+  .then(connection => {
+    console.log('✅ MySQL connected successfully to', process.env.DB_NAME);
+    connection.release();
   })
   .catch(err => {
-    console.error('❌ MySQL connection failed:', err.message);
-    // Jangan crash server, biarkan retry
+    console.error('❌ Defaulting MySQL failed:', err.message);
   });
 
 module.exports = pool;

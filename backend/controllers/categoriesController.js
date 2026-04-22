@@ -74,7 +74,7 @@ exports.update = async (req, res) => {
 
   try {
     let query = `UPDATE categories SET name=?, slug=?, icon=?, color_from=?, color_to=?, description=?, sort_order=?, is_active=?`;
-    const params = [name, slug, icon, color_from, color_to, description, sort_order || 0, is_active !== undefined ? is_active : 1];
+    const params = [name, slug, icon, color_from, color_to, description, parseInt(sort_order) || 0, (is_active == 1 || is_active === 'true' || is_active === '1') ? 1 : 0];
 
     if (image) {
       query += ', image=?';
