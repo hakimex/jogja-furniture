@@ -1,13 +1,13 @@
 /**
  * ordersController.js — Order Management + Invoice
  */
-const db  = require('../config/database');
+const db = require('../config/database');
 const { log } = require('../middleware/activityLogger');
 
 const getIp = (req) => req.headers['x-forwarded-for'] || req.socket?.remoteAddress || null;
 
-const ORDER_STATUSES   = ['pending','confirmed','processing','ready','delivered','cancelled','refunded'];
-const PAYMENT_STATUSES = ['unpaid','partial','paid','refunded'];
+const ORDER_STATUSES = ['pending', 'confirmed', 'processing', 'ready', 'delivered', 'cancelled', 'refunded'];
+const PAYMENT_STATUSES = ['unpaid', 'partial', 'paid', 'refunded'];
 
 // Generate order number
 async function generateOrderNumber() {
@@ -25,11 +25,11 @@ exports.getAll = async (req, res) => {
     const params = [];
     let where = '1=1';
 
-    if (status)         { where += ' AND o.status=?';         params.push(status); }
+    if (status) { where += ' AND o.status=?'; params.push(status); }
     if (payment_status) { where += ' AND o.payment_status=?'; params.push(payment_status); }
-    if (search)         { where += ' AND (o.order_number LIKE ? OR o.customer_name LIKE ? OR o.customer_phone LIKE ?)'; params.push(`%${search}%`, `%${search}%`, `%${search}%`); }
-    if (date_from)      { where += ' AND DATE(o.created_at) >= ?'; params.push(date_from); }
-    if (date_to)        { where += ' AND DATE(o.created_at) <= ?'; params.push(date_to); }
+    if (search) { where += ' AND (o.order_number LIKE ? OR o.customer_name LIKE ? OR o.customer_phone LIKE ?)'; params.push(`%${search}%`, `%${search}%`, `%${search}%`); }
+    if (date_from) { where += ' AND DATE(o.created_at) >= ?'; params.push(date_from); }
+    if (date_to) { where += ' AND DATE(o.created_at) <= ?'; params.push(date_to); }
 
     const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM orders o WHERE ${where}`, params);
     const [rows] = await db.query(
@@ -121,10 +121,10 @@ exports.updateStatus = async (req, res) => {
     if (!order) return res.status(404).json({ success: false, message: 'Order tidak ditemukan' });
 
     const fields = [], params = [];
-    if (status)         { fields.push('status=?');         params.push(status); }
+    if (status) { fields.push('status=?'); params.push(status); }
     if (payment_status) { fields.push('payment_status=?'); params.push(payment_status); }
     if (amount_paid !== undefined) { fields.push('amount_paid=?'); params.push(parseFloat(amount_paid)); }
-    if (notes)          { fields.push('notes=?');          params.push(notes); }
+    if (notes) { fields.push('notes=?'); params.push(notes); }
     if (status === 'confirmed') { fields.push('confirmed_by=?'); params.push(req.admin.id); }
     if (!fields.length) return res.status(400).json({ success: false, message: 'Tidak ada data yang diubah' });
 
@@ -141,25 +141,25 @@ exports.updateStatus = async (req, res) => {
 
       if (oldIsDeducted !== newIsDeducted) {
         const [items] = await db.query('SELECT * FROM order_items WHERE order_id=?', [id]);
-        
+
         for (const item of items) {
           if (!item.product_id) continue;
-          
+
           if (newIsDeducted) {
             // ACTION: DEDUCT STOCK
             const [[product]] = await db.query('SELECT warehouse_stock, name FROM products WHERE id=?', [item.product_id]);
             if (!product) continue;
-            
+
             if (product.warehouse_stock < item.qty) {
               // Note: We already updated the order status above. 
               // In a production app, we should use a DB transaction to roll back.
               // For now, we'll just log an error or throw.
               throw new Error(`Stok tidak cukup untuk produk ${product.name}. Tersedia: ${product.warehouse_stock}`);
             }
-            
+
             const qtyBefore = product.warehouse_stock;
             const qtyAfter = qtyBefore - item.qty;
-            
+
             await db.query('UPDATE products SET warehouse_stock=? WHERE id=?', [qtyAfter, item.product_id]);
             await db.query(
               `INSERT INTO stock_transactions (product_id, type, qty, qty_before, qty_after, reference_type, reference_no, order_id, unit_price, total_price, notes, created_by)
@@ -174,15 +174,15 @@ exports.updateStatus = async (req, res) => {
             // ACTION: RESTORE STOCK
             const [[product]] = await db.query('SELECT warehouse_stock FROM products WHERE id=?', [item.product_id]);
             if (!product) continue;
-            
+
             const qtyBefore = product.warehouse_stock;
             const qtyAfter = qtyBefore + item.qty;
-            
+
             await db.query('UPDATE products SET warehouse_stock=? WHERE id=?', [qtyAfter, item.product_id]);
             await db.query(
               `INSERT INTO stock_transactions (product_id, type, qty, qty_before, qty_after, reference_type, reference_no, order_id, unit_price, total_price, notes, created_by)
                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
-              [item.product_id, 'in', item.qty, qtyBefore, qtyAfter, 'sale_return', order.order_number, id, item.unit_price, item.subtotal, `Pengembalian stok otomatis (Status ${status})`, req.admin.id]
+              [item.product_id, 'in', item.qty, qtyBefore, qtyAfter, 'return', order.order_number, id, item.unit_price, item.subtotal, `Pengembalian stok otomatis (Status ${status})`, req.admin.id]
             );
 
             if (qtyBefore === 0) {
@@ -212,7 +212,7 @@ exports.update = async (req, res) => {
   try {
     const [[order]] = await db.query('SELECT * FROM orders WHERE id=?', [id]);
     if (!order) return res.status(404).json({ success: false, message: 'Order tidak ditemukan' });
-    if (['delivered','cancelled','refunded'].includes(order.status)) {
+    if (['delivered', 'cancelled', 'refunded'].includes(order.status)) {
       return res.status(400).json({ success: false, message: 'Order yang sudah selesai/dibatalkan tidak dapat diubah' });
     }
 
@@ -280,12 +280,12 @@ exports.getInvoice = async (req, res) => {
 // GET order dashboard stats
 exports.getStats = async (req, res) => {
   try {
-    const [[{ total }]]     = await db.query('SELECT COUNT(*) as total FROM orders');
-    const [[{ pending }]]   = await db.query("SELECT COUNT(*) as pending FROM orders WHERE status='pending'");
-    const [[{ processing }]]= await db.query("SELECT COUNT(*) as processing FROM orders WHERE status IN ('confirmed','processing')");
+    const [[{ total }]] = await db.query('SELECT COUNT(*) as total FROM orders');
+    const [[{ pending }]] = await db.query("SELECT COUNT(*) as pending FROM orders WHERE status='pending'");
+    const [[{ processing }]] = await db.query("SELECT COUNT(*) as processing FROM orders WHERE status IN ('confirmed','processing')");
     const [[{ delivered }]] = await db.query("SELECT COUNT(*) as delivered FROM orders WHERE status='delivered'");
-    const [[{ revenue }]]   = await db.query("SELECT COALESCE(SUM(total),0) as revenue FROM orders WHERE payment_status='paid'");
-    const [[{ this_month }]]= await db.query("SELECT COALESCE(SUM(total),0) as this_month FROM orders WHERE payment_status='paid' AND MONTH(created_at)=MONTH(NOW()) AND YEAR(created_at)=YEAR(NOW())");
+    const [[{ revenue }]] = await db.query("SELECT COALESCE(SUM(total),0) as revenue FROM orders WHERE payment_status='paid'");
+    const [[{ this_month }]] = await db.query("SELECT COALESCE(SUM(total),0) as this_month FROM orders WHERE payment_status='paid' AND MONTH(created_at)=MONTH(NOW()) AND YEAR(created_at)=YEAR(NOW())");
     const [[{ this_month_count }]] = await db.query("SELECT COUNT(*) as this_month_count FROM orders WHERE MONTH(created_at)=MONTH(NOW()) AND YEAR(created_at)=YEAR(NOW())");
     res.json({ success: true, data: { total, pending, processing, delivered, revenue, this_month, this_month_count } });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
