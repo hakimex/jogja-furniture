@@ -32,6 +32,7 @@ router.put('/change-password',  authCtrl.changePassword);
 
 // ── NOTIFICATIONS ─────────────────────────────────────────────
 router.get('/notifications',                    ordersCtrl.getNotifications);
+router.put('/notifications/read-all',           ordersCtrl.markAllNotificationsRead);
 router.put('/notifications/:id/read',           ordersCtrl.markNotificationRead);
 
 // ══════════════════════════════════════════════════════════════
