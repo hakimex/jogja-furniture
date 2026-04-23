@@ -89,7 +89,7 @@ function initTomSelect(id) {
 window.addEventListener('DOMContentLoaded', () => {
   if (!token || !me) { window.location.href = 'index.html'; return; }
   initUI();
-  
+
   // Land on correct dashboard by role
   if (me.role === 'admin_gudang') {
     navigateTo('warehouse-dashboard');
@@ -434,7 +434,7 @@ async function loadDashboard() {
             datasets: [{
               label: 'Views',
               data: topProds.map(p => p.view_count || 0),
-              backgroundColor: ['#C49A6C','#D4A97A','#5C2E0E','#8B4513','#A0522D'],
+              backgroundColor: ['#C49A6C', '#D4A97A', '#5C2E0E', '#8B4513', '#A0522D'],
               borderRadius: 6, borderSkipped: false,
             }]
           },
@@ -461,7 +461,7 @@ async function loadMarketingDashboard() {
 
     const s = dashData.data.stats;
     const os = orderStats.data;
-    
+
     document.getElementById('marketStats').innerHTML = buildStatCards([
       { icon: '📦', label: 'Produk Published', val: s.total_products, cls: 'brown' },
       { icon: '👥', label: 'Customer Aktif', val: s.total_customers || 0, cls: 'blue' },
@@ -529,7 +529,7 @@ async function loadProducts(page = 1) {
     else thPrice.textContent = 'Harga';
   }
   const search = getVal('prodSearch');
-const cat = getVal('prodCatFilter');
+  const cat = getVal('prodCatFilter');
   const status = getVal('prodStatusFilter');
   try {
     const data = await api('GET', `/products?page=${page}&limit=20&search=${encodeURIComponent(search)}&category=${cat}&status=${status}`);
@@ -544,9 +544,9 @@ const cat = getVal('prodCatFilter');
         <td>${statusBadge(p.publish_status)}</td>
         <td><span style="font-weight:600;color:${p.warehouse_stock <= 3 ? 'var(--danger)' : p.warehouse_stock <= 10 ? 'var(--warning)' : 'var(--success)'}">${p.warehouse_stock ?? 0}</span> ${p.unit || 'unit'}</td>
         <td style="font-size:.82rem">
-          ${(me.role === 'admin_gudang' || me.role === 'superadmin') ? fmtRp(p.cost_price) : 
-            (me.role === 'admin_website' || me.role === 'marketing') ? fmtRp(p.sell_price) : 
-            (p.price_label || '—')}
+          ${(me.role === 'admin_gudang' || me.role === 'superadmin') ? fmtRp(p.cost_price) :
+        (me.role === 'admin_website' || me.role === 'marketing') ? fmtRp(p.sell_price) :
+          (p.price_label || '—')}
         </td>
         <td>${p.is_featured ? '⭐' : '—'}</td>
 <td>
@@ -643,17 +643,17 @@ function openProductModal(id = null, isViewOnly = false) {
   const pStatusGroup = document.getElementById('pStatusGroup');
   const pFeaturedGroup = document.getElementById('pFeatured') ? document.getElementById('pFeatured').closest('.form-group') : null;
   const pSellPriceInfoGroup = document.getElementById('pSellPriceInfoGroup');
-  
+
   const isGudang = me.role === 'admin_gudang';
   const isWebsite = me.role === 'admin_website';
-  
+
   if (tabWH) tabWH.style.display = (isGudang || me.role === 'superadmin') ? '' : 'none';
   if (tabContent) tabContent.style.display = (isGudang) ? 'none' : '';
   if (tabSeo) tabSeo.style.display = (isGudang) ? 'none' : '';
   if (pFeaturedGroup) pFeaturedGroup.style.display = (isGudang) ? 'none' : '';
   const pOrderGroup = document.getElementById('pSortOrder')?.closest('.form-group');
   if (pOrderGroup) pOrderGroup.style.display = (isGudang) ? 'none' : '';
-  
+
   if (pStatusGroup) pStatusGroup.style.display = (isWebsite || me.role === 'superadmin') ? '' : 'none';
   if (pSellPriceInfoGroup) pSellPriceInfoGroup.style.display = (isWebsite || me.role === 'marketing' || me.role === 'superadmin') ? '' : 'none';
 
@@ -1343,7 +1343,7 @@ async function exportStockPDF() {
           <div class="report-meta">
             <h2>REPORT</h2>
             <p>STOCK SUMMARY</p>
-            <div class="report-date">Tanggal: ${new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })}</div>
+            <div class="report-date">Tanggal: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
             <div style="margin-top: 15px"><span style="background:#E8F5E9; color:#2E7D32; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase">Inventory Live</span></div>
           </div>
         </div>
@@ -1424,13 +1424,13 @@ async function loadTransactions(page = 1) {
 function printStockReport() {
   const el = document.getElementById('page-stock-transactions');
   const opt = {
-    margin:       0.5,
-    filename:     'Laporan_Stok_JogjaFurniture.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+    margin: 0.5,
+    filename: 'Laporan_Stok_JogjaFurniture.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
   };
-  
+
   document.body.classList.add('print-stock-tx');
   html2pdf().set(opt).from(el).save().then(() => {
     document.body.classList.remove('print-stock-tx');
@@ -1442,11 +1442,11 @@ function exportInvoicePDF() {
   const h2 = el.querySelector('h2');
   const invNumber = h2 ? h2.innerText.split(' ').pop() : 'Order';
   const opt = {
-    margin:       0.5,
-    filename:     `Invoice_${invNumber}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true },
-    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    margin: 0.5,
+    filename: `Invoice_${invNumber}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
   };
   html2pdf().set(opt).from(el).save();
 }
@@ -1652,7 +1652,8 @@ async function loadOrders(page = 1) {
         <td>
           <div style="display:flex;gap:.3rem;flex-wrap:wrap">
             <button class="btn btn-sm btn-outline" onclick="viewInvoice(${o.id})" title="Invoice">🧾</button>
-            <button class="btn btn-sm btn-outline" onclick="editOrderStatus(${o.id})" title="Update Status">✏️</button>
+            <button class="btn btn-sm btn-primary" onclick="openOrderModal(${o.id})" title="Edit Pesanan">✏️</button>
+            <button class="btn btn-sm btn-outline" onclick="editOrderStatus(${o.id})" title="Update Status">⚙️</button>
             ${me.role !== 'marketing' ? `<button class="btn btn-sm btn-danger" onclick="deleteOrder(${o.id})" title="Hapus">🗑</button>` : ''}
           </div>
         </td>
@@ -1722,23 +1723,23 @@ window.handleProductInput = function (idx) {
   const val = input.value;
   const priceInput = document.getElementById(`iPrice_${idx}`);
   const qtyInput = document.getElementById(`iQty_${idx}`);
-  
+
   if (typeof products !== 'undefined' && products.length) {
     const prod = products.find(p => {
       const lbl = p.sku ? `[${p.sku}] ${p.name}` : p.name;
       return lbl === val;
     });
-    
+
     if (prod) {
       priceInput.value = prod.sell_price || 0;
       input.dataset.productId = prod.id;
       input.dataset.sku = prod.sku || '';
-      
+
       // Set Max Qty based on warehouse stock
       const stock = parseInt(prod.warehouse_stock) || 0;
       qtyInput.max = stock;
       document.getElementById(`iStockDisplay_${idx}`).textContent = `📦 Tersedia: ${stock} ${prod.unit || 'unit'}`;
-      
+
       // If current qty > stock, adjust it
       if (parseInt(qtyInput.value) > stock) {
         qtyInput.value = stock;
@@ -1790,8 +1791,43 @@ function openOrderModal(id = null) {
   setVal('oCustomerId', ''); setVal('oPayMethod', ''); setVal('oDelivery', '');
   document.getElementById('orderItems').innerHTML = '';
   orderItems = []; orderItemCount = 0;
+
   loadCustomersDropdown();
-  addOrderItem(); // start with 1 item
+
+  if (id) {
+    api('GET', `/orders/${id}`).then(res => {
+      const o = res.data;
+      setVal('oCustomerId', o.customer_id || '');
+      setVal('oCusName', o.customer_name);
+      setVal('oCusPhone', o.customer_phone || '');
+      setVal('oCusEmail', o.customer_email || '');
+      setVal('oPayMethod', o.payment_method || '');
+      setVal('oDelivery', o.delivery_date ? o.delivery_date.split('T')[0] : '');
+      setVal('oAddr', o.customer_addr || '');
+      setVal('oShipAddr', o.shipping_addr || '');
+      setVal('oDiscount', o.discount || 0);
+      setVal('oShipping', o.shipping_cost || 0);
+      setVal('oNotes', o.notes || '');
+
+      if (o.items && o.items.length) {
+        o.items.forEach(item => {
+          addOrderItem();
+          const idx = orderItemCount - 1;
+          const nameInput = document.getElementById(`iName_${idx}`);
+          nameInput.value = item.product_sku ? `[${item.product_sku}] ${item.product_name}` : item.product_name;
+          nameInput.dataset.productId = item.product_id || '';
+          nameInput.dataset.sku = item.product_sku || '';
+          setVal(`iQty_${idx}`, item.qty);
+          setVal(`iPrice_${idx}`, item.unit_price);
+          handleProductInput(idx);
+        });
+      }
+      calcTotal();
+    }).catch(err => toast(err.message, 'error'));
+  } else {
+    addOrderItem();
+  }
+
   openModal('modalOrder');
 }
 
@@ -1820,8 +1856,11 @@ async function saveOrder() {
     delivery_date: getVal('oDelivery') || null, items
   };
   try {
-    const r = await api('POST', '/orders', payload);
-    toast(`Order ${r.order_number} berhasil dibuat!`, 'success');
+    const method = editingId ? 'PUT' : 'POST';
+    const endpoint = editingId ? `/orders/${editingId}` : '/orders';
+    const r = await api(method, endpoint, payload);
+
+    toast(editingId ? `Order ${r.order_number || ''} berhasil diupdate!` : `Order ${r.order_number || ''} berhasil dibuat!`, 'success');
     closeModal('modalOrder'); loadOrders(); loadOrderStats();
   } catch (e) { toast(e.message, 'error'); }
 }
@@ -1860,7 +1899,7 @@ async function viewInvoice(id) {
   try {
     const data = await api('GET', `/orders/${id}/invoice`);
     const { order, company } = data.data;
-    
+
     const rows = (order.items || []).map((item, i) => `
       <tr>
         <td>${i + 1}</td>
@@ -2394,7 +2433,7 @@ async function exportTransactionPDF() {
           <div class="report-meta">
             <h2>REPORT</h2>
             <p>STOCK TRANSACTIONS</p>
-            <div class="report-date">Tanggal: ${new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })}</div>
+            <div class="report-date">Tanggal: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
             <div style="margin-top: 10px; font-size:11px; color:#888">Periode: ${from || 'Awal'} s/d ${to || 'Sekarang'}</div>
           </div>
         </div>
