@@ -40,13 +40,14 @@ async function generateOrderNumber(conn) {
 // ── GET all orders ─────────────────────────────────────────────
 exports.getAll = async (req, res) => {
   try {
-    const { status = '', payment_status = '', search = '', date_from = '', date_to = '' } = req.query;
+    const { status = '', payment_status = '', search = '', date_from = '', date_to = '', customer_id = '' } = req.query;
     const { page, limit, offset } = safePaginate(req.query.page, req.query.limit);
     const params = [];
     let where = '1=1';
 
     if (status)         { where += ' AND o.status=?';                                                                                params.push(status); }
     if (payment_status) { where += ' AND o.payment_status=?';                                                                        params.push(payment_status); }
+    if (customer_id)    { where += ' AND o.customer_id=?';                                                                           params.push(customer_id); }
     if (search)         { where += ' AND (o.order_number LIKE ? OR o.customer_name LIKE ? OR o.customer_phone LIKE ?)';              params.push(`%${search}%`, `%${search}%`, `%${search}%`); }
     if (date_from)      { where += ' AND DATE(o.created_at) >= ?';                                                                   params.push(date_from); }
     if (date_to)        { where += ' AND DATE(o.created_at) <= ?';                                                                   params.push(date_to); }

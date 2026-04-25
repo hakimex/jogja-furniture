@@ -70,7 +70,7 @@ exports.getDashboard = async (req, res) => {
 // ══════════════════════════════════════════════════════════════
 exports.getAllTransactions = async (req, res) => {
   try {
-    const { type = '', product_id = '', date_from = '', date_to = '', page = 1, limit = 30 } = req.query;
+    const { type = '', product_id = '', date_from = '', date_to = '', page = 1, limit = 30, search = '' } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
     const params = [];
     let where = '1=1';
@@ -79,8 +79,12 @@ exports.getAllTransactions = async (req, res) => {
     if (product_id) { where += ' AND st.product_id=?';     params.push(product_id); }
     if (date_from)  { where += ' AND DATE(st.created_at)>=?'; params.push(date_from); }
     if (date_to)    { where += ' AND DATE(st.created_at)<=?'; params.push(date_to); }
+    if (search) {
+      where += ' AND (p.name LIKE ? OR p.sku LIKE ? OR st.reference_no LIKE ?)';
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
 
-    const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM stock_transactions st WHERE ${where}`, params);
+    const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM stock_transactions st LEFT JOIN products p ON p.id=st.product_id WHERE ${where}`, params);
     const [rows] = await db.query(
       `SELECT st.*, p.name as product_name, p.sku, p.unit,
               s.name as supplier_name, u.full_name as created_by_name
@@ -203,7 +207,7 @@ exports.stockAdjustment = async (req, res) => {
 // GET stock report summary with pagination
 exports.getStockSummary = async (req, res) => {
   try {
-    const { search = '', page = 1, limit = 25 } = req.query;
+    const { search = '', page = 1, limit = 25, sort = 'warehouse_stock', order = 'ASC' } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
     const params = [];
     let where = '1=1';
@@ -214,6 +218,11 @@ exports.getStockSummary = async (req, res) => {
 
     const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM products p WHERE ${where}`, params);
     
+    // Validate sort fields to prevent SQL injection
+    const validSortFields = ['sku', 'name', 'warehouse_stock', 'stock_value', 'cost_price', 'sell_price', 'publish_status'];
+    const sortField = validSortFields.includes(sort) ? sort : 'warehouse_stock';
+    const sortOrder = order.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
     const [rows] = await db.query(`
       SELECT p.id, p.sku, p.name, p.warehouse_stock, p.unit, p.cost_price, p.sell_price,
              p.publish_status, c.name as category_name,
@@ -221,7 +230,7 @@ exports.getStockSummary = async (req, res) => {
       FROM products p
       LEFT JOIN categories c ON c.id=p.category_id
       WHERE ${where}
-      ORDER BY p.warehouse_stock ASC, p.name ASC
+      ORDER BY ${sortField === 'stock_value' ? 'stock_value' : 'p.'+sortField} ${sortOrder}, p.name ASC
       LIMIT ? OFFSET ?`,
       [...params, parseInt(limit), offset]
     );

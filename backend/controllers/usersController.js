@@ -303,6 +303,8 @@ exports.getControlCenterStats = async (req, res) => {
     const [[{ today_orders }]]    = await db.query("SELECT COUNT(*) as today_orders FROM orders WHERE DATE(created_at) = CURDATE()");
     const [[{ month_confirmed }]] = await db.query("SELECT COUNT(*) as month_confirmed FROM orders WHERE status = 'confirmed' AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())");
     const [[{ low_stock }]]       = await db.query('SELECT COUNT(*) as low_stock FROM products WHERE warehouse_stock <= 3');
+    const [[{ out_of_stock }]]    = await db.query('SELECT COUNT(*) as out_of_stock FROM products WHERE warehouse_stock = 0');
+    const [[{ unread_contacts }]] = await db.query('SELECT COUNT(*) as unread_contacts FROM contacts WHERE is_read = 0');
     const [[{ inventory_val }]]   = await db.query('SELECT COALESCE(SUM(warehouse_stock * cost_price), 0) as inventory_val FROM products');
 
     const [recent_logs]   = await db.query('SELECT * FROM activity_logs ORDER BY created_at DESC LIMIT 10');
@@ -330,7 +332,7 @@ exports.getControlCenterStats = async (req, res) => {
         stats: {
           total_users, active_sessions, total_orders, pending_orders,
           total_customers, total_suppliers, new_products, total_products,
-          today_orders, month_confirmed, low_stock, inventory_value: inventory_val || 0,
+          today_orders, month_confirmed, low_stock, out_of_stock, unread_contacts, inventory_value: inventory_val || 0,
         },
         recent_logs,
         users_by_role,

@@ -124,6 +124,10 @@ exports.getDashboard = async (req, res) => {
     const [[{ unread_contacts }]]   = await db.query("SELECT COUNT(*) as unread_contacts FROM contacts WHERE is_read = 0");
     const [[{ total_contacts }]]    = await db.query("SELECT COUNT(*) as total_contacts FROM contacts");
     const [[{ featured_products }]] = await db.query("SELECT COUNT(*) as featured_products FROM products WHERE is_featured = 1 AND is_active = 1");
+    const [[{ total_customers }]]   = await db.query("SELECT COUNT(*) as total_customers FROM customers");
+    const [[{ total_orders }]]      = await db.query("SELECT COUNT(*) as total_orders FROM orders");
+    const [[{ today_orders }]]      = await db.query("SELECT COUNT(*) as today_orders FROM orders WHERE DATE(created_at) = CURDATE()");
+    const [[{ total_suppliers }]]   = await db.query("SELECT COUNT(*) as total_suppliers FROM suppliers");
 
     const [recent_contacts] = await db.query(
       'SELECT id, name, subject, created_at, is_read FROM contacts ORDER BY created_at DESC LIMIT 5'
@@ -138,6 +142,7 @@ exports.getDashboard = async (req, res) => {
         stats: {
           total_products, total_categories, total_services,
           total_testimonials, unread_contacts, total_contacts, featured_products,
+          total_customers, total_orders, today_orders, total_suppliers
         },
         recent_contacts,
         top_products,
