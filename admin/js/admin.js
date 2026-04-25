@@ -739,6 +739,15 @@ async function loadProductsDropdown() {
         if (el) el.textContent = prod ? `${prod.warehouse_stock} ${prod.unit || 'unit'}` : '—';
       });
     }
+
+    // Refresh datalist order jika sudah ada di DOM
+    const dl = document.getElementById('dl_products');
+    if (dl && products.length) {
+      dl.innerHTML = products.map(p => {
+        const lbl = p.sku ? `[${p.sku}] ${p.name}` : p.name;
+        return `<option value="${lbl}">`;
+      }).join('');
+    }
   } catch (e) { }
 }
 
@@ -1803,18 +1812,18 @@ function addOrderItem() {
   const div = document.createElement('div');
   div.className = 'item-row'; div.id = `item_${idx}`;
 
-  // Build datalist if not exists
-  if (!document.getElementById('dl_products')) {
-    const dl = document.createElement('datalist');
-    dl.id = 'dl_products';
-    if (typeof products !== 'undefined' && products.length) {
-      dl.innerHTML = products.map(p => {
-        const lbl = p.sku ? `[${p.sku}] ${p.name}` : p.name;
-        return `<option value="${lbl}">`;
-      }).join('');
-    }
-    document.body.appendChild(dl);
+  // Rebuild datalist setiap kali (agar selalu up-to-date dengan data products terbaru)
+  let dl = document.getElementById('dl_products');
+  if (dl) dl.remove(); // hapus yang lama
+  dl = document.createElement('datalist');
+  dl.id = 'dl_products';
+  if (typeof products !== 'undefined' && products.length) {
+    dl.innerHTML = products.map(p => {
+      const lbl = p.sku ? `[${p.sku}] ${p.name}` : p.name;
+      return `<option value="${lbl}">`;
+    }).join('');
   }
+  document.body.appendChild(dl);
 
   div.innerHTML = `
     <div class="form-group" style="margin:0">
@@ -1959,8 +1968,9 @@ async function saveOrder() {
   if (!cusName) { toast('Nama customer wajib diisi', 'warning'); return; }
   const items = orderItems.map(idx => {
     const input = document.getElementById(`iName_${idx}`);
+    const rawProductId = input?.dataset.productId;
     return {
-      product_id: input?.dataset.productId || null,
+      product_id: rawProductId ? parseInt(rawProductId) : null,
       product_sku: input?.dataset.sku || null,
       product_name: input?.value || '',
       qty: parseInt(document.getElementById(`iQty_${idx}`)?.value) || 1,
