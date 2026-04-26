@@ -206,6 +206,21 @@ function initUI() {
       e.target.select();
     }
   }, true);
+
+  // Pulihkan interaksi halaman saat window mendapat focus kembali
+  // (misal: setelah tab popup invoice/PDF ditutup via tombol X di tab bar)
+  window.addEventListener('focus', () => {
+    // Pastikan body tidak terblokir
+    document.body.style.pointerEvents = '';
+    document.body.style.overflow = '';
+    // Tutup semua modal overlay yang mungkin tertinggal terbuka secara tidak sengaja
+    document.querySelectorAll('.modal-overlay.open').forEach(el => {
+      // Hanya tutup jika tidak ada interaksi aktif di dalamnya
+      if (!el.querySelector(':focus')) {
+        el.classList.remove('open');
+      }
+    });
+  });
 }
 
 function roleLabel(r) {
@@ -1580,13 +1595,7 @@ let testiData = [];
 </body>
 </html>`;
 
-        const win = window.open('', '_blank');
-        if (!win) { toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning'); return; }
-        const blob = new Blob([html], { type: 'text/html' });
-        win.location.href = URL.createObjectURL(blob);
-        const pollClose = setInterval(() => {
-          if (win.closed) { clearInterval(pollClose); window.focus(); }
-        }, 300);
+        openReportWindow(html);
       } catch (e) {
         toast('Gagal memuat data: ' + e.message, 'error');
       } finally {
@@ -2210,7 +2219,8 @@ let testiData = [];
       const oldHtml = btn ? btn.innerHTML : '🧾';
       if (btn) { btn.disabled = true; btn.innerHTML = '⏳'; }
 
-      const win = window.open('', '_blank');
+      const _pw = screen.width, _ph = screen.height;
+      const win = window.open('', '_blank', `width=${_pw},height=${_ph},left=0,top=0,menubar=no,toolbar=no,location=no,status=no`);
       if (win) {
         win.document.write(`
       <html>
@@ -2397,6 +2407,7 @@ let testiData = [];
             if (win.closed) {
               clearInterval(pollClose);
               window.focus();
+              setTimeout(() => { document.body.focus(); window.dispatchEvent(new Event('focus')); }, 100);
             }
           }, 300);
         }
@@ -2750,8 +2761,16 @@ let testiData = [];
       const isShow = dd.classList.toggle('show');
       if (isShow) {
         renderNotifs('notifListDropdown');
-        const closer = () => { dd.classList.remove('show'); document.removeEventListener('click', closer); };
-        document.addEventListener('click', closer);
+        const closer = (ev) => {
+          if (!dd.contains(ev.target)) {
+            dd.classList.remove('show');
+          }
+        };
+        // Pakai { once: true } agar listener otomatis terhapus setelah satu klik
+        // dan tambahkan delay agar klik yang sama tidak langsung menutup dropdown
+        setTimeout(() => {
+          document.addEventListener('click', closer, { once: true });
+        }, 0);
       }
     }
 
@@ -2866,7 +2885,8 @@ let testiData = [];
       const oldText = btn ? btn.textContent : '📄 Export PDF';
       if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
 
-      const win = window.open('', '_blank');
+      const _pw = screen.width, _ph = screen.height;
+      const win = window.open('', '_blank', `width=${_pw},height=${_ph},left=0,top=0,menubar=no,toolbar=no,location=no,status=no`);
       if (!win) {
         if (btn) { btn.disabled = false; btn.textContent = oldText; }
         toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning');
@@ -2957,7 +2977,11 @@ let testiData = [];
         const blob = new Blob([html], { type: 'text/html' });
         win.location.href = URL.createObjectURL(blob);
         const pollClose = setInterval(() => {
-          if (win.closed) { clearInterval(pollClose); window.focus(); }
+          if (win.closed) {
+            clearInterval(pollClose);
+            window.focus();
+            setTimeout(() => { document.body.focus(); window.dispatchEvent(new Event('focus')); }, 100);
+          }
         }, 300);
       } catch (e) {
         if (win) win.close();
@@ -2965,6 +2989,37 @@ let testiData = [];
       } finally {
         if (btn) { btn.disabled = false; btn.textContent = oldText; }
       }
+    }
+
+    // ----------------------------------------------------------------------------------------------------
+    // POPUP WINDOW HELPER — Focus Recovery
+    // ----------------------------------------------------------------------------------------------------
+    function openReportWindow(htmlContent) {
+      const _pw = screen.width, _ph = screen.height;
+      const win = window.open('', '_blank', `width=${_pw},height=${_ph},left=0,top=0,menubar=no,toolbar=no,location=no,status=no`);
+      if (!win) {
+        toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning');
+        return null;
+      }
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      win.location.href = URL.createObjectURL(blob);
+      
+      // Polling untuk deteksi popup ditutup, lalu paksa focus kembali ke parent
+      const pollClose = setInterval(() => {
+        if (win.closed) {
+          clearInterval(pollClose);
+          // Paksa focus kembali ke window admin
+          window.focus();
+          // Trigger click event untuk "wake up" browser event system
+          setTimeout(() => {
+            document.body.focus();
+            // Dispatch custom event untuk memastikan semua listener aktif kembali
+            window.dispatchEvent(new Event('focus'));
+          }, 100);
+        }
+      }, 300);
+      
+      return win;
     }
 
     // ----------------------------------------------------------------------------------------------------
