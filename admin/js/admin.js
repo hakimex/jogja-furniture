@@ -210,16 +210,8 @@ function initUI() {
   // Pulihkan interaksi halaman saat window mendapat focus kembali
   // (misal: setelah tab popup invoice/PDF ditutup via tombol X di tab bar)
   window.addEventListener('focus', () => {
-    // Pastikan body tidak terblokir
     document.body.style.pointerEvents = '';
     document.body.style.overflow = '';
-    // Tutup semua modal overlay yang mungkin tertinggal terbuka secara tidak sengaja
-    document.querySelectorAll('.modal-overlay.open').forEach(el => {
-      // Hanya tutup jika tidak ada interaksi aktif di dalamnya
-      if (!el.querySelector(':focus')) {
-        el.classList.remove('open');
-      }
-    });
   });
 }
 
@@ -428,6 +420,21 @@ function previewImg(input, previewId) {
   } else {
     prev.style.display = 'none';
   }
+}
+
+function previewNewImages(input) {
+  const grid = document.getElementById('newImgPreviewGrid');
+  if (!grid) return;
+  const files = Array.from(input.files);
+  if (!files.length) { grid.innerHTML = ''; return; }
+  grid.innerHTML = files.map((file, i) => {
+    const url = URL.createObjectURL(file);
+    return `
+      <div class="image-item" style="position:relative">
+        <img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:6px">
+        <div style="position:absolute;bottom:4px;left:4px;right:4px;background:rgba(0,0,0,.5);color:#fff;font-size:.6rem;padding:2px 4px;border-radius:4px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${file.name}</div>
+      </div>`;
+  }).join('');
 }
 function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val ?? ''; }
 function getVal(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
@@ -760,7 +767,14 @@ function openProductModal(id = null, isViewOnly = false) {
   setChecked('pFeatured', false); setVal('pStatus', 'new'); setVal('pCategory', ''); setVal('pUnit', 'unit');
   const prevEl = document.getElementById('prevThumb');
   if (prevEl) prevEl.style.display = 'none';
+  // Reset file inputs agar tidak carry-over dari sesi edit sebelumnya
+  const pThumbEl = document.getElementById('pThumb');
+  if (pThumbEl) pThumbEl.value = '';
+  const pImagesEl = document.getElementById('pImages');
+  if (pImagesEl) pImagesEl.value = '';
   document.getElementById('existingImgGrid').innerHTML = '';
+  const newPreviewGrid = document.getElementById('newImgPreviewGrid');
+  if (newPreviewGrid) newPreviewGrid.innerHTML = '';
   document.getElementById('modalProductTitle').textContent = isViewOnly ? 'Detail Produk' : (id ? 'Edit Produk' : 'Tambah Produk Baru');
 
   // Role-based tab visibility
@@ -903,8 +917,13 @@ async function saveProduct() {
       : '/products';
     const method = editingId ? 'PUT' : 'POST';
     await api(method, endpoint, fd, true);
-    toast(editingId ? 'Produk berhasil diupdate' : 'Produk berhasil ditambahkan');
-    closeModal('modalProduct');
+    toast(editingId ? 'Produk berhasil diupdate ✅' : 'Produk berhasil ditambahkan ✅');
+    if (editingId) {
+      // Tetap di modal, refresh data sambil pertahankan tab aktif
+      refreshProductModal(editingId);
+    } else {
+      closeModal('modalProduct');
+    }
     loadProducts();
   } catch (e) {
     toast(e.message, 'error');
@@ -914,6 +933,17 @@ async function saveProduct() {
 }
 
 function editProduct(id) { openProductModal(id); }
+
+// Refresh modal produk sambil mempertahankan tab yang sedang aktif
+async function refreshProductModal(id) {
+  const activeTab = document.querySelector('#productTabBar .settings-tab.active');
+  const tabKeyMap = { tabInfo:'info', tabWH:'warehouse', tabContent:'content', tabImages:'images', tabSeo:'seo' };
+  const activeKey = activeTab ? (tabKeyMap[activeTab.id] || 'images') : 'images';
+  openProductModal(id);
+  setTimeout(() => {
+    switchProductTab(activeKey, document.querySelector(`#productTabBar [onclick*="'${activeKey}'"]`));
+  }, 150);
+}
 
 async function deleteProduct(id) {
   if (!confirm('Hapus produk ini? Semua foto dan data terkait akan ikut dihapus.')) return;
@@ -944,7 +974,7 @@ async function quickUnpublish(id) {
 async function setPrimaryImg(productId, imageId) {
   try {
     await api('PUT', `/products/${productId}/images/${imageId}/primary`);
-    toast('Gambar utama diset'); editProduct(productId);
+    toast('Gambar utama diset ✅'); refreshProductModal(productId);
   } catch (e) { toast(e.message, 'error'); }
 }
 
@@ -952,7 +982,7 @@ async function deleteProductImg(productId, imageId) {
   if (!confirm('Hapus gambar ini?')) return;
   try {
     await api('DELETE', `/products/${productId}/images/${imageId}`);
-    toast('Gambar dihapus'); editProduct(productId);
+    toast('Gambar dihapus'); refreshProductModal(productId);
   } catch (e) { toast(e.message, 'error'); }
 }
 
@@ -1006,6 +1036,9 @@ function openCategoryModal(id = null) {
   const isGudang = me.role === 'admin_gudang';
   const cOrderGroup = document.getElementById('cOrder')?.closest('.form-group');
   if (cOrderGroup) cOrderGroup.style.display = (isGudang) ? 'none' : '';
+  // Reset file input dan preview
+  const cImg = document.getElementById('cImage');
+  if (cImg) cImg.value = '';
   document.getElementById('prevCatImg').style.display = 'none';
   if (id) {
     const cat = categories.find(c => c.id === id);
@@ -1088,6 +1121,9 @@ function openServiceModal(id = null) {
   setVal('svIcon', '🛠'); setVal('svOrder', 0); setChecked('svActive', true);
   setVal('svColorFrom', '#5C2E0E'); setVal('svColorTo', '#C49A6C');
   document.getElementById('prevSvImg').style.display = 'none';
+  // Reset file input
+  const svImg = document.getElementById('svImage');
+  if (svImg) svImg.value = '';
 
   if (id && serviceData.length) {
     const s = serviceData.find(s => s.id === id);

@@ -1389,9 +1389,11 @@
           <div class="form-group"><label>Thumbnail Utama</label><input type="file" id="pThumb" accept="image/*"
               onchange="previewImg(this,'prevThumb')"><img id="prevThumb" class="img-preview" style="display:none">
           </div>
-          <div class="form-group"><label>Galeri Foto Tambahan (maks 10)</label><input type="file" id="pImages"
-              accept="image/*" multiple>
+          <div class="form-group">
+            <label>Galeri Foto Tambahan (maks 10)</label>
+            <input type="file" id="pImages" accept="image/*" multiple onchange="previewNewImages(this)">
             <p class="form-note">Format: JPG, PNG, WEBP. Maks 5MB/foto.</p>
+            <div id="newImgPreviewGrid" class="images-grid" style="margin-top:.75rem"></div>
           </div>
           <div id="existingImgGrid" class="images-grid" style="margin-top:1rem"></div>
         </div>
@@ -1778,8 +1780,8 @@
               placeholder="Estimasi: 3–8 minggu|Area: Yogyakarta"></div>
           <div class="form-group"><label>Warna Awal</label><input type="color" id="svColorFrom" value="#5C2E0E"></div>
           <div class="form-group"><label>Warna Akhir</label><input type="color" id="svColorTo" value="#C49A6C"></div>
-          <div class="form-group"><label>Gambar</label><input type="file" id="svImage" accept="image/*">
-            <img id="prevSvImg" src=""
+          <div class="form-group"><label>Gambar</label><input type="file" id="svImage" accept="image/*" onchange="previewImg(this,'prevSvImg')">
+            <img id="prevSvImg"
               style="display:none;width:100px;height:100px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--gray200);margin-top:.5rem">
           </div>
           <div class="form-group"><label>Urutan</label><input type="number" id="svOrder" value="0"></div>
