@@ -1,509 +1,556 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jogja Furniture Decoration – Furnitur Premium Yogyakarta</title>
-<meta name="description" content="Furnitur handcraft berkualitas tinggi dan dekorasi interior khas Yogyakarta. Custom furniture, kitchen set, interior design.">
-<meta property="og:title" content="Jogja Furniture Decoration">
-<meta property="og:description" content="Furnitur premium handcraft khas Yogyakarta">
-<meta property="og:type" content="website">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogja Furniture Decoration – Furnitur Premium Yogyakarta</title>
+  <meta name="description"
+    content="Furnitur handcraft berkualitas tinggi dan dekorasi interior khas Yogyakarta. Custom furniture, kitchen set, interior design.">
+  <meta property="og:title" content="Jogja Furniture Decoration">
+  <meta property="og:description" content="Furnitur premium handcraft khas Yogyakarta">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
 </head>
+
 <body>
-<!-- ══ PRELOADER ANIMATION ══ -->
-<div class="preloader" id="preloader">
-  <div class="preloader-text-wrap">
-    <div class="preloader-word main-text" style="animation-delay: 0.2s;">JOGJA</div>
-    <div class="preloader-word accent-text" style="animation-delay: 0.8s;">Furniture Decoration</div>
+  <!-- ══ PRELOADER ANIMATION ══ -->
+  <div class="preloader" id="preloader">
+    <div class="preloader-text-wrap">
+      <div class="preloader-word main-text" style="animation-delay: 0.2s;">JOGJA</div>
+      <div class="preloader-word accent-text" style="animation-delay: 0.8s;">Furniture Decoration</div>
+    </div>
   </div>
-</div>
 
 
-<!-- ══ NAVBAR ══ -->
-<nav class="navbar" id="navbar">
-  <div class="nav-inner">
-    <a href="#beranda" class="logo">
-      <span class="logo-name" id="logoName">JOGJA</span>
-      <span class="logo-tag"  id="logoTag">Furniture Decoration</span>
-    </a>
-    <div class="nav-links">
-      <a href="#beranda">Beranda</a>
-      <a href="#tentang">Tentang</a>
-      <a href="#layanan">Layanan</a>
-      <a href="#catalog">Catalog</a>
-      <a href="#testimoni">Testimoni</a>
-      <a href="#kontak">Kontak</a>
-    </div>
-    <div class="nav-cta">
-      <a href="#kontak" class="btn btn-outline" style="padding:.52rem 1.1rem;">📞 Hubungi</a>
-      <a href="#kontak" class="btn btn-primary" style="padding:.52rem 1.1rem;">Konsultasi</a>
-    </div>
-    <!-- Hamburger (mobile) -->
-    <div class="nav-hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </div>
-  </div>
-</nav>
-
-<!-- Mobile Drawer -->
-<div class="nav-mobile-drawer" id="mobileDrawer">
-  <div class="drawer-header" style="margin-bottom: 1.5rem; text-align: center;">
-    <div class="logo-name" style="color:var(--white); font-size: 1.8rem;">JOGJA</div>
-    <div class="logo-tag" style="color:var(--accent); display:block !important; font-size: 0.65rem;">Furniture Decoration</div>
-  </div>
-  <span class="mob-close" id="mobClose" onclick="document.getElementById('mobileDrawer').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">✕</span>
-  <a href="#beranda">Beranda</a>
-  <a href="#tentang">Tentang</a>
-  <a href="#layanan">Layanan</a>
-  <a href="#catalog">Catalog</a>
-  <a href="#testimoni">Testimoni</a>
-  <a href="#kontak">Kontak</a>
-  <a href="#kontak" class="btn btn-primary" style="margin-top:1rem; width: 100%; justify-content: center;">Konsultasi Gratis</a>
-  
-  <div class="drawer-footer" style="margin-top: 2.5rem; display: flex; gap: 1rem;">
-    <a href="#" style="font-size: 1.2rem; opacity: 0.5;">📸</a>
-    <a href="#" style="font-size: 1.2rem; opacity: 0.5;">📘</a>
-  </div>
-</div>
-
-<!-- ══ HERO ══ -->
-<section class="hero" id="beranda">
-  <div class="hero-bg">
-    <canvas class="hero-canvas" id="heroCanvas"></canvas>
-    <div class="hero-overlay"></div>
-  </div>
-  <div class="hero-content">
-    <div class="hero-label" id="heroLabel">Jogja Furniture Decoration</div>
-    <h1 class="hero-title">
-      <span id="heroTitle1">Wujudkan Ruang</span><br>
-      <span class="accent" id="heroTitleAccent">Impian Anda</span>
-    </h1>
-    <p class="hero-desc" id="heroDesc">Furnitur berkualitas tinggi dan dekorasi interior yang mencerminkan keanggunan dan keunikan khas Yogyakarta.</p>
-    <div class="hero-actions">
-      <a href="#catalog" class="btn btn-primary" id="heroBtnPrimary">Lihat Catalog →</a>
-      <a href="#kontak"  class="btn btn-glass"   id="heroBtnSecondary">💬 Konsultasi Gratis</a>
-    </div>
-  </div>
-  <div class="hero-scroll"><span>Scroll</span><div class="hero-scroll-line"></div></div>
-  <div class="hero-stats">
-    <div class="stat-item">
-      <span class="stat-num" id="s1" data-target="500" data-suffix="+">0+</span>
-      <span class="stat-lbl">Proyek Selesai</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num" id="s2" data-target="12" data-suffix="+">0+</span>
-      <span class="stat-lbl">Tahun Pengalaman</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num" id="s3" data-target="98" data-suffix="%">0%</span>
-      <span class="stat-lbl">Kepuasan Klien</span>
-    </div>
-  </div>
-</section>
-
-<!-- ══ MARQUEE ══ -->
-<div class="marquee" aria-hidden="true">
-  <div class="marquee-track" id="marqueeTrack"></div>
-</div>
-
-<!-- ══ TENTANG KAMI ══ -->
-<section class="about" id="tentang">
-  <div class="container">
-    <div class="about-grid">
-      <div class="about-imgs" data-reveal="left">
-        <div class="img-main" id="aboutImgMain">
-          <div class="img-placeholder" style="background:linear-gradient(135deg,#E8D5B7,#C49A6C)">🛋</div>
-        </div>
-        <div class="img-sec" id="aboutImgSec">
-          <div class="img-placeholder" style="background:linear-gradient(135deg,#8B4513,#5C2E0E)">🪵</div>
-        </div>
-        <div class="about-badge">
-          <span class="badge-num" id="aboutYears">12+</span>
-          <span class="badge-txt">Tahun<br>Pengalaman</span>
-        </div>
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#beranda" class="logo">
+        <span class="logo-name" id="logoName">JOGJA</span>
+        <span class="logo-tag" id="logoTag">Furniture Decoration</span>
+      </a>
+      <div class="nav-links">
+        <a href="#beranda">Beranda</a>
+        <a href="#tentang">Tentang</a>
+        <a href="#layanan">Layanan</a>
+        <a href="#catalog">Catalog</a>
+        <a href="#testimoni">Testimoni</a>
+        <a href="#kontak">Kontak</a>
       </div>
-      <div class="about-content">
-        <span class="section-label" data-reveal>Tentang Kami</span>
-        <h2 class="section-title" id="aboutTitle" data-reveal data-reveal-delay="1">
-          Keahlian & Dedikasi<br><em>Dalam Setiap Karya</em>
-        </h2>
-        <p class="section-desc" id="aboutDesc" data-reveal data-reveal-delay="2">
-          Jogja Furniture Decoration hadir sejak 2012 dengan misi menciptakan furnitur berkualitas tinggi yang memadukan keindahan tradisional Jawa dengan sentuhan modern kontemporer.
-        </p>
-        <div class="feature-grid" data-reveal data-reveal-delay="3">
-          <div class="feature-card">
-            <span class="feat-icon">🪵</span>
-            <div><div class="feat-title">Material Premium</div><div class="feat-desc">Kayu jati, mahoni, rotan pilihan</div></div>
+      <div class="nav-cta">
+        <a href="#kontak" class="btn btn-outline" style="padding:.52rem 1.1rem;">📞 Hubungi</a>
+        <a href="#kontak" class="btn btn-primary" style="padding:.52rem 1.1rem;">Konsultasi</a>
+      </div>
+      <!-- Hamburger (mobile) -->
+      <div class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer -->
+  <div class="nav-mobile-drawer" id="mobileDrawer">
+    <div class="drawer-header" style="margin-bottom: 1.5rem; text-align: center;">
+      <div class="logo-name" style="color:var(--white); font-size: 1.8rem;">JOGJA</div>
+      <div class="logo-tag" style="color:var(--accent); display:block !important; font-size: 0.65rem;">Furniture
+        Decoration</div>
+    </div>
+    <span class="mob-close" id="mobClose"
+      onclick="document.getElementById('mobileDrawer').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">✕</span>
+    <a href="#beranda">Beranda</a>
+    <a href="#tentang">Tentang</a>
+    <a href="#layanan">Layanan</a>
+    <a href="#catalog">Catalog</a>
+    <a href="#testimoni">Testimoni</a>
+    <a href="#kontak">Kontak</a>
+    <a href="#kontak" class="btn btn-primary" style="margin-top:1rem; width: 100%; justify-content: center;">Konsultasi
+      Gratis</a>
+
+    <div class="drawer-footer" style="margin-top: 2.5rem; display: flex; gap: 1rem;">
+      <a href="#" style="font-size: 1.2rem; opacity: 0.5;">📸</a>
+      <a href="#" style="font-size: 1.2rem; opacity: 0.5;">📘</a>
+    </div>
+  </div>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero" id="beranda">
+    <div class="hero-bg">
+      <canvas class="hero-canvas" id="heroCanvas"></canvas>
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-label" id="heroLabel">Jogja Furniture Decoration</div>
+      <h1 class="hero-title">
+        <span id="heroTitle1">Wujudkan Ruang</span><br>
+        <span class="accent" id="heroTitleAccent">Impian Anda</span>
+      </h1>
+      <p class="hero-desc" id="heroDesc">Furnitur berkualitas tinggi dan dekorasi interior yang mencerminkan keanggunan
+        dan keunikan khas Yogyakarta.</p>
+      <div class="hero-actions">
+        <a href="#catalog" class="btn btn-primary" id="heroBtnPrimary">Lihat Catalog →</a>
+        <a href="#kontak" class="btn btn-glass" id="heroBtnSecondary">💬 Konsultasi Gratis</a>
+      </div>
+    </div>
+    <div class="hero-scroll"><span>Scroll</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num" id="s1" data-target="500" data-suffix="+">0+</span>
+        <span class="stat-lbl">Proyek Selesai</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" id="s2" data-target="12" data-suffix="+">0+</span>
+        <span class="stat-lbl">Tahun Pengalaman</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" id="s3" data-target="98" data-suffix="%">0%</span>
+        <span class="stat-lbl">Kepuasan Klien</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ MARQUEE ══ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+
+  <!-- ══ TENTANG KAMI ══ -->
+  <section class="about" id="tentang">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-imgs" data-reveal="left">
+          <div class="img-main" id="aboutImgMain">
+            <div class="img-placeholder" style="background:linear-gradient(135deg,#E8D5B7,#C49A6C)">🛋</div>
           </div>
-          <div class="feature-card">
-            <span class="feat-icon">✋</span>
-            <div><div class="feat-title">Handcrafted</div><div class="feat-desc">Dikerjakan oleh pengrajin ahli</div></div>
+          <div class="img-sec" id="aboutImgSec">
+            <div class="img-placeholder" style="background:linear-gradient(135deg,#8B4513,#5C2E0E)">🪵</div>
           </div>
-          <div class="feature-card">
-            <span class="feat-icon">📐</span>
-            <div><div class="feat-title">Custom Design</div><div class="feat-desc">Sesuai ukuran & selera Anda</div></div>
-          </div>
-          <div class="feature-card">
-            <span class="feat-icon">🏠</span>
-            <div><div class="feat-title">Interior Consult</div><div class="feat-desc">Konsultasi desain gratis</div></div>
+          <div class="about-badge">
+            <span class="badge-num" id="aboutYears">12+</span>
+            <span class="badge-txt">Tahun<br>Pengalaman</span>
           </div>
         </div>
-        <a href="#kontak" class="btn btn-primary" data-reveal data-reveal-delay="4">Konsultasi Gratis →</a>
+        <div class="about-content">
+          <span class="section-label" data-reveal>Tentang Kami</span>
+          <h2 class="section-title" id="aboutTitle" data-reveal data-reveal-delay="1">
+            Keahlian & Dedikasi<br><em>Dalam Setiap Karya</em>
+          </h2>
+          <p class="section-desc" id="aboutDesc" data-reveal data-reveal-delay="2">
+            Jogja Furniture Decoration hadir sejak 2012 dengan misi menciptakan furnitur berkualitas tinggi yang
+            memadukan keindahan tradisional Jawa dengan sentuhan modern kontemporer.
+          </p>
+          <div class="feature-grid" data-reveal data-reveal-delay="3">
+            <div class="feature-card">
+              <span class="feat-icon">🪵</span>
+              <div>
+                <div class="feat-title">Material Premium</div>
+                <div class="feat-desc">Kayu jati, mahoni, rotan pilihan</div>
+              </div>
+            </div>
+            <div class="feature-card">
+              <span class="feat-icon">✋</span>
+              <div>
+                <div class="feat-title">Handcrafted</div>
+                <div class="feat-desc">Dikerjakan oleh pengrajin ahli</div>
+              </div>
+            </div>
+            <div class="feature-card">
+              <span class="feat-icon">📐</span>
+              <div>
+                <div class="feat-title">Custom Design</div>
+                <div class="feat-desc">Sesuai ukuran & selera Anda</div>
+              </div>
+            </div>
+            <div class="feature-card">
+              <span class="feat-icon">🏠</span>
+              <div>
+                <div class="feat-title">Interior Consult</div>
+                <div class="feat-desc">Konsultasi desain gratis</div>
+              </div>
+            </div>
+          </div>
+          <a href="#kontak" class="btn btn-primary" data-reveal data-reveal-delay="4">Konsultasi Gratis →</a>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ══ LAYANAN ══ -->
-<section class="services" id="layanan">
-  <div class="container">
-    <div class="sec-header">
-      <div>
-        <span class="section-label" data-reveal>Layanan Kami</span>
-        <h2 class="section-title" data-reveal data-reveal-delay="1" style="margin-top:.75rem;">
-          Solusi Lengkap untuk<br><em>Hunian Idaman</em>
-        </h2>
+  <!-- ══ LAYANAN ══ -->
+  <section class="services" id="layanan">
+    <div class="container">
+      <div class="sec-header">
+        <div>
+          <span class="section-label" data-reveal>Layanan Kami</span>
+          <h2 class="section-title" data-reveal data-reveal-delay="1" style="margin-top:.75rem;">
+            Solusi Lengkap untuk<br><em>Hunian Idaman</em>
+          </h2>
+        </div>
+        <a href="#kontak" class="btn btn-outline-dark" data-reveal data-reveal-delay="2">Hubungi Kami →</a>
       </div>
-      <a href="#kontak" class="btn btn-outline-dark" data-reveal data-reveal-delay="2">Hubungi Kami →</a>
-    </div>
-    <div class="services-grid" id="servicesGrid">
-      <!-- Dynamic -->
-      <div class="skel-card"><div class="skeleton skel-img" style="aspect-ratio:16/9"></div><div class="skel-body"><div class="skeleton skel-line med"></div><div class="skeleton skel-line short"></div></div></div>
-      <div class="skel-card"><div class="skeleton skel-img" style="aspect-ratio:16/9"></div><div class="skel-body"><div class="skeleton skel-line med"></div><div class="skeleton skel-line short"></div></div></div>
-      <div class="skel-card"><div class="skeleton skel-img" style="aspect-ratio:16/9"></div><div class="skel-body"><div class="skeleton skel-line med"></div><div class="skeleton skel-line short"></div></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ CATALOG ══ -->
-<section class="catalog" id="catalog">
-  <div class="container">
-    <div class="sec-header">
-      <div>
-        <span class="section-label" data-reveal>Catalog Produk</span>
-        <h2 class="section-title" data-reveal data-reveal-delay="1" style="margin-top:.75rem;">
-          Koleksi Handycraft<br><em>Pilihan Kami</em>
-        </h2>
-      </div>
-      <a href="collections.html" class="btn btn-outline-dark" data-reveal data-reveal-delay="2">Liat Semua Koleksi</a>
-    </div>
-
-    <!-- Category nav with prev/next -->
-    <div class="cat-nav-wrap" data-reveal>
-      <button class="cat-nav-btn" id="catPrev" disabled>‹</button>
-      <div class="cat-cards-inner" id="catCardsInner"><!-- Dynamic --></div>
-      <button class="cat-nav-btn" id="catNext">›</button>
-    </div>
-
-    <!-- Filter pills -->
-    <div class="filter-pills" id="filterPills" data-reveal data-reveal-delay="1">
-      <!-- Dynamic -->
-    </div>
-
-    <!-- Search bar -->
-    <div style="margin-bottom:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap;" data-reveal data-reveal-delay="1">
-      <input type="text" id="searchInput" placeholder="🔍 Cari produk..."
-        style="flex:1;min-width:200px;padding:.65rem 1rem;border:1.5px solid var(--gray200);border-radius:var(--radius-full);font-family:var(--font-body);font-size:.88rem;outline:none;background:var(--white);"
-        oninput="handleSearch(this.value)">
-    </div>
-
-    <!-- Products grid -->
-    <div class="catalog-grid" id="catalogGrid"><!-- Dynamic --></div>
-
-    <!-- Count -->
-    <p class="catalog-count" id="catalogCount"></p>
-
-    <!-- Pagination -->
-    <div class="catalog-footer" id="catalogPagination"></div>
-  </div>
-</section>
-
-<!-- ══ PROCESS ══ -->
-<section class="process">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:.75rem;">
-      <span class="section-label" style="justify-content:center;" data-reveal>Cara Kerja Kami</span>
-    </div>
-    <h2 class="section-title" data-reveal data-reveal-delay="1" style="text-align:center;color:var(--white);">
-      Proses yang <em>Mudah & Transparan</em>
-    </h2>
-    <div class="process-grid">
-      <div class="step" data-reveal data-reveal-delay="1">
-        <div class="step-icon">💬</div>
-        <span class="step-num">01</span>
-        <h3 class="step-title">Konsultasi</h3>
-        <p class="step-desc">Ceritakan kebutuhan dan impian Anda. Kami mendengarkan setiap detail.</p>
-      </div>
-      <div class="step" data-reveal data-reveal-delay="2">
-        <div class="step-icon">📐</div>
-        <span class="step-num">02</span>
-        <h3 class="step-title">Desain & Survey</h3>
-        <p class="step-desc">Tim ahli mengukur dan merancang desain 3D sesuai konsep yang disepakati.</p>
-      </div>
-      <div class="step" data-reveal data-reveal-delay="3">
-        <div class="step-icon">🔨</div>
-        <span class="step-num">03</span>
-        <h3 class="step-title">Produksi</h3>
-        <p class="step-desc">Pengerjaan dengan material premium oleh pengrajin berpengalaman di Yogyakarta.</p>
-      </div>
-      <div class="step" data-reveal data-reveal-delay="4">
-        <div class="step-icon">🏠</div>
-        <span class="step-num">04</span>
-        <h3 class="step-title">Instalasi</h3>
-        <p class="step-desc">Pemasangan profesional dan finishing sempurna di lokasi Anda.</p>
+      <div class="services-grid" id="servicesGrid">
+        <!-- Dynamic -->
+        <div class="skel-card">
+          <div class="skeleton skel-img" style="aspect-ratio:16/9"></div>
+          <div class="skel-body">
+            <div class="skeleton skel-line med"></div>
+            <div class="skeleton skel-line short"></div>
+          </div>
+        </div>
+        <div class="skel-card">
+          <div class="skeleton skel-img" style="aspect-ratio:16/9"></div>
+          <div class="skel-body">
+            <div class="skeleton skel-line med"></div>
+            <div class="skeleton skel-line short"></div>
+          </div>
+        </div>
+        <div class="skel-card">
+          <div class="skeleton skel-img" style="aspect-ratio:16/9"></div>
+          <div class="skel-body">
+            <div class="skeleton skel-line med"></div>
+            <div class="skeleton skel-line short"></div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ══ STATS ══ -->
-<section class="stats">
-  <div class="container">
-    <div class="stats-grid">
-      <div class="stat-box" data-reveal>
-        <span class="stat-box-num" id="statProjects" data-target="500" data-suffix="+">0</span>
-        <div class="stat-box-lbl">Proyek Selesai</div>
+  <!-- ══ CATALOG ══ -->
+  <section class="catalog" id="catalog">
+    <div class="container">
+      <div class="sec-header">
+        <div>
+          <span class="section-label" data-reveal>Catalog Produk</span>
+          <h2 class="section-title" data-reveal data-reveal-delay="1" style="margin-top:.75rem;">
+            Koleksi Handycraft<br><em>Pilihan Kami</em>
+          </h2>
+        </div>
+        <a href="collections.html" class="btn btn-outline-dark" data-reveal data-reveal-delay="2">Liat Semua Koleksi</a>
       </div>
-      <div class="stat-box" data-reveal data-reveal-delay="1">
-        <span class="stat-box-num" id="statYears" data-target="12" data-suffix="+">0</span>
-        <div class="stat-box-lbl">Tahun Pengalaman</div>
+
+      <!-- Category nav with prev/next -->
+      <div class="cat-nav-wrap" data-reveal>
+        <button class="cat-nav-btn" id="catPrev" disabled>‹</button>
+        <div class="cat-cards-inner" id="catCardsInner"><!-- Dynamic --></div>
+        <button class="cat-nav-btn" id="catNext">›</button>
       </div>
-      <div class="stat-box" data-reveal data-reveal-delay="2">
-        <span class="stat-box-num" id="statSatis" data-target="98" data-suffix="%">0</span>
-        <div class="stat-box-lbl">Kepuasan Klien</div>
+
+      <!-- Filter pills -->
+      <div class="filter-pills" id="filterPills" data-reveal data-reveal-delay="1">
+        <!-- Dynamic -->
       </div>
-      <div class="stat-box" data-reveal data-reveal-delay="3">
-        <span class="stat-box-num" id="statCraft" data-target="50" data-suffix="+">0</span>
-        <div class="stat-box-lbl">Tim Pengrajin</div>
+
+      <!-- Search bar -->
+      <div style="margin-bottom:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap;" data-reveal data-reveal-delay="1">
+        <input type="text" id="searchInput" placeholder="🔍 Cari produk..."
+          style="flex:1;min-width:200px;padding:.65rem 1rem;border:1.5px solid var(--gray200);border-radius:var(--radius-full);font-family:var(--font-body);font-size:.88rem;outline:none;background:var(--white);"
+          oninput="handleSearch(this.value)">
       </div>
+
+      <!-- Products grid -->
+      <div class="catalog-grid" id="catalogGrid"><!-- Dynamic --></div>
+
+      <!-- Count -->
+      <p class="catalog-count" id="catalogCount"></p>
+
+      <!-- Pagination -->
+      <div class="catalog-footer" id="catalogPagination"></div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ══ TESTIMONIALS ══ -->
-<section class="testimonials" id="testimoni">
-  <div class="container">
-    <div style="text-align:center;margin-bottom:3.5rem;">
-      <span class="section-label" style="justify-content:center;" data-reveal>Testimoni</span>
-      <h2 class="section-title" style="text-align:center;margin-top:.75rem;" data-reveal data-reveal-delay="1">
-        Apa Kata <em>Pelanggan Kami</em>
+  <!-- ══ PROCESS ══ -->
+  <section class="process">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:.75rem;">
+        <span class="section-label" style="justify-content:center;" data-reveal>Cara Kerja Kami</span>
+      </div>
+      <h2 class="section-title" data-reveal data-reveal-delay="1" style="text-align:center;color:var(--white);">
+        Proses yang <em>Mudah & Transparan</em>
       </h2>
+      <div class="process-grid">
+        <div class="step" data-reveal data-reveal-delay="1">
+          <div class="step-icon">💬</div>
+          <span class="step-num">01</span>
+          <h3 class="step-title">Konsultasi</h3>
+          <p class="step-desc">Ceritakan kebutuhan dan impian Anda. Kami mendengarkan setiap detail.</p>
+        </div>
+        <div class="step" data-reveal data-reveal-delay="2">
+          <div class="step-icon">📐</div>
+          <span class="step-num">02</span>
+          <h3 class="step-title">Desain & Survey</h3>
+          <p class="step-desc">Tim ahli mengukur dan merancang desain 3D sesuai konsep yang disepakati.</p>
+        </div>
+        <div class="step" data-reveal data-reveal-delay="3">
+          <div class="step-icon">🔨</div>
+          <span class="step-num">03</span>
+          <h3 class="step-title">Produksi</h3>
+          <p class="step-desc">Pengerjaan dengan material premium oleh pengrajin berpengalaman di Yogyakarta.</p>
+        </div>
+        <div class="step" data-reveal data-reveal-delay="4">
+          <div class="step-icon">🏠</div>
+          <span class="step-num">04</span>
+          <h3 class="step-title">Instalasi</h3>
+          <p class="step-desc">Pemasangan profesional dan finishing sempurna di lokasi Anda.</p>
+        </div>
+      </div>
     </div>
-    <div class="testi-slider" data-reveal data-reveal-delay="2">
-      <div class="testi-track" id="testiTrack"><!-- Dynamic --></div>
-    </div>
-    <div class="slider-ctrl">
-      <button class="slider-btn" id="tPrev">‹</button>
-      <div class="slider-dots" id="tDots" style="display:flex;gap:.5rem;align-items:center;"></div>
-      <button class="slider-btn" id="tNext">›</button>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- ══ KONTAK ══ -->
-<section class="contact" id="kontak">
-  <div class="container">
-    <div class="sec-header" style="margin-bottom:3rem;">
-      <div>
-        <span class="section-label" data-reveal>Hubungi Kami</span>
-        <h2 class="section-title" data-reveal data-reveal-delay="1" style="margin-top:.75rem;">
-          Mari Wujudkan<br><em>Impian Anda</em>
+  <!-- ══ STATS ══ -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-box" data-reveal>
+          <span class="stat-box-num" id="statProjects" data-target="500" data-suffix="+">0</span>
+          <div class="stat-box-lbl">Proyek Selesai</div>
+        </div>
+        <div class="stat-box" data-reveal data-reveal-delay="1">
+          <span class="stat-box-num" id="statYears" data-target="12" data-suffix="+">0</span>
+          <div class="stat-box-lbl">Tahun Pengalaman</div>
+        </div>
+        <div class="stat-box" data-reveal data-reveal-delay="2">
+          <span class="stat-box-num" id="statSatis" data-target="98" data-suffix="%">0</span>
+          <div class="stat-box-lbl">Kepuasan Klien</div>
+        </div>
+        <div class="stat-box" data-reveal data-reveal-delay="3">
+          <span class="stat-box-num" id="statCraft" data-target="50" data-suffix="+">0</span>
+          <div class="stat-box-lbl">Tim Pengrajin</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIALS ══ -->
+  <section class="testimonials" id="testimoni">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:3.5rem;">
+        <span class="section-label" style="justify-content:center;" data-reveal>Testimoni</span>
+        <h2 class="section-title" style="text-align:center;margin-top:.75rem;" data-reveal data-reveal-delay="1">
+          Apa Kata <em>Pelanggan Kami</em>
         </h2>
       </div>
-    </div>
-    <div class="contact-grid">
-      <!-- Info -->
-      <div class="contact-info" data-reveal="left">
-        <div class="info-item">
-          <div class="info-icon">📞</div>
-          <div>
-            <div class="info-label">Telepon / WhatsApp</div>
-            <div class="info-value" id="contactPhone">+62 812-3456-7890</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">✉️</div>
-          <div>
-            <div class="info-label">Email</div>
-            <div class="info-value" id="contactEmail">info@jogjafurniture.com</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">📍</div>
-          <div>
-            <div class="info-label">Alamat</div>
-            <div class="info-value" id="contactAddress">Jl. Kaliurang KM 12, Sleman, Yogyakarta</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">🕐</div>
-          <div>
-            <div class="info-label">Jam Operasional</div>
-            <div class="info-value" id="contactHours">Sen–Sab: 08.00 – 17.00</div>
-          </div>
-        </div>
-        <a id="waFloat2" href="#" target="_blank" class="btn btn-primary" style="margin-top:.5rem;width:fit-content;">
-          💬 Chat WhatsApp Sekarang
-        </a>
+      <div class="testi-slider" data-reveal data-reveal-delay="2">
+        <div class="testi-track" id="testiTrack"><!-- Dynamic --></div>
       </div>
-      <!-- Form -->
-      <div data-reveal data-reveal-delay="1">
-        <div class="contact-form">
-          <h3 class="form-title">Kirim Pesan</h3>
-          <div class="form-msg" id="formMsg"></div>
-          <form id="contactForm" novalidate>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Nama Lengkap *</label>
-                <input type="text" name="name" placeholder="Nama Anda" required>
+      <div class="slider-ctrl">
+        <button class="slider-btn" id="tPrev">‹</button>
+        <div class="slider-dots" id="tDots" style="display:flex;gap:.5rem;align-items:center;"></div>
+        <button class="slider-btn" id="tNext">›</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ KONTAK ══ -->
+  <section class="contact" id="kontak">
+    <div class="container">
+      <div class="sec-header" style="margin-bottom:3rem;">
+        <div>
+          <span class="section-label" data-reveal>Hubungi Kami</span>
+          <h2 class="section-title" data-reveal data-reveal-delay="1" style="margin-top:.75rem;">
+            Mari Wujudkan<br><em>Impian Anda</em>
+          </h2>
+        </div>
+      </div>
+      <div class="contact-grid">
+        <!-- Info -->
+        <div class="contact-info" data-reveal="left">
+          <div class="info-item">
+            <div class="info-icon">📞</div>
+            <div>
+              <div class="info-label">Telepon / WhatsApp</div>
+              <div class="info-value" id="contactPhone">+62 812-3456-7890</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">✉️</div>
+            <div>
+              <div class="info-label">Email</div>
+              <div class="info-value" id="contactEmail">info@jogjafurniture.com</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">📍</div>
+            <div>
+              <div class="info-label">Alamat</div>
+              <div class="info-value" id="contactAddress">Jl. Kaliurang KM 12, Sleman, Yogyakarta</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🕐</div>
+            <div>
+              <div class="info-label">Jam Operasional</div>
+              <div class="info-value" id="contactHours">Sen–Sab: 08.00 – 17.00</div>
+            </div>
+          </div>
+          <a id="waFloat2" href="#" target="_blank" class="btn btn-primary" style="margin-top:.5rem;width:fit-content;">
+            💬 Chat WhatsApp Sekarang
+          </a>
+        </div>
+        <!-- Form -->
+        <div data-reveal data-reveal-delay="1">
+          <div class="contact-form">
+            <h3 class="form-title">Kirim Pesan</h3>
+            <div class="form-msg" id="formMsg"></div>
+            <form id="contactForm" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Nama Lengkap *</label>
+                  <input type="text" name="name" placeholder="Nama Anda" required>
+                </div>
+                <div class="form-group">
+                  <label>No. WhatsApp</label>
+                  <input type="tel" name="phone" placeholder="08xx-xxxx-xxxx">
+                </div>
               </div>
               <div class="form-group">
-                <label>No. WhatsApp</label>
-                <input type="tel" name="phone" placeholder="08xx-xxxx-xxxx">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="email@anda.com">
               </div>
-            </div>
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" name="email" placeholder="email@anda.com">
-            </div>
-            <div class="form-group">
-              <label>Subjek</label>
-              <input type="text" name="subject" placeholder="Konsultasi / Custom Order / dll">
-            </div>
-            <div class="form-group">
-              <label>Pesan *</label>
-              <textarea name="message" placeholder="Ceritakan kebutuhan furnitur Anda..." required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
-              Kirim Pesan →
-            </button>
-          </form>
+              <div class="form-group">
+                <label>Subjek</label>
+                <input type="text" name="subject" placeholder="Konsultasi / Custom Order / dll">
+              </div>
+              <div class="form-group">
+                <label>Pesan *</label>
+                <textarea name="message" placeholder="Ceritakan kebutuhan furnitur Anda..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+                Kirim Pesan →
+              </button>
+            </form>
+          </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="container">
+      <div class="footer-main">
+        <!-- Brand -->
+        <div>
+          <div class="footer-logo-name" id="footerName">Jogja Furniture</div>
+          <div class="footer-logo-tag" id="footerTag">Decoration</div>
+          <p class="footer-desc" id="footerDesc">Menghadirkan keindahan kayu Jawa ke dalam setiap sudut hunian Anda.</p>
+          <div class="social-links">
+            <a class="social-link" id="igLink" href="#" title="Instagram">📸</a>
+            <a class="social-link" id="fbLink" href="#" title="Facebook">📘</a>
+            <a class="social-link" id="ytLink" href="#" title="YouTube" style="display:none">▶️</a>
+          </div>
+        </div>
+        <!-- Navigasi -->
+        <div>
+          <div class="col-title">Navigasi</div>
+          <div class="footer-links-col">
+            <a href="#beranda">Beranda</a>
+            <a href="#tentang">Tentang Kami</a>
+            <a href="#layanan">Layanan</a>
+            <a href="#catalog">Catalog</a>
+            <a href="#kontak">Kontak</a>
+          </div>
+        </div>
+        <!-- Layanan -->
+        <div>
+          <div class="col-title">Layanan</div>
+          <div class="footer-links-col">
+            <a href="#layanan">Furniture Custom</a>
+            <a href="#layanan">Interior Design</a>
+            <a href="#layanan">Kitchen Set</a>
+            <a href="#layanan">Renovasi</a>
+          </div>
+        </div>
+        <!-- Newsletter -->
+        <div>
+          <div class="col-title">Newsletter</div>
+          <p style="font-size:.82rem;color:rgba(255,255,255,.45);line-height:1.75;margin-bottom:.65rem;">
+            Dapatkan inspirasi desain dan promo eksklusif.
+          </p>
+          <div class="nl-form">
+            <input class="nl-input" type="email" placeholder="Email Anda...">
+            <button class="nl-btn" onclick="showToast('Terima kasih telah berlangganan!')">Daftar</button>
+          </div>
+          <div style="margin-top:1.5rem;">
+            <div class="col-title" style="margin-bottom:.5rem;">Jam Operasional</div>
+            <p style="font-size:.82rem;color:rgba(255,255,255,.45);" id="footerHours">Sen–Sab: 08.00 – 17.00<br>Minggu:
+              09.00 – 14.00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="copyright" id="copyright">© 2025 Jogja Furniture Decoration. Semua hak dilindungi.</p>
+        <div class="footer-legal">
+          <a href="#">Kebijakan Privasi</a>
+          <a href="#">Syarat & Ketentuan</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WA Float Button -->
+  <div class="wa-float" id="waFloat" title="Chat WhatsApp">
+    <div class="wa-pulse"></div>
+    <svg viewBox="0 0 24 24">
+      <path
+        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+    </svg>
+  </div>
+
+  <button class="back-top" id="backTop" aria-label="Kembali ke atas">↑</button>
+
+  <!-- ══ DETAIL MODAL ══ -->
+  <div class="modal-bg" id="detailModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">—</h3>
+        <button class="modal-close" onclick="closeModal()" aria-label="Tutup">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
     </div>
   </div>
-</section>
 
-<!-- ══ FOOTER ══ -->
-<footer>
-  <div class="container">
-    <div class="footer-main">
-      <!-- Brand -->
-      <div>
-        <div class="footer-logo-name" id="footerName">Jogja Furniture</div>
-        <div class="footer-logo-tag" id="footerTag">Decoration</div>
-        <p class="footer-desc" id="footerDesc">Menghadirkan keindahan kayu Jawa ke dalam setiap sudut hunian Anda.</p>
-        <div class="social-links">
-          <a class="social-link" id="igLink" href="#" title="Instagram">📸</a>
-          <a class="social-link" id="fbLink" href="#" title="Facebook">📘</a>
-          <a class="social-link" id="ytLink" href="#" title="YouTube" style="display:none">▶️</a>
-        </div>
-      </div>
-      <!-- Navigasi -->
-      <div>
-        <div class="col-title">Navigasi</div>
-        <div class="footer-links-col">
-          <a href="#beranda">Beranda</a>
-          <a href="#tentang">Tentang Kami</a>
-          <a href="#layanan">Layanan</a>
-          <a href="#catalog">Catalog</a>
-          <a href="#kontak">Kontak</a>
-        </div>
-      </div>
-      <!-- Layanan -->
-      <div>
-        <div class="col-title">Layanan</div>
-        <div class="footer-links-col">
-          <a href="#layanan">Furniture Custom</a>
-          <a href="#layanan">Interior Design</a>
-          <a href="#layanan">Kitchen Set</a>
-          <a href="#layanan">Renovasi</a>
-        </div>
-      </div>
-      <!-- Newsletter -->
-      <div>
-        <div class="col-title">Newsletter</div>
-        <p style="font-size:.82rem;color:rgba(255,255,255,.45);line-height:1.75;margin-bottom:.65rem;">
-          Dapatkan inspirasi desain dan promo eksklusif.
-        </p>
-        <div class="nl-form">
-          <input class="nl-input" type="email" placeholder="Email Anda...">
-          <button class="nl-btn" onclick="showToast('Terima kasih telah berlangganan!')">Daftar</button>
-        </div>
-        <div style="margin-top:1.5rem;">
-          <div class="col-title" style="margin-bottom:.5rem;">Jam Operasional</div>
-          <p style="font-size:.82rem;color:rgba(255,255,255,.45);" id="footerHours">Sen–Sab: 08.00 – 17.00<br>Minggu: 09.00 – 14.00</p>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p class="copyright" id="copyright">© 2025 Jogja Furniture Decoration. Semua hak dilindungi.</p>
-      <div class="footer-legal">
-        <a href="#">Kebijakan Privasi</a>
-        <a href="#">Syarat & Ketentuan</a>
-      </div>
-    </div>
-  </div>
-</footer>
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
-<!-- WA Float Button -->
-<div class="wa-float" id="waFloat" title="Chat WhatsApp">
-  <div class="wa-pulse"></div>
-  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-</div>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Search with debounce
+    let searchTimeout;
+    window.handleSearch = function (val) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(async () => {
+        const grid = document.getElementById('catalogGrid');
+        if (!grid) return;
+        const params = new URLSearchParams({ search: val, limit: 6, page: 1 });
+        if (state.currentFilter !== 'all') params.set('category', state.currentFilter);
+        const res = await apiFetch(`/products?${params}`);
+        if (!res.success) return;
+        state.products = res.data;
+        state.prodTotal = res.pagination?.total || 0;
+        state.prodPage = 1;
+        grid.innerHTML = res.data.length
+          ? res.data.map((p, i) => renderProductCard(p, i)).join('')
+          : '<p style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-light)">Tidak ada produk ditemukan.</p>';
+        renderPagination();
+        updateCatalogCount();
+        initLazyLoad();
+        initCardTilt();
+      }, 400);
+    };
 
-<button class="back-top" id="backTop" aria-label="Kembali ke atas">↑</button>
-
-<!-- ══ DETAIL MODAL ══ -->
-<div class="modal-bg" id="detailModal" role="dialog" aria-modal="true">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 class="modal-title" id="modalTitle">—</h3>
-      <button class="modal-close" onclick="closeModal()" aria-label="Tutup">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
-  </div>
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script src="js/api.js"></script>
-<script src="js/main.js"></script>
-<script>
-// Search with debounce
-let searchTimeout;
-window.handleSearch = function(val) {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(async () => {
-    const grid = document.getElementById('catalogGrid');
-    if (!grid) return;
-    const params = new URLSearchParams({ search: val, limit: 6, page: 1 });
-    if (state.currentFilter !== 'all') params.set('category', state.currentFilter);
-    const res = await apiFetch(`/products?${params}`);
-    if (!res.success) return;
-    state.products = res.data;
-    state.prodTotal = res.pagination?.total || 0;
-    state.prodPage = 1;
-    grid.innerHTML = res.data.length
-      ? res.data.map((p, i) => renderProductCard(p, i)).join('')
-      : '<p style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-light)">Tidak ada produk ditemukan.</p>';
-    renderPagination();
-    updateCatalogCount();
-    initLazyLoad();
-    initCardTilt();
-  }, 400);
-};
-
-// Update WA float link after settings load
-window.addEventListener('settingsLoaded', () => {
-  const waBtn2 = document.getElementById('waFloat2');
-  if (waBtn2) waBtn2.href = `https://wa.me/${state.settings.whatsapp_number || '6281234567890'}`;
-});
-</script>
+    // Update WA float link after settings load
+    window.addEventListener('settingsLoaded', () => {
+      const waBtn2 = document.getElementById('waFloat2');
+      if (waBtn2) waBtn2.href = `https://wa.me/${state.settings.whatsapp_number || '6281234567890'}`;
+    });
+  </script>
 </body>
+
 </html>

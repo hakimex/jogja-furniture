@@ -333,7 +333,7 @@ function navigateTo(page) {
 
   const pageTitles = {
     'dashboard': '📊 Dashboard', 'products': '📦 Manajemen Produk',
-    'products-new': '🆕 Produk Baru dari Gudang', 'categories': '🗂 Kategori',
+    'products-new': '🆕 Produk Baru dari Gudang', 'categories': '🗂 Kategori & Menu Website',
     'services': '🛠 Layanan', 'testimonials': '💬 Testimoni', 'contacts': '📨 Pesan Masuk',
     'settings': '⚙️ Settings / CMS', 'warehouse-dashboard': '📊 Dashboard Gudang',
     'marketing-dashboard': '📊 Dashboard Marketing',
@@ -829,17 +829,12 @@ function openProductModal(id = null, isViewOnly = false) {
             </div>` : ''}
           </div>`).join('');
       }
-    }).catch(e => toast(e.message, 'error'));
-  } else {
-    // Auto-generate SKU for new products
-    const timestampCode = Math.floor(Date.now() / 1000).toString().slice(-6);
-    setVal('pSku', `SKU-${timestampCode}`);
+    }).catch(err => toast(err.message, 'error'));
   }
-
   openModal('modalProduct');
 }
 
-function switchProdTab(tab, btn) {
+function switchProductTab(tab, btn = null) {
   ['ptInfo', 'ptWarehouse', 'ptContent', 'ptImages', 'ptSeo'].forEach(t => {
     const el = document.getElementById(t);
     if (el) el.classList.remove('active');
@@ -887,9 +882,8 @@ async function saveProduct() {
   btn.textContent = '⏳ Menyimpan...'; btn.disabled = true;
 
   try {
-    // Use CMS endpoint for website admin
     const endpoint = editingId
-      ? (me.role === 'admin_website' ? `/products/${editingId}/cms` : `/products/${editingId}`)
+      ? (me.role === 'admin_website' ? `/products/${editingId }/cms` : ` /products/${editingId }`)
       : '/products';
     const method = editingId ? 'PUT' : 'POST';
     await api(method, endpoint, fd, true);
@@ -908,7 +902,7 @@ function editProduct(id) { openProductModal(id); }
 async function deleteProduct(id) {
   if (!confirm('Hapus produk ini? Semua foto dan data terkait akan ikut dihapus.')) return;
   try {
-    await api('DELETE', `/products/${id}`);
+    await api('DELETE', `/products/${id }`);
     toast('Produk berhasil dihapus');
     loadProducts();
   } catch (e) { toast(e.message, 'error'); }
@@ -916,7 +910,7 @@ async function deleteProduct(id) {
 
 async function quickPublish(id) {
   try {
-    await api('PUT', `/products/${id}/publish`);
+    await api('PUT', `/products/${id } / publish`);
     toast('Produk berhasil dipublish ke website 🌐');
     loadProducts(); loadNewProducts();
   } catch (e) { toast(e.message, 'error'); }
@@ -925,7 +919,7 @@ async function quickPublish(id) {
 async function quickUnpublish(id) {
   if (!confirm('Sembunyikan produk ini dari website?')) return;
   try {
-    await api('PUT', `/products/${id}/unpublish`);
+    await api('PUT', `/products/${id } / unpublish`);
     toast('Produk disembunyikan dari website');
     loadProducts();
   } catch (e) { toast(e.message, 'error'); }
@@ -933,7 +927,7 @@ async function quickUnpublish(id) {
 
 async function setPrimaryImg(productId, imageId) {
   try {
-    await api('PUT', `/products/${productId}/images/${imageId}/primary`);
+    await api('PUT', `/products/${productId } / images / ${ imageId } / primary`);
     toast('Gambar utama diset'); editProduct(productId);
   } catch (e) { toast(e.message, 'error'); }
 }
@@ -941,7 +935,7 @@ async function setPrimaryImg(productId, imageId) {
 async function deleteProductImg(productId, imageId) {
   if (!confirm('Hapus gambar ini?')) return;
   try {
-    await api('DELETE', `/products/${productId}/images/${imageId}`);
+    await api('DELETE', `/products/${productId } / images / ${ imageId }`);
     toast('Gambar dihapus'); editProduct(productId);
   } catch (e) { toast(e.message, 'error'); }
 }
@@ -955,16 +949,27 @@ async function loadCategories() {
     categories = data.data || [];
     document.getElementById('catBody').innerHTML = categories.map(c => `
       <tr>
-        <td style="font-size:1.4rem">${c.icon}</td>
-        <td><strong>${c.name}</strong></td>
+        <td>
+          <div style="display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:8px;background:var(--gray50);border:1px solid var(--gray200);overflow:hidden">
+            ${c.image ? `<img src="/uploads/categories/${c.image}" style="width:100%;height:100%;object-fit:cover">` : `<div style="font-size:2rem;color:var(--text-light)">🖼️</div>`}
+          </div>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <span style="font-size:1.4rem">${c.icon || '📦'}</span>
+            <strong>${c.name}</strong>
+          </div>
+        </td>
         <td><code style="font-size:.75rem;color:var(--text-light)">${c.slug}</code></td>
         <td>${c.is_active ? '<span class="badge badge-active">Aktif</span>' : '<span class="badge badge-inactive">Nonaktif</span>'}</td>
         <td>${c.sort_order}</td>
         <td>
-          <button class="btn btn-sm btn-outline" onclick="editCategory(${c.id})">✏️</button>
-          ${me.role === 'superadmin' ? `<button class="btn btn-sm btn-danger" onclick="deleteCategory(${c.id})">🗑</button>` : ''}
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-sm btn-outline" onclick="editCategory(${c.id})">✏️</button>
+            ${['superadmin', 'admin_website', 'admin_gudang'].includes(me.role) ? `<button class="btn btn-sm btn-danger" onclick="deleteCategory(${c.id})">🗑</button>` : ''}
+          </div>
         </td>
-      </tr>`).join('');
+      </tr > `).join('');
   } catch (e) { toast(e.message, 'error'); }
 }
 
@@ -979,9 +984,8 @@ async function loadCategoriesDropdown() {
 function openCategoryModal(id = null) {
   editingId = id;
   document.getElementById('modalCatTitle').textContent = id ? 'Edit Kategori' : 'Tambah Kategori';
-  ['cName', 'cSlug', 'cDesc', 'cColorFromT', 'cColorToT'].forEach(f => setVal(f, ''));
+  ['cName', 'cSlug', 'cDesc'].forEach(f => setVal(f, ''));
   setVal('cColorFrom', '#5C2E0E'); setVal('cColorTo', '#C49A6C');
-  setVal('cColorFromT', '#5C2E0E'); setVal('cColorToT', '#C49A6C');
   setVal('cOrder', ''); setChecked('cActive', true);
   const isGudang = me.role === 'admin_gudang';
   const cOrderGroup = document.getElementById('cOrder')?.closest('.form-group');
@@ -992,8 +996,11 @@ function openCategoryModal(id = null) {
     if (cat) {
       setVal('cName', cat.name); setVal('cSlug', cat.slug); setVal('cDesc', cat.description || '');
       setVal('cIcon', cat.icon || '📦'); setVal('cOrder', cat.sort_order || 0); setChecked('cActive', !!cat.is_active);
-      setVal('cColorFrom', cat.color_from); setVal('cColorFromT', cat.color_from);
-      setVal('cColorTo', cat.color_to); setVal('cColorToT', cat.color_to);
+      setVal('cColorFrom', cat.color_from || '#5C2E0E'); setVal('cColorTo', cat.color_to || '#C49A6C');
+      if (cat.image) {
+        const prev = document.getElementById('prevCatImg');
+        if (prev) { prev.src = `/uploads/categories/${cat.image}`; prev.style.display = 'block'; }
+      }
     }
   }
   openModal('modalCategory');
@@ -1010,7 +1017,7 @@ async function saveCategory() {
   const img = document.getElementById('cImage');
   if (img?.files[0]) fd.append('image', img.files[0]);
   try {
-    if (editingId) await api('PUT', `/categories/${editingId}`, fd, true);
+    if (editingId) await api('PUT', `/categories/${editingId }`, fd, true);
     else await api('POST', '/categories', fd, true);
     toast('Kategori berhasil disimpan'); closeModal('modalCategory'); loadCategories();
   } catch (e) { toast(e.message, 'error'); }
@@ -1020,7 +1027,7 @@ function editCategory(id) { openCategoryModal(id); }
 
 async function deleteCategory(id) {
   if (!confirm('Hapus kategori ini?')) return;
-  try { await api('DELETE', `/categories/${id}`); toast('Kategori dihapus'); loadCategories(); }
+  try { await api('DELETE', `/categories/${id }`); toast('Kategori dihapus'); loadCategories(); }
   catch (e) { toast(e.message, 'error'); }
 }
 
@@ -1030,18 +1037,30 @@ async function deleteCategory(id) {
 async function loadServices() {
   try {
     const data = await api('GET', '/services');
-    document.getElementById('svcBody').innerHTML = (data.data || []).map(s => `
+    serviceData = data.data || [];
+    document.getElementById('svcBody').innerHTML = serviceData.map(s => `
       <tr>
-        <td style="font-size:1.4rem">${s.icon}</td>
-        <td><strong>${s.name}</strong></td>
+        <td>
+          <div style="display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:8px;background:var(--gray50);border:1px solid var(--gray200);overflow:hidden">
+            ${s.image ? `<img src="/uploads/services/${s.image}" style="width:100%;height:100%;object-fit:cover">` : `<div style="font-size:2rem;color:var(--text-light)">🖼️</div>`}
+          </div>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <span style="font-size:1.4rem">${s.icon || '🛠'}</span>
+            <strong>${s.name}</strong>
+          </div>
+        </td>
         <td style="font-size:.82rem;max-width:280px">${s.short_desc || '—'}</td>
         <td>${s.is_active ? '<span class="badge badge-active">Aktif</span>' : '<span class="badge badge-inactive">Nonaktif</span>'}</td>
         <td>${s.sort_order}</td>
         <td>
-          <button class="btn btn-sm btn-outline" onclick="editService(${s.id})">✏️</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteService(${s.id})">🗑</button>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-sm btn-outline" onclick="editService(${s.id})">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteService(${s.id})">🗑</button>
+          </div>
         </td>
-      </tr>`).join('');
+      </tr > `).join('');
   } catch (e) { toast(e.message, 'error'); }
 }
 
@@ -1052,6 +1071,8 @@ function openServiceModal(id = null) {
   ['svName', 'svSlug', 'svShort', 'svDesc', 'svInfo'].forEach(f => setVal(f, ''));
   setVal('svIcon', '🛠'); setVal('svOrder', 0); setChecked('svActive', true);
   setVal('svColorFrom', '#5C2E0E'); setVal('svColorTo', '#C49A6C');
+  document.getElementById('prevSvImg').style.display = 'none';
+
   if (id && serviceData.length) {
     const s = serviceData.find(s => s.id === id);
     if (s) {
@@ -1059,6 +1080,10 @@ function openServiceModal(id = null) {
       setVal('svDesc', s.description || ''); setVal('svInfo', s.info || ''); setVal('svIcon', s.icon || '🛠');
       setVal('svOrder', s.sort_order || 0); setChecked('svActive', !!s.is_active);
       setVal('svColorFrom', s.color_from || '#5C2E0E'); setVal('svColorTo', s.color_to || '#C49A6C');
+      if (s.image) {
+        const prev = document.getElementById('prevSvImg');
+        if (prev) { prev.src = `/ uploads /services/${s.image }`; prev.style.display = 'block'; }
+      }
     }
   }
   openModal('modalService');
@@ -1075,7 +1100,7 @@ async function saveService() {
   const img = document.getElementById('svImage');
   if (img?.files[0]) fd.append('image', img.files[0]);
   try {
-    if (editingId) await api('PUT', `/services/${editingId}`, fd, true);
+    if (editingId) await api('PUT', `/services/${editingId }`, fd, true);
     else await api('POST', '/services', fd, true);
     toast('Layanan berhasil disimpan'); closeModal('modalService');
     const d = await api('GET', '/services'); serviceData = d.data || []; loadServices();
@@ -1089,7 +1114,7 @@ async function editService(id) {
 
 async function deleteService(id) {
   if (!confirm('Hapus layanan ini?')) return;
-  try { await api('DELETE', `/services/${id}`); toast('Layanan dihapus'); loadServices(); }
+  try { await api('DELETE', `/services/${id }`); toast('Layanan dihapus'); loadServices(); }
   catch (e) { toast(e.message, 'error'); }
 }
 
@@ -1111,61 +1136,61 @@ async function loadTestimonials() {
           <button class="btn btn-sm btn-danger" onclick="deleteTestimonial(${t.id})">🗑</button>
         </td>
       </tr>`).join('');
-  } catch (e) { toast(e.message, 'error'); }
-}
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
 let testiData = [];
-function openTestimonialModal(id = null) {
-  editingId = id;
-  document.getElementById('modalTestiTitle').textContent = id ? 'Edit Testimoni' : 'Tambah Testimoni';
-  ['tName', 'tRole', 'tInitial', 'tContent', 'tRef'].forEach(f => setVal(f, ''));
-  setVal('tRating', 5); setVal('tOrder', 0); setChecked('tActive', true);
-  if (id) {
-    const t = testiData.find(t => t.id === id);
-    if (t) {
-      setVal('tName', t.name); setVal('tRole', t.role || ''); setVal('tInitial', t.initial || '');
-      setVal('tContent', t.content); setVal('tRef', t.product_ref || '');
-      setVal('tRating', t.rating || 5); setVal('tOrder', t.sort_order || 0); setChecked('tActive', !!t.is_active);
+    function openTestimonialModal(id = null) {
+      editingId = id;
+      document.getElementById('modalTestiTitle').textContent = id ? 'Edit Testimoni' : 'Tambah Testimoni';
+      ['tName', 'tRole', 'tInitial', 'tContent', 'tRef'].forEach(f => setVal(f, ''));
+      setVal('tRating', 5); setVal('tOrder', 0); setChecked('tActive', true);
+      if (id) {
+        const t = testiData.find(t => t.id === id);
+        if (t) {
+          setVal('tName', t.name); setVal('tRole', t.role || ''); setVal('tInitial', t.initial || '');
+          setVal('tContent', t.content); setVal('tRef', t.product_ref || '');
+          setVal('tRating', t.rating || 5); setVal('tOrder', t.sort_order || 0); setChecked('tActive', !!t.is_active);
+        }
+      }
+      openModal('modalTesti');
     }
-  }
-  openModal('modalTesti');
-}
 
-async function saveTestimonial() {
-  const name = getVal('tName'), content = getVal('tContent');
-  if (!name || !content) { toast('Nama dan konten testimoni wajib diisi', 'warning'); return; }
-  const payload = {
-    name, role: getVal('tRole'), initial: getVal('tInitial') || name[0].toUpperCase(),
-    content, product_ref: getVal('tRef'), rating: parseInt(getVal('tRating')) || 5,
-    sort_order: parseInt(getVal('tOrder')) || 0, is_active: getChecked('tActive') ? 1 : 0
-  };
-  try {
-    if (editingId) await api('PUT', `/testimonials/${editingId}`, payload);
-    else await api('POST', '/testimonials', payload);
-    toast('Testimoni berhasil disimpan'); closeModal('modalTesti');
-    const d = await api('GET', '/testimonials'); testiData = d.data || []; loadTestimonials();
-  } catch (e) { toast(e.message, 'error'); }
-}
+    async function saveTestimonial() {
+      const name = getVal('tName'), content = getVal('tContent');
+      if (!name || !content) { toast('Nama dan konten testimoni wajib diisi', 'warning'); return; }
+      const payload = {
+        name, role: getVal('tRole'), initial: getVal('tInitial') || name[0].toUpperCase(),
+        content, product_ref: getVal('tRef'), rating: parseInt(getVal('tRating')) || 5,
+        sort_order: parseInt(getVal('tOrder')) || 0, is_active: getChecked('tActive') ? 1 : 0
+      };
+      try {
+        if (editingId) await api('PUT', `/testimonials/${editingId}`, payload);
+        else await api('POST', '/testimonials', payload);
+        toast('Testimoni berhasil disimpan'); closeModal('modalTesti');
+        const d = await api('GET', '/testimonials'); testiData = d.data || []; loadTestimonials();
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-async function editTestimonial(id) {
-  if (!testiData.length) { try { const d = await api('GET', '/testimonials'); testiData = d.data || []; } catch (e) { } }
-  openTestimonialModal(id);
-}
+    async function editTestimonial(id) {
+      if (!testiData.length) { try { const d = await api('GET', '/testimonials'); testiData = d.data || []; } catch (e) { } }
+      openTestimonialModal(id);
+    }
 
-async function deleteTestimonial(id) {
-  if (!confirm('Hapus testimoni ini?')) return;
-  try { await api('DELETE', `/testimonials/${id}`); toast('Dihapus'); loadTestimonials(); }
-  catch (e) { toast(e.message, 'error'); }
-}
+    async function deleteTestimonial(id) {
+      if (!confirm('Hapus testimoni ini?')) return;
+      try { await api('DELETE', `/testimonials/${id}`); toast('Dihapus'); loadTestimonials(); }
+      catch (e) { toast(e.message, 'error'); }
+    }
 
-// --------------------------------------------------------------------------------------------------
-// CONTACTS
-// --------------------------------------------------------------------------------------------------
-async function loadContacts() {
-  try {
-    const data = await api('GET', '/contacts');
-    const contacts = data.data || [];
-    document.getElementById('contactBody').innerHTML = contacts.map(c => `
+    // --------------------------------------------------------------------------------------------------
+    // CONTACTS
+    // --------------------------------------------------------------------------------------------------
+    async function loadContacts() {
+      try {
+        const data = await api('GET', '/contacts');
+        const contacts = data.data || [];
+        document.getElementById('contactBody').innerHTML = contacts.map(c => `
       <tr style="${!c.is_read ? 'font-weight:600;' : ''}">
         <td>${c.name}</td>
         <td style="font-size:.8rem">${c.email || ''} ${c.phone || ''}</td>
@@ -1177,69 +1202,69 @@ async function loadContacts() {
           <button class="btn btn-sm btn-danger" onclick="deleteContact(${c.id})">🗑</button>
         </td>
       </tr>`).join('');
-    const unread = contacts.filter(c => !c.is_read).length;
-    const badge = document.getElementById('contactUnreadBadge');
-    if (badge) badge.innerHTML = unread ? `<span class="nav-badge">${unread}</span>` : '';
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-async function markRead(id) {
-  try { await api('PUT', `/contacts/${id}/read`); loadContacts(); }
-  catch (e) { toast(e.message, 'error'); }
-}
-
-async function deleteContact(id) {
-  if (!confirm('Hapus pesan ini?')) return;
-  try { await api('DELETE', `/contacts/${id}`); toast('Pesan dihapus'); loadContacts(); }
-  catch (e) { toast(e.message, 'error'); }
-}
-
-// --------------------------------------------------------------------------------------------------
-// SETTINGS
-// --------------------------------------------------------------------------------------------------
-async function loadSettings() {
-  const tabs = document.getElementById('settingsTabs');
-  const panels = document.getElementById('settingsPanels');
-  if (!tabs || !panels) { console.error('[settings] DOM elements not found'); return; }
-
-  tabs.innerHTML = '<span style="color:var(--text-light);font-size:.85rem">Memuat...</span>';
-  panels.innerHTML = '';
-
-  try {
-    const data = await api('GET', '/settings');
-    const settings = Array.isArray(data.data) ? data.data : [];
-
-    if (!settings.length) {
-      tabs.innerHTML = '';
-      panels.innerHTML = '<div style="padding:2rem;color:var(--text-light);text-align:center">Tidak ada data settings.</div>';
-      return;
+        const unread = contacts.filter(c => !c.is_read).length;
+        const badge = document.getElementById('contactUnreadBadge');
+        if (badge) badge.innerHTML = unread ? `<span class="nav-badge">${unread}</span>` : '';
+      } catch (e) { toast(e.message, 'error'); }
     }
 
-    const groups = {};
-    settings.forEach(s => {
-      if (!groups[s.group_name]) groups[s.group_name] = [];
-      groups[s.group_name].push(s);
-    });
-    const groupLabels = { general: '⚙️ Umum', hero: '🖼️ Hero', about: '📖 Tentang', contact: '📞 Kontak', stats: '📊 Statistik', social: '📱 Sosial', footer: '📄 Footer' };
-    tabs.innerHTML = ''; panels.innerHTML = '';
-    let first = true;
-    Object.keys(groups).forEach(grp => {
-      const label = groupLabels[grp] || grp;
-      const tabBtn = document.createElement('button');
-      tabBtn.className = 'settings-tab' + (first ? ' active' : '');
-      tabBtn.textContent = label;
-      tabBtn.onclick = () => {
-        document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
-        tabBtn.classList.add('active');
-        document.getElementById(`spanel-${grp}`)?.classList.add('active');
-      };
-      tabs.appendChild(tabBtn);
+    async function markRead(id) {
+      try { await api('PUT', `/contacts/${id}/read`); loadContacts(); }
+      catch (e) { toast(e.message, 'error'); }
+    }
 
-      const panel = document.createElement('div');
-      panel.id = `spanel-${grp}`;
-      panel.className = 'settings-panel' + (first ? ' active' : '');
-      panel.innerHTML = groups[grp].map(s => `
+    async function deleteContact(id) {
+      if (!confirm('Hapus pesan ini?')) return;
+      try { await api('DELETE', `/contacts/${id}`); toast('Pesan dihapus'); loadContacts(); }
+      catch (e) { toast(e.message, 'error'); }
+    }
+
+    // --------------------------------------------------------------------------------------------------
+    // SETTINGS
+    // --------------------------------------------------------------------------------------------------
+    async function loadSettings() {
+      const tabs = document.getElementById('settingsTabs');
+      const panels = document.getElementById('settingsPanels');
+      if (!tabs || !panels) { console.error('[settings] DOM elements not found'); return; }
+
+      tabs.innerHTML = '<span style="color:var(--text-light);font-size:.85rem">Memuat...</span>';
+      panels.innerHTML = '';
+
+      try {
+        const data = await api('GET', '/settings');
+        const settings = Array.isArray(data.data) ? data.data : [];
+
+        if (!settings.length) {
+          tabs.innerHTML = '';
+          panels.innerHTML = '<div style="padding:2rem;color:var(--text-light);text-align:center">Tidak ada data settings.</div>';
+          return;
+        }
+
+        const groups = {};
+        settings.forEach(s => {
+          if (!groups[s.group_name]) groups[s.group_name] = [];
+          groups[s.group_name].push(s);
+        });
+        const groupLabels = { general: '⚙️ Umum', hero: '🖼️ Hero', about: '📖 Tentang', contact: '📞 Kontak', stats: '📊 Statistik', social: '📱 Sosial', footer: '📄 Footer' };
+        tabs.innerHTML = ''; panels.innerHTML = '';
+        let first = true;
+        Object.keys(groups).forEach(grp => {
+          const label = groupLabels[grp] || grp;
+          const tabBtn = document.createElement('button');
+          tabBtn.className = 'settings-tab' + (first ? ' active' : '');
+          tabBtn.textContent = label;
+          tabBtn.onclick = () => {
+            document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+            tabBtn.classList.add('active');
+            document.getElementById(`spanel-${grp}`)?.classList.add('active');
+          };
+          tabs.appendChild(tabBtn);
+
+          const panel = document.createElement('div');
+          panel.id = `spanel-${grp}`;
+          panel.className = 'settings-panel' + (first ? ' active' : '');
+          panel.innerHTML = groups[grp].map(s => `
         <div class="form-group">
           <label>${s.label || s.key}</label>
           ${s.type === 'image' ? `
@@ -1259,96 +1284,96 @@ async function loadSettings() {
           `}
         </div>`).join('');
 
-      const saveBtn = document.createElement('button');
-      saveBtn.className = 'btn btn-primary';
-      saveBtn.style.marginTop = '.5rem';
-      saveBtn.textContent = '💾 Simpan ' + label;
-      saveBtn.onclick = () => saveSettingsGroup(groups[grp]);
-      panel.appendChild(saveBtn);
-      panels.appendChild(panel);
-      first = false;
-    });
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-async function saveSettingsGroup(items) {
-  const payload = {};
-  items.forEach(s => {
-    if (s.type !== 'image') {
-      const el = document.getElementById(`setting_${s.key}`);
-      if (el) payload[s.key] = el.value;
+          const saveBtn = document.createElement('button');
+          saveBtn.className = 'btn btn-primary';
+          saveBtn.style.marginTop = '.5rem';
+          saveBtn.textContent = '💾 Simpan ' + label;
+          saveBtn.onclick = () => saveSettingsGroup(groups[grp]);
+          panel.appendChild(saveBtn);
+          panels.appendChild(panel);
+          first = false;
+        });
+      } catch (e) { toast(e.message, 'error'); }
     }
-  });
-  try {
-    await api('PUT', '/settings', payload);
-    toast('Settings berhasil disimpan');
-  } catch (e) { toast(e.message, 'error'); }
-}
 
-async function uploadSettingImage(key) {
-  const file = document.getElementById(`setting_file_${key}`)?.files[0];
-  if (!file) { toast('Pilih file gambar terlebih dahulu', 'warning'); return; }
-  const fd = new FormData(); fd.append('image', file);
-  try {
-    await api('POST', `/settings/image/${key}`, fd, true);
-    toast('Gambar berhasil diupload'); loadSettings();
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-// --------------------------------------------------------------------------------------------------
-// WAREHOUSE DASHBOARD
-// --------------------------------------------------------------------------------------------------
-async function loadWarehouseDashboard() {
-  try {
-    const data = await api('GET', '/warehouse/dashboard');
-    const s = data.data.stats;
-    document.getElementById('whStats').innerHTML = buildStatCards([
-      { icon: '📦', label: 'Total Produk', val: s.total_products, cls: 'brown' },
-      { icon: '⚠️', label: 'Stok Kritis (≤3)', val: s.low_stock, cls: 'red', onclick: "filterProductsBy('low_stock')" },
-      { icon: '❌', label: 'Habis', val: s.out_of_stock, cls: 'red', onclick: "filterProductsBy('out_of_stock')" },
-      { icon: '🏢', label: 'Supplier', val: s.total_suppliers, cls: 'green' },
-      { icon: '👥', label: 'Customer', val: s.total_customers, cls: 'blue' },
-      { icon: '🛒', label: 'Order Proses', val: s.pending_orders, cls: 'orange' },
-      { icon: '📥', label: 'Masuk Hari Ini', val: s.stock_in_today, cls: 'teal' },
-      { icon: '📤', label: 'Keluar Hari Ini', val: s.stock_out_today, cls: 'purple' },
-    ]);
-
-    // Inventory value KPI - Hidden for non-executive
-    const kpi = document.getElementById('whInventoryKPI');
-    if (kpi) kpi.style.display = 'none';
-
-    // Stock flow chart (7 days)
-    const flowData = data.data.stock_flow_7days || [];
-    const canvas = document.getElementById('chartStockFlow');
-    if (canvas && flowData.length) {
-      if (canvas._chartInstance) canvas._chartInstance.destroy();
-      canvas._chartInstance = new Chart(canvas, {
-        type: 'bar',
-        data: {
-          labels: flowData.map(d => d.date),
-          datasets: [
-            {
-              label: '📥 Masuk', data: flowData.map(d => d.stock_in || 0),
-              backgroundColor: 'rgba(40,167,69,.7)', borderRadius: 4, borderSkipped: false,
-            },
-            {
-              label: '—', data: flowData.map(d => d.stock_out || 0),
-              backgroundColor: 'rgba(220,53,69,.7)', borderRadius: 4, borderSkipped: false,
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } },
-          scales: {
-            x: { ticks: { font: { size: 11 } } },
-            y: { ticks: { precision: 0 }, grid: { color: '#f0ebe3' } }
-          }
+    async function saveSettingsGroup(items) {
+      const payload = {};
+      items.forEach(s => {
+        if (s.type !== 'image') {
+          const el = document.getElementById(`setting_${s.key}`);
+          if (el) payload[s.key] = el.value;
         }
       });
+      try {
+        await api('PUT', '/settings', payload);
+        toast('Settings berhasil disimpan');
+      } catch (e) { toast(e.message, 'error'); }
     }
 
-    document.getElementById('lowStockBody').innerHTML = (data.data.low_stock_products || []).map(p => `
+    async function uploadSettingImage(key) {
+      const file = document.getElementById(`setting_file_${key}`)?.files[0];
+      if (!file) { toast('Pilih file gambar terlebih dahulu', 'warning'); return; }
+      const fd = new FormData(); fd.append('image', file);
+      try {
+        await api('POST', `/settings/image/${key}`, fd, true);
+        toast('Gambar berhasil diupload'); loadSettings();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    // --------------------------------------------------------------------------------------------------
+    // WAREHOUSE DASHBOARD
+    // --------------------------------------------------------------------------------------------------
+    async function loadWarehouseDashboard() {
+      try {
+        const data = await api('GET', '/warehouse/dashboard');
+        const s = data.data.stats;
+        document.getElementById('whStats').innerHTML = buildStatCards([
+          { icon: '📦', label: 'Total Produk', val: s.total_products, cls: 'brown' },
+          { icon: '⚠️', label: 'Stok Kritis (≤3)', val: s.low_stock, cls: 'red', onclick: "filterProductsBy('low_stock')" },
+          { icon: '❌', label: 'Habis', val: s.out_of_stock, cls: 'red', onclick: "filterProductsBy('out_of_stock')" },
+          { icon: '🏢', label: 'Supplier', val: s.total_suppliers, cls: 'green' },
+          { icon: '👥', label: 'Customer', val: s.total_customers, cls: 'blue' },
+          { icon: '🛒', label: 'Order Proses', val: s.pending_orders, cls: 'orange' },
+          { icon: '📥', label: 'Masuk Hari Ini', val: s.stock_in_today, cls: 'teal' },
+          { icon: '📤', label: 'Keluar Hari Ini', val: s.stock_out_today, cls: 'purple' },
+        ]);
+
+        // Inventory value KPI - Hidden for non-executive
+        const kpi = document.getElementById('whInventoryKPI');
+        if (kpi) kpi.style.display = 'none';
+
+        // Stock flow chart (7 days)
+        const flowData = data.data.stock_flow_7days || [];
+        const canvas = document.getElementById('chartStockFlow');
+        if (canvas && flowData.length) {
+          if (canvas._chartInstance) canvas._chartInstance.destroy();
+          canvas._chartInstance = new Chart(canvas, {
+            type: 'bar',
+            data: {
+              labels: flowData.map(d => d.date),
+              datasets: [
+                {
+                  label: '📥 Masuk', data: flowData.map(d => d.stock_in || 0),
+                  backgroundColor: 'rgba(40,167,69,.7)', borderRadius: 4, borderSkipped: false,
+                },
+                {
+                  label: '—', data: flowData.map(d => d.stock_out || 0),
+                  backgroundColor: 'rgba(220,53,69,.7)', borderRadius: 4, borderSkipped: false,
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } },
+              scales: {
+                x: { ticks: { font: { size: 11 } } },
+                y: { ticks: { precision: 0 }, grid: { color: '#f0ebe3' } }
+              }
+            }
+          });
+        }
+
+        document.getElementById('lowStockBody').innerHTML = (data.data.low_stock_products || []).map(p => `
       <tr>
         <td>${p.name}</td>
         <td style="font-size:.78rem;color:var(--text-light)">${p.sku || '—'}</td>
@@ -1356,66 +1381,66 @@ async function loadWarehouseDashboard() {
         <td>${p.warehouse_stock === 0 ? '<span class="badge badge-out_of_stock">Habis</span>' : '<span class="badge badge-pending">Kritis</span>'}</td>
       </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--success);padding:1rem">✅ Semua stok aman</td></tr>';
 
-    document.getElementById('recentTxBody').innerHTML = (data.data.recent_transactions || []).map(t => `
+        document.getElementById('recentTxBody').innerHTML = (data.data.recent_transactions || []).map(t => `
       <tr>
         <td style="font-size:.82rem">${t.product_name}</td>
         <td><span class="badge badge-${t.type}">${t.type === 'in' ? '📥 Masuk' : t.type === 'out' ? '📥 Keluar' : '—'}</span></td>
         <td style="font-weight:600;color:${t.type === 'in' ? 'var(--success)' : 'var(--danger)'}">${t.type === 'in' ? '+' : '-'}${t.qty}</td>
         <td style="font-size:.78rem">${fmtDate(t.created_at)}</td>
       </tr>`).join('');
-  } catch (e) { toast(e.message, 'error'); }
-}
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-// --------------------------------------------------------------------------------------------------
-// STOCK MANAGEMENT
-// --------------------------------------------------------------------------------------------------
-async function submitStockIn() {
-  const productId = getVal('siProduct');
-  const qty = parseInt(getVal('siQty'));
-  if (!productId || !qty || qty <= 0) { toast('Pilih produk dan masukkan jumlah', 'warning'); return; }
-  const payload = {
-    product_id: productId, qty, supplier_id: getVal('siSupplier') || null,
-    reference_no: getVal('siRef'), unit_price: parseFloat(getVal('siPrice')) || 0, notes: getVal('siNotes')
-  };
-  try {
-    const r = await api('POST', '/stock/in', payload);
-    toast(r.message || 'Barang masuk berhasil');['siProduct', 'siQty', 'siRef', 'siPrice', 'siNotes'].forEach(f => setVal(f, ''));
-    loadStockSummary(); loadProductsDropdown();
-  } catch (e) { toast(e.message, 'error'); }
-}
+    // --------------------------------------------------------------------------------------------------
+    // STOCK MANAGEMENT
+    // --------------------------------------------------------------------------------------------------
+    async function submitStockIn() {
+      const productId = getVal('siProduct');
+      const qty = parseInt(getVal('siQty'));
+      if (!productId || !qty || qty <= 0) { toast('Pilih produk dan masukkan jumlah', 'warning'); return; }
+      const payload = {
+        product_id: productId, qty, supplier_id: getVal('siSupplier') || null,
+        reference_no: getVal('siRef'), unit_price: parseFloat(getVal('siPrice')) || 0, notes: getVal('siNotes')
+      };
+      try {
+        const r = await api('POST', '/stock/in', payload);
+        toast(r.message || 'Barang masuk berhasil');['siProduct', 'siQty', 'siRef', 'siPrice', 'siNotes'].forEach(f => setVal(f, ''));
+        loadStockSummary(); loadProductsDropdown();
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-async function submitStockOut() {
-  const productId = getVal('soProduct');
-  const qty = parseInt(getVal('soQty'));
-  if (!productId || !qty || qty <= 0) { toast('Pilih produk dan masukkan jumlah', 'warning'); return; }
-  const payload = { product_id: productId, qty, reference_no: getVal('soRef'), notes: getVal('soNotes') };
-  try {
-    const r = await api('POST', '/stock/out', payload);
-    toast(r.message || 'Barang keluar berhasil');['soProduct', 'soQty', 'soNotes'].forEach(f => setVal(f, ''));
-    loadStockSummary(); loadProductsDropdown();
-    setVal('soRef', `OUT-${Math.floor(Date.now() / 1000).toString().slice(-6)}`);
-  } catch (e) { toast(e.message, 'error'); }
-}
+    async function submitStockOut() {
+      const productId = getVal('soProduct');
+      const qty = parseInt(getVal('soQty'));
+      if (!productId || !qty || qty <= 0) { toast('Pilih produk dan masukkan jumlah', 'warning'); return; }
+      const payload = { product_id: productId, qty, reference_no: getVal('soRef'), notes: getVal('soNotes') };
+      try {
+        const r = await api('POST', '/stock/out', payload);
+        toast(r.message || 'Barang keluar berhasil');['soProduct', 'soQty', 'soNotes'].forEach(f => setVal(f, ''));
+        loadStockSummary(); loadProductsDropdown();
+        setVal('soRef', `OUT-${Math.floor(Date.now() / 1000).toString().slice(-6)}`);
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-let stockSort = 'warehouse_stock', stockOrder = 'ASC';
-function sortStock(field) {
-  if (stockSort === field) stockOrder = stockOrder === 'ASC' ? 'DESC' : 'ASC';
-  else { stockSort = field; stockOrder = 'ASC'; }
-  loadStockSummary(1);
-}
+    let stockSort = 'warehouse_stock', stockOrder = 'ASC';
+    function sortStock(field) {
+      if (stockSort === field) stockOrder = stockOrder === 'ASC' ? 'DESC' : 'ASC';
+      else { stockSort = field; stockOrder = 'ASC'; }
+      loadStockSummary(1);
+    }
 
-async function loadStockSummary(page = 1) {
-  try {
-    const q = getVal('stockSearch');
-    const data = await api('GET', `/stock/summary?page=${page}&search=${q}&sort=${stockSort}&order=${stockOrder}`);
-    stockSummaryData = data.data || [];
-    renderStockTable(data);
-  } catch (e) { toast(e.message, 'error'); }
-}
+    async function loadStockSummary(page = 1) {
+      try {
+        const q = getVal('stockSearch');
+        const data = await api('GET', `/stock/summary?page=${page}&search=${q}&sort=${stockSort}&order=${stockOrder}`);
+        stockSummaryData = data.data || [];
+        renderStockTable(data);
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-function renderStockTable(data) {
-  const rows = data.data || [];
-  document.getElementById('stockSummaryBody').innerHTML = rows.map(p => `
+    function renderStockTable(data) {
+      const rows = data.data || [];
+      document.getElementById('stockSummaryBody').innerHTML = rows.map(p => `
     <tr>
       <td style="font-size:.78rem;color:var(--text-light)">${p.sku || '—'}</td>
       <td style="font-size:.85rem"><strong>${p.name}</strong></td>
@@ -1427,22 +1452,22 @@ function renderStockTable(data) {
       <td style="font-size:.8rem;font-weight:600">${fmtRp(p.stock_value)}</td>
       <td>${statusBadge(p.publish_status)}</td>
     </tr>`).join('');
-  buildPagination('stockPagination', data.pagination, 'loadStockSummary');
-}
+      buildPagination('stockPagination', data.pagination, 'loadStockSummary');
+    }
 
-const filterStockTable = debounce(() => loadStockSummary(1), 500);
+    const filterStockTable = debounce(() => loadStockSummary(1), 500);
 
-async function exportStockPDF() {
-  const btn = event?.target;
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Memuat...'; }
-  try {
-    const q = getVal('stockSearch');
-    const data = await api('GET', `/stock/summary?limit=1000&search=${q}&sort=${stockSort}&order=${stockOrder}`);
-    const items = data.data || [];
-    const totalVal = data.total_stock_value || 0;
-    const c = data.company || {};
+    async function exportStockPDF() {
+      const btn = event?.target;
+      if (btn) { btn.disabled = true; btn.textContent = '⏳ Memuat...'; }
+      try {
+        const q = getVal('stockSearch');
+        const data = await api('GET', `/stock/summary?limit=1000&search=${q}&sort=${stockSort}&order=${stockOrder}`);
+        const items = data.data || [];
+        const totalVal = data.total_stock_value || 0;
+        const c = data.company || {};
 
-    const html = `<!DOCTYPE html>
+        const html = `<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -1529,24 +1554,24 @@ async function exportStockPDF() {
 </body>
 </html>`;
 
-    const win = window.open('', '_blank');
-    if (!win) { toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning'); return; }
-    win.document.write(html);
-    win.document.close();
-  } catch (e) {
-    toast('Gagal memuat data: ' + e.message, 'error');
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '📄 Export PDF'; }
-  }
-}
+        const win = window.open('', '_blank');
+        if (!win) { toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning'); return; }
+        win.document.write(html);
+        win.document.close();
+      } catch (e) {
+        toast('Gagal memuat data: ' + e.message, 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '📄 Export PDF'; }
+      }
+    }
 
-let txPage = 1;
-async function loadTransactions(page = 1) {
-  txPage = page;
-  const type = getVal('txType'), from = getVal('txFrom'), to = getVal('txTo'), q = getVal('txSearch');
-  try {
-    const data = await api('GET', `/stock/transactions?page=${page}&limit=30&type=${type}&date_from=${from}&date_to=${to}&search=${q}`);
-    document.getElementById('txBody').innerHTML = (data.data || []).map(t => `
+    let txPage = 1;
+    async function loadTransactions(page = 1) {
+      txPage = page;
+      const type = getVal('txType'), from = getVal('txFrom'), to = getVal('txTo'), q = getVal('txSearch');
+      try {
+        const data = await api('GET', `/stock/transactions?page=${page}&limit=30&type=${type}&date_from=${from}&date_to=${to}&search=${q}`);
+        document.getElementById('txBody').innerHTML = (data.data || []).map(t => `
       <tr>
         <td style="font-size:.8rem">${fmtDate(t.created_at)}</td>
         <td style="font-size:.82rem">${t.product_name}</td>
@@ -1559,50 +1584,50 @@ async function loadTransactions(page = 1) {
         <td style="font-size:.78rem">${t.supplier_name || '—'}</td>
         <td style="font-size:.78rem">${t.created_by_name || '—'}</td>
       </tr>`).join('') || '<tr><td colspan="10" style="text-align:center;padding:1.5rem;color:var(--text-light)">Tidak ada transaksi</td></tr>';
-    buildPagination('txPagination', data.pagination, 'loadTransactions');
-  } catch (e) { toast(e.message, 'error'); }
-}
+        buildPagination('txPagination', data.pagination, 'loadTransactions');
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-function printStockReport() {
-  const el = document.getElementById('page-stock-transactions');
-  const opt = {
-    margin: 0.5,
-    filename: 'Laporan_Stok_JogjaFurniture.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
-  };
+    function printStockReport() {
+      const el = document.getElementById('page-stock-transactions');
+      const opt = {
+        margin: 0.5,
+        filename: 'Laporan_Stok_JogjaFurniture.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+      };
 
-  document.body.classList.add('print-stock-tx');
-  html2pdf().set(opt).from(el).save().then(() => {
-    document.body.classList.remove('print-stock-tx');
-  });
-}
+      document.body.classList.add('print-stock-tx');
+      html2pdf().set(opt).from(el).save().then(() => {
+        document.body.classList.remove('print-stock-tx');
+      });
+    }
 
-function exportInvoicePDF() {
-  const el = document.getElementById('invoiceContent');
-  const h2 = el.querySelector('h2');
-  const invNumber = h2 ? h2.innerText.split(' ').pop() : 'Order';
-  const opt = {
-    margin: 0.5,
-    filename: `Invoice_${invNumber}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(el).save();
-}
-// --------------------------------------------------------------------------------------------------
-// SUPPLIERS
-// --------------------------------------------------------------------------------------------------
-let supPage = 1, supData = [];
-async function loadSuppliers(page = 1) {
-  supPage = page;
-  const search = getVal('supSearch');
-  try {
-    const data = await api('GET', `/suppliers?page=${page}&limit=20&search=${encodeURIComponent(search)}`);
-    supData = data.data || [];
-    document.getElementById('supBody').innerHTML = supData.map(s => `
+    function exportInvoicePDF() {
+      const el = document.getElementById('invoiceContent');
+      const h2 = el.querySelector('h2');
+      const invNumber = h2 ? h2.innerText.split(' ').pop() : 'Order';
+      const opt = {
+        margin: 0.5,
+        filename: `Invoice_${invNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(el).save();
+    }
+    // --------------------------------------------------------------------------------------------------
+    // SUPPLIERS
+    // --------------------------------------------------------------------------------------------------
+    let supPage = 1, supData = [];
+    async function loadSuppliers(page = 1) {
+      supPage = page;
+      const search = getVal('supSearch');
+      try {
+        const data = await api('GET', `/suppliers?page=${page}&limit=20&search=${encodeURIComponent(search)}`);
+        supData = data.data || [];
+        document.getElementById('supBody').innerHTML = supData.map(s => `
       <tr>
         <td><code style="font-size:.78rem">${s.code || '—'}</code></td>
         <td><strong>${s.name}</strong></td>
@@ -1615,76 +1640,76 @@ async function loadSuppliers(page = 1) {
           <button class="btn btn-sm btn-danger" onclick="deleteSupplier(${s.id})">🗑</button>
         </td>
       </tr>`).join('');
-    buildPagination('supPagination', data.pagination, 'loadSuppliers');
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-async function loadSuppliersDropdown() {
-  if (!supData.length) { try { const d = await api('GET', '/suppliers?limit=200'); supData = d.data || []; } catch (e) { } }
-  const el = document.getElementById('siSupplier');
-  if (!el) return;
-  el.innerHTML = '<option value="">Pilih Supplier...</option>';
-  supData.forEach(s => el.add(new Option(s.name, s.id)));
-  initTomSelect('siSupplier');
-}
-
-function openSupplierModal(id = null) {
-  editingId = id;
-  document.getElementById('modalSupTitle').textContent = id ? 'Edit Supplier' : 'Tambah Supplier';
-  ['sCode', 'sName', 'sContact', 'sPhone', 'sEmail', 'sCity', 'sProvince', 'sAddress', 'sNotes'].forEach(f => setVal(f, ''));
-  if (id) {
-    const s = supData.find(s => s.id === id);
-    if (s) {
-      setVal('sCode', s.code || ''); setVal('sName', s.name); setVal('sContact', s.contact_name || '');
-      setVal('sPhone', s.phone || ''); setVal('sEmail', s.email || ''); setVal('sCity', s.city || '');
-      setVal('sProvince', s.province || ''); setVal('sAddress', s.address || ''); setVal('sNotes', s.notes || '');
+        buildPagination('supPagination', data.pagination, 'loadSuppliers');
+      } catch (e) { toast(e.message, 'error'); }
     }
-  } else {
-    let max = 0;
-    supData.forEach(s => {
-      if (s.code && s.code.startsWith('SUP')) {
-        let num = parseInt(s.code.replace('SUP', ''));
-        if (!isNaN(num) && num > max) max = num;
+
+    async function loadSuppliersDropdown() {
+      if (!supData.length) { try { const d = await api('GET', '/suppliers?limit=200'); supData = d.data || []; } catch (e) { } }
+      const el = document.getElementById('siSupplier');
+      if (!el) return;
+      el.innerHTML = '<option value="">Pilih Supplier...</option>';
+      supData.forEach(s => el.add(new Option(s.name, s.id)));
+      initTomSelect('siSupplier');
+    }
+
+    function openSupplierModal(id = null) {
+      editingId = id;
+      document.getElementById('modalSupTitle').textContent = id ? 'Edit Supplier' : 'Tambah Supplier';
+      ['sCode', 'sName', 'sContact', 'sPhone', 'sEmail', 'sCity', 'sProvince', 'sAddress', 'sNotes'].forEach(f => setVal(f, ''));
+      if (id) {
+        const s = supData.find(s => s.id === id);
+        if (s) {
+          setVal('sCode', s.code || ''); setVal('sName', s.name); setVal('sContact', s.contact_name || '');
+          setVal('sPhone', s.phone || ''); setVal('sEmail', s.email || ''); setVal('sCity', s.city || '');
+          setVal('sProvince', s.province || ''); setVal('sAddress', s.address || ''); setVal('sNotes', s.notes || '');
+        }
+      } else {
+        let max = 0;
+        supData.forEach(s => {
+          if (s.code && s.code.startsWith('SUP')) {
+            let num = parseInt(s.code.replace('SUP', ''));
+            if (!isNaN(num) && num > max) max = num;
+          }
+        });
+        setVal('sCode', `SUP${String(max + 1).padStart(3, '0')}`);
       }
-    });
-    setVal('sCode', `SUP${String(max + 1).padStart(3, '0')}`);
-  }
-  openModal('modalSupplier');
-}
+      openModal('modalSupplier');
+    }
 
-async function saveSupplier() {
-  const name = getVal('sName');
-  if (!name) { toast('Nama supplier wajib diisi', 'warning'); return; }
-  const payload = {
-    code: getVal('sCode'), name, contact_name: getVal('sContact'), phone: getVal('sPhone'),
-    email: getVal('sEmail'), city: getVal('sCity'), province: getVal('sProvince'),
-    address: getVal('sAddress'), notes: getVal('sNotes'), is_active: 1
-  };
-  try {
-    if (editingId) await api('PUT', `/suppliers/${editingId}`, payload);
-    else await api('POST', '/suppliers', payload);
-    toast('Supplier berhasil disimpan'); closeModal('modalSupplier'); loadSuppliers();
-  } catch (e) { toast(e.message, 'error'); }
-}
+    async function saveSupplier() {
+      const name = getVal('sName');
+      if (!name) { toast('Nama supplier wajib diisi', 'warning'); return; }
+      const payload = {
+        code: getVal('sCode'), name, contact_name: getVal('sContact'), phone: getVal('sPhone'),
+        email: getVal('sEmail'), city: getVal('sCity'), province: getVal('sProvince'),
+        address: getVal('sAddress'), notes: getVal('sNotes'), is_active: 1
+      };
+      try {
+        if (editingId) await api('PUT', `/suppliers/${editingId}`, payload);
+        else await api('POST', '/suppliers', payload);
+        toast('Supplier berhasil disimpan'); closeModal('modalSupplier'); loadSuppliers();
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-function editSupplier(id) { openSupplierModal(id); }
-async function deleteSupplier(id) {
-  if (!confirm('Hapus supplier ini?')) return;
-  try { await api('DELETE', `/suppliers/${id}`); toast('Supplier dihapus'); loadSuppliers(); }
-  catch (e) { toast(e.message, 'error'); }
-}
+    function editSupplier(id) { openSupplierModal(id); }
+    async function deleteSupplier(id) {
+      if (!confirm('Hapus supplier ini?')) return;
+      try { await api('DELETE', `/suppliers/${id}`); toast('Supplier dihapus'); loadSuppliers(); }
+      catch (e) { toast(e.message, 'error'); }
+    }
 
-// --------------------------------------------------------------------------------------------------
-// CUSTOMERS
-// --------------------------------------------------------------------------------------------------
-let cusPage = 1, cusData = [];
-async function loadCustomers(page = 1) {
-  cusPage = page;
-  const search = getVal('cusSearch');
-  try {
-    const data = await api('GET', `/customers?page=${page}&limit=20&search=${encodeURIComponent(search)}`);
-    cusData = data.data || [];
-    document.getElementById('cusBody').innerHTML = cusData.map(c => `
+    // --------------------------------------------------------------------------------------------------
+    // CUSTOMERS
+    // --------------------------------------------------------------------------------------------------
+    let cusPage = 1, cusData = [];
+    async function loadCustomers(page = 1) {
+      cusPage = page;
+      const search = getVal('cusSearch');
+      try {
+        const data = await api('GET', `/customers?page=${page}&limit=20&search=${encodeURIComponent(search)}`);
+        cusData = data.data || [];
+        document.getElementById('cusBody').innerHTML = cusData.map(c => `
       <tr>
         <td><code style="font-size:.78rem">${c.code || '—'}</code></td>
         <td><strong>${c.name}</strong></td>
@@ -1701,22 +1726,22 @@ async function loadCustomers(page = 1) {
           </div>
         </td>
       </tr>`).join('');
-    buildPagination('cusPagination', data.pagination, 'loadCustomers');
-  } catch (e) { toast(e.message, 'error'); }
-}
+        buildPagination('cusPagination', data.pagination, 'loadCustomers');
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-async function viewCustomerHistory(id) {
-  const c = cusData.find(x => x.id == id);
-  if (!c) return;
+    async function viewCustomerHistory(id) {
+      const c = cusData.find(x => x.id == id);
+      if (!c) return;
 
-  document.getElementById('modalCusHistoryTitle').innerText = `Riwayat Transaksi: ${c.name}`;
-  document.getElementById('cusHistoryBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1rem">Memuat...</td></tr>';
-  openModal('modalCusHistory');
+      document.getElementById('modalCusHistoryTitle').innerText = `Riwayat Transaksi: ${c.name}`;
+      document.getElementById('cusHistoryBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1rem">Memuat...</td></tr>';
+      openModal('modalCusHistory');
 
-  try {
-    const data = await api('GET', `/orders?customer_id=${id}&limit=50`);
-    const orders = data.data || [];
-    document.getElementById('cusHistoryBody').innerHTML = orders.map(o => `
+      try {
+        const data = await api('GET', `/orders?customer_id=${id}&limit=50`);
+        const orders = data.data || [];
+        document.getElementById('cusHistoryBody').innerHTML = orders.map(o => `
       <tr>
         <td style="font-weight:600">${o.order_number}</td>
         <td>${fmtDateOnly(o.created_at)}</td>
@@ -1725,19 +1750,19 @@ async function viewCustomerHistory(id) {
         <td>${statusBadge(o.payment_status)}</td>
         <td><button class="btn btn-sm btn-outline" onclick="viewOrderSummary(${o.id})" title="Detail Order">🔍</button></td>
       </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:var(--text-light)">Belum ada transaksi</td></tr>';
-  } catch (e) {
-    toast(e.message, 'error');
-    document.getElementById('cusHistoryBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--danger)">Gagal memuat data</td></tr>';
-  }
-}
+      } catch (e) {
+        toast(e.message, 'error');
+        document.getElementById('cusHistoryBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--danger)">Gagal memuat data</td></tr>';
+      }
+    }
 
-async function viewOrderSummary(id) {
-  try {
-    const data = await api('GET', `/orders/${id}`);
-    const o = data.data;
-    const items = o.items || [];
+    async function viewOrderSummary(id) {
+      try {
+        const data = await api('GET', `/orders/${id}`);
+        const o = data.data;
+        const items = o.items || [];
 
-    const rows = items.map((it, i) => `
+        const rows = items.map((it, i) => `
       <tr>
         <td style="padding:10px;border-bottom:1px solid #eee;font-size:13px">${i + 1}</td>
         <td style="padding:10px;border-bottom:1px solid #eee;font-size:13px">
@@ -1749,7 +1774,7 @@ async function viewOrderSummary(id) {
         <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;font-weight:600;font-size:13px">${fmtRp(it.subtotal)}</td>
       </tr>`).join('');
 
-    const content = `
+        const content = `
       <div style="padding:20px;color:#333">
         <div style="display:flex;justify-content:space-between;margin-bottom:20px">
           <div>
@@ -1807,96 +1832,96 @@ async function viewOrderSummary(id) {
       </div>
     `;
 
-    document.getElementById('summaryContent').innerHTML = content;
-    document.getElementById('summaryPrintBtn').onclick = () => viewInvoice(id);
-    openModal('modalOrderSummary');
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-
-async function loadCustomersDropdown() {
-  if (!cusData.length) { try { const d = await api('GET', '/customers?limit=200'); cusData = d.data || []; } catch (e) { } }
-  const el = document.getElementById('oCustomerId');
-  if (!el) return;
-  el.innerHTML = '<option value="">— Isi manual —</option>';
-  cusData.forEach(c => el.add(new Option(`[${c.code || '—'}] ${c.name}`, c.id)));
-  initTomSelect('oCustomerId');
-}
-
-function openCustomerModal(id = null) {
-  editingId = id;
-  document.getElementById('modalCusTitle').textContent = id ? 'Edit Customer' : 'Tambah Customer';
-  ['kCode', 'kName', 'kPhone', 'kEmail', 'kCity', 'kProvince', 'kAddress', 'kNotes'].forEach(f => setVal(f, ''));
-  if (id) {
-    const c = cusData.find(c => c.id === id);
-    if (c) {
-      setVal('kCode', c.code || ''); setVal('kName', c.name); setVal('kPhone', c.phone || '');
-      setVal('kEmail', c.email || ''); setVal('kCity', c.city || ''); setVal('kProvince', c.province || '');
-      setVal('kAddress', c.address || ''); setVal('kNotes', c.notes || '');
+        document.getElementById('summaryContent').innerHTML = content;
+        document.getElementById('summaryPrintBtn').onclick = () => viewInvoice(id);
+        openModal('modalOrderSummary');
+      } catch (e) { toast(e.message, 'error'); }
     }
-  } else {
-    let max = 0;
-    cusData.forEach(c => {
-      if (c.code && c.code.startsWith('CUS')) {
-        let num = parseInt(c.code.replace('CUS', ''));
-        if (!isNaN(num) && num > max) max = num;
+
+
+    async function loadCustomersDropdown() {
+      if (!cusData.length) { try { const d = await api('GET', '/customers?limit=200'); cusData = d.data || []; } catch (e) { } }
+      const el = document.getElementById('oCustomerId');
+      if (!el) return;
+      el.innerHTML = '<option value="">— Isi manual —</option>';
+      cusData.forEach(c => el.add(new Option(`[${c.code || '—'}] ${c.name}`, c.id)));
+      initTomSelect('oCustomerId');
+    }
+
+    function openCustomerModal(id = null) {
+      editingId = id;
+      document.getElementById('modalCusTitle').textContent = id ? 'Edit Customer' : 'Tambah Customer';
+      ['kCode', 'kName', 'kPhone', 'kEmail', 'kCity', 'kProvince', 'kAddress', 'kNotes'].forEach(f => setVal(f, ''));
+      if (id) {
+        const c = cusData.find(c => c.id === id);
+        if (c) {
+          setVal('kCode', c.code || ''); setVal('kName', c.name); setVal('kPhone', c.phone || '');
+          setVal('kEmail', c.email || ''); setVal('kCity', c.city || ''); setVal('kProvince', c.province || '');
+          setVal('kAddress', c.address || ''); setVal('kNotes', c.notes || '');
+        }
+      } else {
+        let max = 0;
+        cusData.forEach(c => {
+          if (c.code && c.code.startsWith('CUS')) {
+            let num = parseInt(c.code.replace('CUS', ''));
+            if (!isNaN(num) && num > max) max = num;
+          }
+        });
+        setVal('kCode', `CUS${String(max + 1).padStart(3, '0')}`);
       }
-    });
-    setVal('kCode', `CUS${String(max + 1).padStart(3, '0')}`);
-  }
-  openModal('modalCustomer');
-}
+      openModal('modalCustomer');
+    }
 
-async function saveCustomer() {
-  const name = getVal('kName');
-  if (!name) { toast('Nama customer wajib diisi', 'warning'); return; }
-  const payload = {
-    code: getVal('kCode'), name, phone: getVal('kPhone'), email: getVal('kEmail'),
-    city: getVal('kCity'), province: getVal('kProvince'), address: getVal('kAddress'), notes: getVal('kNotes'), is_active: 1
-  };
-  try {
-    if (editingId) await api('PUT', `/customers/${editingId}`, payload);
-    else await api('POST', '/customers', payload);
-    toast('Customer berhasil disimpan'); closeModal('modalCustomer'); loadCustomers();
-  } catch (e) { toast(e.message, 'error'); }
-}
+    async function saveCustomer() {
+      const name = getVal('kName');
+      if (!name) { toast('Nama customer wajib diisi', 'warning'); return; }
+      const payload = {
+        code: getVal('kCode'), name, phone: getVal('kPhone'), email: getVal('kEmail'),
+        city: getVal('kCity'), province: getVal('kProvince'), address: getVal('kAddress'), notes: getVal('kNotes'), is_active: 1
+      };
+      try {
+        if (editingId) await api('PUT', `/customers/${editingId}`, payload);
+        else await api('POST', '/customers', payload);
+        toast('Customer berhasil disimpan'); closeModal('modalCustomer'); loadCustomers();
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-function editCustomer(id) { openCustomerModal(id); }
-async function deleteCustomer(id) {
-  if (!confirm('Hapus customer ini?')) return;
-  try { await api('DELETE', `/customers/${id}`); toast('Customer dihapus'); loadCustomers(); }
-  catch (e) { toast(e.message, 'error'); }
-}
+    function editCustomer(id) { openCustomerModal(id); }
+    async function deleteCustomer(id) {
+      if (!confirm('Hapus customer ini?')) return;
+      try { await api('DELETE', `/customers/${id}`); toast('Customer dihapus'); loadCustomers(); }
+      catch (e) { toast(e.message, 'error'); }
+    }
 
-// --------------------------------------------------------------------------------------------------
-// ORDERS
-// --------------------------------------------------------------------------------------------------
-let ordPage = 1, orderItems = [], ordData = [];
+    // --------------------------------------------------------------------------------------------------
+    // ORDERS
+    // --------------------------------------------------------------------------------------------------
+    let ordPage = 1, orderItems = [], ordData = [];
 
-async function loadOrderStats() {
-  try {
-    const data = await api('GET', '/orders/stats');
-    const s = data.data;
-    document.getElementById('orderStats').innerHTML = buildStatCards([
-      { icon: '🛒', label: 'Total Order', val: s.total, cls: 'brown' },
-      { icon: '⏳', label: 'Pending', val: s.pending, cls: 'orange' },
-      { icon: '🚚', label: 'Proses', val: s.processing, cls: 'blue' },
-      { icon: '✅', label: 'Delivered', val: s.delivered, cls: 'green' },
-      { icon: '🆕', label: 'Order Hari Ini', val: s.today_count, cls: 'teal' },
-      { icon: '📅', label: 'Order Bulan Ini', val: s.month_confirmed_count, cls: 'brown' },
-      { icon: '🚫', label: 'Order Dibatalkan', val: s.cancelled_count, cls: 'purple' },
-    ]);
-  } catch (e) { }
-}
+    async function loadOrderStats() {
+      try {
+        const data = await api('GET', '/orders/stats');
+        const s = data.data;
+        document.getElementById('orderStats').innerHTML = buildStatCards([
+          { icon: '🛒', label: 'Total Order', val: s.total, cls: 'brown' },
+          { icon: '⏳', label: 'Pending', val: s.pending, cls: 'orange' },
+          { icon: '🚚', label: 'Proses', val: s.processing, cls: 'blue' },
+          { icon: '✅', label: 'Delivered', val: s.delivered, cls: 'green' },
+          { icon: '🆕', label: 'Order Hari Ini', val: s.today_count, cls: 'teal' },
+          { icon: '📅', label: 'Order Bulan Ini', val: s.month_confirmed_count, cls: 'brown' },
+          { icon: '🚫', label: 'Order Dibatalkan', val: s.cancelled_count, cls: 'purple' },
+        ]);
+      } catch (e) { }
+    }
 
-async function loadOrders(page = 1) {
-  ordPage = page;
-  const search = getVal('ordSearch'), status = getVal('ordStatusF'), pay = getVal('ordPayF');
-  const from = getVal('ordDateFrom'), to = getVal('ordDateTo');
-  try {
-    const data = await api('GET', `/orders?page=${page}&limit=20&search=${encodeURIComponent(search)}&status=${status}&payment_status=${pay}&date_from=${from}&date_to=${to}`);
-    ordData = data.data || [];
-    document.getElementById('ordBody').innerHTML = ordData.map(o => `
+    async function loadOrders(page = 1) {
+      ordPage = page;
+      const search = getVal('ordSearch'), status = getVal('ordStatusF'), pay = getVal('ordPayF');
+      const from = getVal('ordDateFrom'), to = getVal('ordDateTo');
+      try {
+        const data = await api('GET', `/orders?page=${page}&limit=20&search=${encodeURIComponent(search)}&status=${status}&payment_status=${pay}&date_from=${from}&date_to=${to}`);
+        ordData = data.data || [];
+        document.getElementById('ordBody').innerHTML = ordData.map(o => `
       <tr>
         <td><strong style="font-family:var(--font-heading);color:var(--primary)">${o.order_number}</strong></td>
         <td><div style="font-size:.85rem;font-weight:500">${o.customer_name}</div><div style="font-size:.75rem;color:var(--text-light)">${o.customer_phone || ''}</div></td>
@@ -1913,42 +1938,42 @@ async function loadOrders(page = 1) {
           </div>
         </td>
       </tr>`).join('');
-    buildPagination('ordPagination', data.pagination, 'loadOrders');
-  } catch (e) { toast(e.message, 'error'); }
-}
+        buildPagination('ordPagination', data.pagination, 'loadOrders');
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-function resetOrderDateFilter() {
-  setVal('ordDateFrom', '');
-  setVal('ordDateTo', '');
-  loadOrders();
-}
+    function resetOrderDateFilter() {
+      setVal('ordDateFrom', '');
+      setVal('ordDateTo', '');
+      loadOrders();
+    }
 
-function fillCustomer() {
-  const id = getVal('oCustomerId');
-  if (!id) return;
-  const c = cusData.find(c => c.id == id);
-  if (c) { setVal('oCusName', c.name); setVal('oCusPhone', c.phone || ''); setVal('oCusEmail', c.email || ''); setVal('oAddr', c.address || ''); }
-}
+    function fillCustomer() {
+      const id = getVal('oCustomerId');
+      if (!id) return;
+      const c = cusData.find(c => c.id == id);
+      if (c) { setVal('oCusName', c.name); setVal('oCusPhone', c.phone || ''); setVal('oCusEmail', c.email || ''); setVal('oAddr', c.address || ''); }
+    }
 
-function addOrderItem() {
-  const idx = orderItemCount++;
-  const div = document.createElement('div');
-  div.className = 'item-row'; div.id = `item_${idx}`;
+    function addOrderItem() {
+      const idx = orderItemCount++;
+      const div = document.createElement('div');
+      div.className = 'item-row'; div.id = `item_${idx}`;
 
-  // Rebuild datalist setiap kali (agar selalu up-to-date dengan data products terbaru)
-  let dl = document.getElementById('dl_products');
-  if (dl) dl.remove(); // hapus yang lama
-  dl = document.createElement('datalist');
-  dl.id = 'dl_products';
-  if (typeof products !== 'undefined' && products.length) {
-    dl.innerHTML = products.map(p => {
-      const lbl = p.sku ? `[${p.sku}] ${p.name}` : p.name;
-      return `<option value="${lbl}">`;
-    }).join('');
-  }
-  document.body.appendChild(dl);
+      // Rebuild datalist setiap kali (agar selalu up-to-date dengan data products terbaru)
+      let dl = document.getElementById('dl_products');
+      if (dl) dl.remove(); // hapus yang lama
+      dl = document.createElement('datalist');
+      dl.id = 'dl_products';
+      if (typeof products !== 'undefined' && products.length) {
+        dl.innerHTML = products.map(p => {
+          const lbl = p.sku ? `[${p.sku}] ${p.name}` : p.name;
+          return `<option value="${lbl}">`;
+        }).join('');
+      }
+      document.body.appendChild(dl);
 
-  div.innerHTML = `
+      div.innerHTML = `
     <div class="form-group" style="margin:0">
       <label style="font-size:.72rem">Ketik SKU / Nama Produk *</label>
       <input type="text" list="dl_products" id="iName_${idx}" placeholder="Pilih dari daftar atau ketik manual..." oninput="handleProductInput(${idx})">
@@ -1969,196 +1994,196 @@ function addOrderItem() {
     <div style="align-self:end;padding-bottom:.35rem">
       <button class="btn btn-sm btn-danger" onclick="removeOrderItem(${idx})">✖️</button>
     </div>`;
-  document.getElementById('orderItems').appendChild(div);
-  orderItems.push(idx);
-}
-
-window.handleProductInput = function (idx) {
-  const input = document.getElementById(`iName_${idx}`);
-  const val = input.value;
-  const priceInput = document.getElementById(`iPrice_${idx}`);
-  const qtyInput = document.getElementById(`iQty_${idx}`);
-
-  if (typeof products !== 'undefined' && products.length) {
-    const prod = products.find(p => {
-      const lbl = p.sku ? `[${p.sku}] ${p.name}` : p.name;
-      return lbl === val;
-    });
-
-    if (prod) {
-      priceInput.value = prod.sell_price || 0;
-      input.dataset.productId = prod.id;
-      input.dataset.sku = prod.sku || '';
-
-      // Set Max Qty based on warehouse stock
-      const stock = parseInt(prod.warehouse_stock) || 0;
-      qtyInput.max = stock;
-      document.getElementById(`iStockDisplay_${idx}`).textContent = `📦 Tersedia: ${stock} ${prod.unit || 'unit'}`;
-
-      // If current qty > stock, adjust it
-      if (parseInt(qtyInput.value) > stock) {
-        qtyInput.value = stock;
-        toast(`Stok tidak mencukupi. Maksimal: ${stock}`, 'warning');
-      }
-    } else {
-      delete input.dataset.productId;
-      delete input.dataset.sku;
-      qtyInput.removeAttribute('max');
-      document.getElementById(`iStockDisplay_${idx}`).textContent = '';
-    }
-  }
-  calcTotal();
-};
-
-function removeOrderItem(idx) {
-  document.getElementById(`item_${idx}`)?.remove();
-  orderItems = orderItems.filter(i => i !== idx);
-  calcTotal();
-}
-
-function calcTotal() {
-  let sub = 0;
-  orderItems.forEach(idx => {
-    const qEl = document.getElementById(`iQty_${idx}`);
-    let qty = parseFloat(qEl?.value || 0);
-    const max = parseFloat(qEl?.max);
-    if (max !== NaN && qty > max) {
-      qty = max;
-      qEl.value = max;
-      toast(`Jumlah melebihi stok tersedia (${max})`, 'warning');
+      document.getElementById('orderItems').appendChild(div);
+      orderItems.push(idx);
     }
 
-    const price = parseFloat(document.getElementById(`iPrice_${idx}`)?.value || 0);
-    const s = qty * price; sub += s;
-    const el = document.getElementById(`iSub_${idx}`);
-    if (el) el.textContent = fmtRp(s);
-  });
-  const disc = parseFloat(getVal('oDiscount') || 0);
-  const ship = parseFloat(getVal('oShipping') || 0);
-  setVal('oTotal', fmtRp(sub - disc + ship));
-}
+    window.handleProductInput = function (idx) {
+      const input = document.getElementById(`iName_${idx}`);
+      const val = input.value;
+      const priceInput = document.getElementById(`iPrice_${idx}`);
+      const qtyInput = document.getElementById(`iQty_${idx}`);
 
-function openOrderModal(id = null) {
-  editingId = id;
-  document.getElementById('modalOrdTitle').textContent = id ? 'Edit Order' : 'Buat Order Baru';
-  ['oCusName', 'oCusPhone', 'oCusEmail', 'oAddr', 'oShipAddr', 'oNotes'].forEach(f => setVal(f, ''));
-  setVal('oDiscount', ''); setVal('oShipping', ''); setVal('oTotal', 'Rp 0');
-  setVal('oCustomerId', ''); setVal('oPayMethod', ''); setVal('oDelivery', '');
-  document.getElementById('orderItems').innerHTML = '';
-  orderItems = []; orderItemCount = 0;
-
-  loadCustomersDropdown();
-
-  if (id) {
-    api('GET', `/orders/${id}`).then(res => {
-      const o = res.data;
-      setVal('oCustomerId', o.customer_id || '');
-      setVal('oCusName', o.customer_name);
-      setVal('oCusPhone', o.customer_phone || '');
-      setVal('oCusEmail', o.customer_email || '');
-      setVal('oPayMethod', o.payment_method || '');
-      setVal('oDelivery', o.delivery_date ? o.delivery_date.split('T')[0] : '');
-      setVal('oAddr', o.customer_addr || '');
-      setVal('oShipAddr', o.shipping_addr || '');
-      setVal('oDiscount', o.discount || 0);
-      setVal('oShipping', o.shipping_cost || 0);
-      setVal('oNotes', o.notes || '');
-
-      if (o.items && o.items.length) {
-        o.items.forEach(item => {
-          addOrderItem();
-          const idx = orderItemCount - 1;
-          const nameInput = document.getElementById(`iName_${idx}`);
-          nameInput.value = item.product_sku ? `[${item.product_sku}] ${item.product_name}` : item.product_name;
-          nameInput.dataset.productId = item.product_id || '';
-          nameInput.dataset.sku = item.product_sku || '';
-          setVal(`iQty_${idx}`, item.qty);
-          setVal(`iPrice_${idx}`, item.unit_price);
-          handleProductInput(idx);
+      if (typeof products !== 'undefined' && products.length) {
+        const prod = products.find(p => {
+          const lbl = p.sku ? `[${p.sku}] ${p.name}` : p.name;
+          return lbl === val;
         });
+
+        if (prod) {
+          priceInput.value = prod.sell_price || 0;
+          input.dataset.productId = prod.id;
+          input.dataset.sku = prod.sku || '';
+
+          // Set Max Qty based on warehouse stock
+          const stock = parseInt(prod.warehouse_stock) || 0;
+          qtyInput.max = stock;
+          document.getElementById(`iStockDisplay_${idx}`).textContent = `📦 Tersedia: ${stock} ${prod.unit || 'unit'}`;
+
+          // If current qty > stock, adjust it
+          if (parseInt(qtyInput.value) > stock) {
+            qtyInput.value = stock;
+            toast(`Stok tidak mencukupi. Maksimal: ${stock}`, 'warning');
+          }
+        } else {
+          delete input.dataset.productId;
+          delete input.dataset.sku;
+          qtyInput.removeAttribute('max');
+          document.getElementById(`iStockDisplay_${idx}`).textContent = '';
+        }
       }
       calcTotal();
-    }).catch(err => toast(err.message, 'error'));
-  } else {
-    addOrderItem();
-  }
-
-  openModal('modalOrder');
-}
-
-async function saveOrder() {
-  const cusName = getVal('oCusName');
-  if (!cusName) { toast('Nama customer wajib diisi', 'warning'); return; }
-  const items = orderItems.map(idx => {
-    const input = document.getElementById(`iName_${idx}`);
-    const rawProductId = input?.dataset.productId;
-    return {
-      product_id: rawProductId ? parseInt(rawProductId) : null,
-      product_sku: input?.dataset.sku || null,
-      product_name: input?.value || '',
-      qty: parseInt(document.getElementById(`iQty_${idx}`)?.value) || 1,
-      unit_price: parseFloat(document.getElementById(`iPrice_${idx}`)?.value) || 0,
-      unit: 'unit',
     };
-  }).filter(i => i.product_name && i.qty > 0);
-  if (!items.length) { toast('Tambahkan minimal 1 item order', 'warning'); return; }
 
-  const payload = {
-    customer_id: getVal('oCustomerId') || null, customer_name: cusName,
-    customer_phone: getVal('oCusPhone'), customer_email: getVal('oCusEmail'),
-    customer_addr: getVal('oAddr'), shipping_addr: getVal('oShipAddr'),
-    payment_method: getVal('oPayMethod'), discount: parseFloat(getVal('oDiscount')) || 0,
-    shipping_cost: parseFloat(getVal('oShipping')) || 0, notes: getVal('oNotes'),
-    delivery_date: getVal('oDelivery') || null, items
-  };
-  try {
-    const method = editingId ? 'PUT' : 'POST';
-    const endpoint = editingId ? `/orders/${editingId}` : '/orders';
-    const r = await api(method, endpoint, payload);
+    function removeOrderItem(idx) {
+      document.getElementById(`item_${idx}`)?.remove();
+      orderItems = orderItems.filter(i => i !== idx);
+      calcTotal();
+    }
 
-    toast(editingId ? `Order ${r.order_number || ''} berhasil diupdate!` : `Order ${r.order_number || ''} berhasil dibuat!`, 'success');
-    closeModal('modalOrder'); loadOrders(); loadOrderStats();
-  } catch (e) { toast(e.message, 'error'); }
-}
+    function calcTotal() {
+      let sub = 0;
+      orderItems.forEach(idx => {
+        const qEl = document.getElementById(`iQty_${idx}`);
+        let qty = parseFloat(qEl?.value || 0);
+        const max = parseFloat(qEl?.max);
+        if (max !== NaN && qty > max) {
+          qty = max;
+          qEl.value = max;
+          toast(`Jumlah melebihi stok tersedia (${max})`, 'warning');
+        }
 
-let _editingOrderId = null;
+        const price = parseFloat(document.getElementById(`iPrice_${idx}`)?.value || 0);
+        const s = qty * price; sub += s;
+        const el = document.getElementById(`iSub_${idx}`);
+        if (el) el.textContent = fmtRp(s);
+      });
+      const disc = parseFloat(getVal('oDiscount') || 0);
+      const ship = parseFloat(getVal('oShipping') || 0);
+      setVal('oTotal', fmtRp(sub - disc + ship));
+    }
 
-function editOrderStatus(id) {
-  const o = ordData.find(o => o.id === id);
-  if (!o) return;
-  _editingOrderId = id;
-  document.getElementById('osOrderNo').textContent = o.order_number;
-  document.getElementById('osCustomerName').textContent = o.customer_name;
-  setVal('osStatus', o.status);
-  setVal('osPayStatus', o.payment_status);
-  openModal('modalOrderStatus');
-}
+    function openOrderModal(id = null) {
+      editingId = id;
+      document.getElementById('modalOrdTitle').textContent = id ? 'Edit Order' : 'Buat Order Baru';
+      ['oCusName', 'oCusPhone', 'oCusEmail', 'oAddr', 'oShipAddr', 'oNotes'].forEach(f => setVal(f, ''));
+      setVal('oDiscount', ''); setVal('oShipping', ''); setVal('oTotal', 'Rp 0');
+      setVal('oCustomerId', ''); setVal('oPayMethod', ''); setVal('oDelivery', '');
+      document.getElementById('orderItems').innerHTML = '';
+      orderItems = []; orderItemCount = 0;
 
-async function saveOrderStatus() {
-  const status = getVal('osStatus');
-  const payStatus = getVal('osPayStatus');
-  try {
-    await api('PUT', `/orders/${_editingOrderId}/status`, { status, payment_status: payStatus });
-    toast('Status order berhasil diperbarui ✅');
-    closeModal('modalOrderStatus');
-    loadOrders();
-  } catch (e) { toast(e.message, 'error'); }
-}
+      loadCustomersDropdown();
 
-async function deleteOrder(id) {
-  if (!confirm('Hapus order ini? Aksi ini tidak dapat dibatalkan.')) return;
-  try { await api('DELETE', `/orders/${id}`); toast('Order dihapus'); loadOrders(); }
-  catch (e) { toast(e.message, 'error'); }
-}
+      if (id) {
+        api('GET', `/orders/${id}`).then(res => {
+          const o = res.data;
+          setVal('oCustomerId', o.customer_id || '');
+          setVal('oCusName', o.customer_name);
+          setVal('oCusPhone', o.customer_phone || '');
+          setVal('oCusEmail', o.customer_email || '');
+          setVal('oPayMethod', o.payment_method || '');
+          setVal('oDelivery', o.delivery_date ? o.delivery_date.split('T')[0] : '');
+          setVal('oAddr', o.customer_addr || '');
+          setVal('oShipAddr', o.shipping_addr || '');
+          setVal('oDiscount', o.discount || 0);
+          setVal('oShipping', o.shipping_cost || 0);
+          setVal('oNotes', o.notes || '');
 
-async function viewInvoice(id, e) {
-  const btn = e?.currentTarget || e?.target;
-  const oldHtml = btn ? btn.innerHTML : '🧾';
-  if (btn) { btn.disabled = true; btn.innerHTML = '⏳'; }
+          if (o.items && o.items.length) {
+            o.items.forEach(item => {
+              addOrderItem();
+              const idx = orderItemCount - 1;
+              const nameInput = document.getElementById(`iName_${idx}`);
+              nameInput.value = item.product_sku ? `[${item.product_sku}] ${item.product_name}` : item.product_name;
+              nameInput.dataset.productId = item.product_id || '';
+              nameInput.dataset.sku = item.product_sku || '';
+              setVal(`iQty_${idx}`, item.qty);
+              setVal(`iPrice_${idx}`, item.unit_price);
+              handleProductInput(idx);
+            });
+          }
+          calcTotal();
+        }).catch(err => toast(err.message, 'error'));
+      } else {
+        addOrderItem();
+      }
 
-  const win = window.open('', '_blank');
-  if (win) {
-    win.document.write(`
+      openModal('modalOrder');
+    }
+
+    async function saveOrder() {
+      const cusName = getVal('oCusName');
+      if (!cusName) { toast('Nama customer wajib diisi', 'warning'); return; }
+      const items = orderItems.map(idx => {
+        const input = document.getElementById(`iName_${idx}`);
+        const rawProductId = input?.dataset.productId;
+        return {
+          product_id: rawProductId ? parseInt(rawProductId) : null,
+          product_sku: input?.dataset.sku || null,
+          product_name: input?.value || '',
+          qty: parseInt(document.getElementById(`iQty_${idx}`)?.value) || 1,
+          unit_price: parseFloat(document.getElementById(`iPrice_${idx}`)?.value) || 0,
+          unit: 'unit',
+        };
+      }).filter(i => i.product_name && i.qty > 0);
+      if (!items.length) { toast('Tambahkan minimal 1 item order', 'warning'); return; }
+
+      const payload = {
+        customer_id: getVal('oCustomerId') || null, customer_name: cusName,
+        customer_phone: getVal('oCusPhone'), customer_email: getVal('oCusEmail'),
+        customer_addr: getVal('oAddr'), shipping_addr: getVal('oShipAddr'),
+        payment_method: getVal('oPayMethod'), discount: parseFloat(getVal('oDiscount')) || 0,
+        shipping_cost: parseFloat(getVal('oShipping')) || 0, notes: getVal('oNotes'),
+        delivery_date: getVal('oDelivery') || null, items
+      };
+      try {
+        const method = editingId ? 'PUT' : 'POST';
+        const endpoint = editingId ? `/orders/${editingId}` : '/orders';
+        const r = await api(method, endpoint, payload);
+
+        toast(editingId ? `Order ${r.order_number || ''} berhasil diupdate!` : `Order ${r.order_number || ''} berhasil dibuat!`, 'success');
+        closeModal('modalOrder'); loadOrders(); loadOrderStats();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    let _editingOrderId = null;
+
+    function editOrderStatus(id) {
+      const o = ordData.find(o => o.id === id);
+      if (!o) return;
+      _editingOrderId = id;
+      document.getElementById('osOrderNo').textContent = o.order_number;
+      document.getElementById('osCustomerName').textContent = o.customer_name;
+      setVal('osStatus', o.status);
+      setVal('osPayStatus', o.payment_status);
+      openModal('modalOrderStatus');
+    }
+
+    async function saveOrderStatus() {
+      const status = getVal('osStatus');
+      const payStatus = getVal('osPayStatus');
+      try {
+        await api('PUT', `/orders/${_editingOrderId}/status`, { status, payment_status: payStatus });
+        toast('Status order berhasil diperbarui ✅');
+        closeModal('modalOrderStatus');
+        loadOrders();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    async function deleteOrder(id) {
+      if (!confirm('Hapus order ini? Aksi ini tidak dapat dibatalkan.')) return;
+      try { await api('DELETE', `/orders/${id}`); toast('Order dihapus'); loadOrders(); }
+      catch (e) { toast(e.message, 'error'); }
+    }
+
+    async function viewInvoice(id, e) {
+      const btn = e?.currentTarget || e?.target;
+      const oldHtml = btn ? btn.innerHTML : '🧾';
+      if (btn) { btn.disabled = true; btn.innerHTML = '⏳'; }
+
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.write(`
       <html>
         <head>
           <title>Memuat Invoice...</title>
@@ -2178,17 +2203,17 @@ async function viewInvoice(id, e) {
         </body>
       </html>
     `);
-  } else {
-    if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
-    toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning');
-    return;
-  }
+      } else {
+        if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
+        toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning');
+        return;
+      }
 
-  try {
-    const data = await api('GET', `/orders/${id}/invoice`);
-    const { order, company } = data.data;
+      try {
+        const data = await api('GET', `/orders/${id}/invoice`);
+        const { order, company } = data.data;
 
-    const rows = (order.items || []).map((item, i) => `
+        const rows = (order.items || []).map((item, i) => `
       <tr>
         <td>${i + 1}</td>
         <td><strong>${item.product_name}</strong>${item.product_sku ? `<br><span style="font-size:9px;color:#888">${item.product_sku}</span>` : ''}</td>
@@ -2197,7 +2222,7 @@ async function viewInvoice(id, e) {
         <td style="text-align:right;font-weight:700">${fmtRp(item.subtotal)}</td>
       </tr>`).join('');
 
-    const html = `<!DOCTYPE html>
+        const html = `<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -2333,22 +2358,22 @@ async function viewInvoice(id, e) {
   </script>
 </body>
 </html>`;
-    if (win) {
-      const blob = new Blob([html], { type: 'text/html' });
-      win.location.href = URL.createObjectURL(blob);
+        if (win) {
+          const blob = new Blob([html], { type: 'text/html' });
+          win.location.href = URL.createObjectURL(blob);
+        }
+      } catch (e) {
+        if (win) win.close();
+        toast(e.message, 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
+      }
     }
-  } catch (e) {
-    if (win) win.close();
-    toast(e.message, 'error');
-  } finally {
-    if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
-  }
-}
 
-function renderInvoice(data) {
-  const { order, company } = data;
-  const el = document.getElementById('invoiceContent');
-  const rows = (order.items || []).map((item, i) => `
+    function renderInvoice(data) {
+      const { order, company } = data;
+      const el = document.getElementById('invoiceContent');
+      const rows = (order.items || []).map((item, i) => `
     <tr>
       <td>${i + 1}</td>
       <td>${item.product_name}</td>
@@ -2357,7 +2382,7 @@ function renderInvoice(data) {
       <td style="text-align:right;font-weight:600">${fmtRp(item.subtotal)}</td>
     </tr>`).join('');
 
-  el.innerHTML = `
+      el.innerHTML = `
     <div class="inv-header">
       <div class="inv-company">
         <div class="co-name">${company.site_name || 'Jogja Furniture'}</div>
@@ -2408,21 +2433,21 @@ function renderInvoice(data) {
       <p>Terima kasih telah mempercayakan kebutuhan furnitur Anda kepada <strong>${company.site_name || 'Jogja Furniture Decoration'}</strong></p>
       <p style="margin-top:.3rem">Dokumen ini sah tanpa tanda tangan basah</p>
     </div>`;
-}
+    }
 
 
 
-// --------------------------------------------------------------------------------------------------
-// USERS (Superadmin)
-// --------------------------------------------------------------------------------------------------
-let logPage = 1;
-async function loadActivityLogs(page = 1) {
-  logPage = page;
-  const module = getVal('logModule');
-  try {
-    const data = await api('GET', `/activity-logs?page=${page}&limit=20&module=${encodeURIComponent(module)}`);
-    const logs = data.data || [];
-    document.getElementById('logBody').innerHTML = logs.map(l => `
+    // --------------------------------------------------------------------------------------------------
+    // USERS (Superadmin)
+    // --------------------------------------------------------------------------------------------------
+    let logPage = 1;
+    async function loadActivityLogs(page = 1) {
+      logPage = page;
+      const module = getVal('logModule');
+      try {
+        const data = await api('GET', `/activity-logs?page=${page}&limit=20&module=${encodeURIComponent(module)}`);
+        const logs = data.data || [];
+        document.getElementById('logBody').innerHTML = logs.map(l => `
       <tr>
         <td style="font-size:.8rem">${fmtDate(l.created_at)}</td>
         <td><strong>${l.username || '—'}</strong></td>
@@ -2432,114 +2457,114 @@ async function loadActivityLogs(page = 1) {
         <td style="font-size:.82rem;color:var(--text-light)">${l.description || '—'}</td>
         <td style="font-size:.78rem;color:var(--gray500)">${l.ip_address || '—'}</td>
       </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:1.5rem">Tidak ada log aktivitas</td></tr>';
-    buildPagination('logPagination', data.pagination, 'loadActivityLogs');
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-async function loadControlCenter() {
-  try {
-    const res = await api('GET', '/control-center/stats');
-    const s = res.data.stats;
-    const { recent_logs, users_by_role, orders_30days } = res.data;
-    const statsEl = document.getElementById('ccStats');
-    if (statsEl) {
-      statsEl.innerHTML = buildStatCards([
-        { icon: '🆕', label: 'Order Hari Ini', val: s.today_orders, cls: 'teal' },
-        { icon: '📅', label: 'Order Bulan Ini', val: s.month_confirmed, cls: 'brown' },
-        { icon: '⏳', label: 'Order Pending', val: s.pending_orders, cls: 'orange' },
-        { icon: '📊', label: 'Total Order', val: s.total_orders, cls: 'blue' },
-        { icon: '📦', label: 'Total Produk', val: s.total_products, cls: 'green' },
-        { icon: '⚠️', label: 'Stok Kritis', val: s.low_stock, cls: 'red' },
-        { icon: '❌', label: 'Stok Habis', val: s.out_of_stock, cls: 'purple' },
-        { icon: '⭐', label: 'Produk Baru', val: s.new_products, cls: 'orange' },
-        { icon: '🏢', label: 'Supplier', val: s.total_suppliers, cls: 'green' },
-        { icon: '👤', label: 'Total Akun User', val: s.total_users, cls: 'brown' },
-        { icon: '👥', label: 'Total Customer', val: s.total_customers, cls: 'blue' },
-        { icon: '📨', label: 'Pesan Masuk', val: s.unread_contacts, cls: 'red' }
-      ]);
+        buildPagination('logPagination', data.pagination, 'loadActivityLogs');
+      } catch (e) { toast(e.message, 'error'); }
     }
 
-    const invKPI = document.getElementById('ccInventoryKPI');
-    if (invKPI) {
-      invKPI.style.display = 'block';
-      invKPI.innerHTML = `<div style="background:var(--gray50);padding:1rem 1.5rem;border-radius:8px;border-left:4px solid var(--accent)">
+    async function loadControlCenter() {
+      try {
+        const res = await api('GET', '/control-center/stats');
+        const s = res.data.stats;
+        const { recent_logs, users_by_role, orders_30days } = res.data;
+        const statsEl = document.getElementById('ccStats');
+        if (statsEl) {
+          statsEl.innerHTML = buildStatCards([
+            { icon: '🆕', label: 'Order Hari Ini', val: s.today_orders, cls: 'teal' },
+            { icon: '📅', label: 'Order Bulan Ini', val: s.month_confirmed, cls: 'brown' },
+            { icon: '⏳', label: 'Order Pending', val: s.pending_orders, cls: 'orange' },
+            { icon: '📊', label: 'Total Order', val: s.total_orders, cls: 'blue' },
+            { icon: '📦', label: 'Total Produk', val: s.total_products, cls: 'green' },
+            { icon: '⚠️', label: 'Stok Kritis', val: s.low_stock, cls: 'red' },
+            { icon: '❌', label: 'Stok Habis', val: s.out_of_stock, cls: 'purple' },
+            { icon: '⭐', label: 'Produk Baru', val: s.new_products, cls: 'orange' },
+            { icon: '🏢', label: 'Supplier', val: s.total_suppliers, cls: 'green' },
+            { icon: '👤', label: 'Total Akun User', val: s.total_users, cls: 'brown' },
+            { icon: '👥', label: 'Total Customer', val: s.total_customers, cls: 'blue' },
+            { icon: '📨', label: 'Pesan Masuk', val: s.unread_contacts, cls: 'red' }
+          ]);
+        }
+
+        const invKPI = document.getElementById('ccInventoryKPI');
+        if (invKPI) {
+          invKPI.style.display = 'block';
+          invKPI.innerHTML = `<div style="background:var(--gray50);padding:1rem 1.5rem;border-radius:8px;border-left:4px solid var(--accent)">
         <div style="font-size:.8rem;color:var(--text-light)">Total Nilai Inventori (Harga Beli)</div>
         <div style="font-size:1.4rem;font-weight:700;color:var(--primary)">${fmtRp(s.inventory_value)}</div>
       </div>`;
-    }
+        }
 
-    if (orders_30days && orders_30days.length) {
-      const canvas = document.getElementById('chartRevenue');
-      if (canvas) {
-        if (canvas._chartInstance) canvas._chartInstance.destroy();
-        canvas._chartInstance = new Chart(canvas, {
-          type: 'line',
-          data: {
-            labels: orders_30days.map(x => x.date),
-            datasets: [{
-              label: 'Volume Order',
-              data: orders_30days.map(x => x.count),
-              borderColor: '#5C2E0E',
-              backgroundColor: 'rgba(92, 46, 14, 0.1)',
-              tension: 0.3,
-              fill: true
-            }]
-          },
-          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-        });
-      }
-    }
+        if (orders_30days && orders_30days.length) {
+          const canvas = document.getElementById('chartRevenue');
+          if (canvas) {
+            if (canvas._chartInstance) canvas._chartInstance.destroy();
+            canvas._chartInstance = new Chart(canvas, {
+              type: 'line',
+              data: {
+                labels: orders_30days.map(x => x.date),
+                datasets: [{
+                  label: 'Volume Order',
+                  data: orders_30days.map(x => x.count),
+                  borderColor: '#5C2E0E',
+                  backgroundColor: 'rgba(92, 46, 14, 0.1)',
+                  tension: 0.3,
+                  fill: true
+                }]
+              },
+              options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+            });
+          }
+        }
 
-    if (users_by_role && users_by_role.length) {
-      const canvas = document.getElementById('chartRoleDonut');
-      if (canvas) {
-        if (canvas._chartInstance) canvas._chartInstance.destroy();
-        canvas._chartInstance = new Chart(canvas, {
-          type: 'doughnut',
-          data: {
-            labels: users_by_role.map(x => roleLabel(x.role)),
-            datasets: [{
-              data: users_by_role.map(x => x.count),
-              backgroundColor: ['#5C2E0E', '#D4A97A', '#C49A6C', '#8B4513']
-            }]
-          },
-          options: { responsive: false, plugins: { legend: { display: false } }, cutout: '70%' }
-        });
-      }
-      const ccRoleChart = document.getElementById('ccRoleChart');
-      if (ccRoleChart) {
-        ccRoleChart.innerHTML = users_by_role.map((r, i) => {
-          const colors = ['#5C2E0E', '#D4A97A', '#C49A6C', '#8B4513'];
-          return `<div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.3rem">
+        if (users_by_role && users_by_role.length) {
+          const canvas = document.getElementById('chartRoleDonut');
+          if (canvas) {
+            if (canvas._chartInstance) canvas._chartInstance.destroy();
+            canvas._chartInstance = new Chart(canvas, {
+              type: 'doughnut',
+              data: {
+                labels: users_by_role.map(x => roleLabel(x.role)),
+                datasets: [{
+                  data: users_by_role.map(x => x.count),
+                  backgroundColor: ['#5C2E0E', '#D4A97A', '#C49A6C', '#8B4513']
+                }]
+              },
+              options: { responsive: false, plugins: { legend: { display: false } }, cutout: '70%' }
+            });
+          }
+          const ccRoleChart = document.getElementById('ccRoleChart');
+          if (ccRoleChart) {
+            ccRoleChart.innerHTML = users_by_role.map((r, i) => {
+              const colors = ['#5C2E0E', '#D4A97A', '#C49A6C', '#8B4513'];
+              return `<div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.3rem">
              <span><span style="display:inline-block;width:10px;height:10px;background:${colors[i % colors.length]};border-radius:2px;margin-right:6px"></span>${roleLabel(r.role)}</span>
              <strong>${r.count}</strong>
            </div>`;
-        }).join('');
-      }
-    }
+            }).join('');
+          }
+        }
 
-    const logBody = document.getElementById('ccLogsBody');
-    if (logBody) {
-      logBody.innerHTML = (recent_logs || []).map(l => `
+        const logBody = document.getElementById('ccLogsBody');
+        if (logBody) {
+          logBody.innerHTML = (recent_logs || []).map(l => `
         <tr>
           <td style="font-size:.8rem">${fmtDate(l.created_at)}</td>
           <td><strong>${l.username}</strong></td>
           <td><span class="badge badge-draft">${l.action}</span></td>
           <td>${l.module || '—'}</td>
         </tr>`).join('') || '<tr><td colspan="4" style="text-align:center">Tidak ada aktivitas</td></tr>';
+        }
+
+      } catch (e) { toast(e.message, 'error'); }
     }
 
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-let usrPage = 1, usrData = [];
-async function loadUsers(page = 1) {
-  usrPage = page;
-  const search = getVal('usrSearch'), role = getVal('usrRoleF');
-  try {
-    const data = await api('GET', `/users?page=${page}&limit=20&search=${encodeURIComponent(search)}&role=${role}`);
-    usrData = data.data || [];
-    document.getElementById('usrBody').innerHTML = usrData.map(u => `
+    let usrPage = 1, usrData = [];
+    async function loadUsers(page = 1) {
+      usrPage = page;
+      const search = getVal('usrSearch'), role = getVal('usrRoleF');
+      try {
+        const data = await api('GET', `/users?page=${page}&limit=20&search=${encodeURIComponent(search)}&role=${role}`);
+        usrData = data.data || [];
+        document.getElementById('usrBody').innerHTML = usrData.map(u => `
       <tr style="${!u.is_active ? 'opacity:.6' : ''}">
         <td><strong>${u.username}</strong>${u.id == me.id ? ' <span style="font-size:.7rem;color:var(--accent)">(Anda)</span>' : ''}</td>
         <td>${u.full_name || '—'}</td>
@@ -2556,213 +2581,213 @@ async function loadUsers(page = 1) {
           </div>
         </td>
       </tr>`).join('');
-    buildPagination('usrPagination', data.pagination, 'loadUsers');
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-let currentEditUserId = null;
-const editUser = openUserModal;
-function openUserModal(id = null) {
-  currentEditUserId = id;
-  const title = document.getElementById('modalUserTitle');
-  const passGroup = document.getElementById('uPassGroup');
-
-  setVal('uUsername', '');
-  setVal('uRole', 'marketing');
-  setVal('uEmail', '');
-  setVal('uName', '');
-  setVal('uPhone', '');
-  setVal('uPassword', '');
-  document.getElementById('uActive').checked = true;
-  document.getElementById('uUsername').disabled = false;
-
-  if (id) {
-    const u = usrData.find(x => x.id == id);
-    if (!u) return;
-    title.innerText = 'Edit User';
-    passGroup.style.display = 'none';
-    setVal('uUsername', u.username);
-    document.getElementById('uUsername').disabled = true;
-    setVal('uRole', u.role);
-    setVal('uEmail', u.email);
-    setVal('uName', u.full_name || '');
-    setVal('uPhone', u.phone || '');
-    document.getElementById('uActive').checked = !!u.is_active;
-  } else {
-    title.innerText = 'Tambah User Baru';
-    passGroup.style.display = 'block';
-  }
-  openModal('modalUser');
-}
-
-async function saveUser() {
-  const username = getVal('uUsername'), role = getVal('uRole'), email = getVal('uEmail'),
-    full_name = getVal('uName'), phone = getVal('uPhone'), password = getVal('uPassword'),
-    is_active = document.getElementById('uActive').checked ? 1 : 0;
-
-  if (!email || !role || (!currentEditUserId && (!username || !password))) {
-    toast('Field wajib (*) harus diisi', 'warning'); return;
-  }
-
-  const body = { role, email, full_name, phone, is_active };
-  if (!currentEditUserId) {
-    body.username = username;
-    body.password = password;
-  }
-
-  try {
-    const method = currentEditUserId ? 'PUT' : 'POST';
-    const url = currentEditUserId ? `/users/${currentEditUserId}` : '/users';
-    await api(method, url, body);
-    toast(`User berhasil ${currentEditUserId ? 'diupdate' : 'dibuat'}`);
-    closeModal('modalUser');
-    loadUsers(usrPage);
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-async function resetUserPassword(id) {
-  const nw = prompt('Masukkan password baru (min 8 karakter):');
-  if (!nw) return;
-  if (nw.length < 8) { toast('Password minimal 8 karakter', 'warning'); return; }
-  try {
-    await api('POST', `/users/${id}/reset-password`, { new_password: nw });
-    toast('Password berhasil direset');
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-async function toggleUser(id) {
-  try {
-    const res = await api('POST', `/users/${id}/toggle`);
-    toast(`User berhasil ${res.is_active ? 'diaktifkan' : 'dinonaktifkan'}`);
-    loadUsers(usrPage);
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-async function forceLogoutUser(id) {
-  if (!confirm('Paksa logout user ini dari semua perangkat?')) return;
-  try {
-    await api('POST', `/users/${id}/force-logout`);
-    toast('User berhasil dikeluarkan');
-    loadUsers(usrPage);
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-// ==================================================================================================
-// PROFILE & NOTIFICATIONS
-// ==================================================================================================
-async function loadNotifications() {
-  try {
-    // 1. General Staff Notifications
-    const notifRes = await api('GET', '/notifications');
-    const notifBadge = document.getElementById('notifBadge');
-    if (notifBadge) {
-      notifBadge.textContent = notifRes.unread || 0;
-      notifBadge.style.display = notifRes.unread > 0 ? 'block' : 'none';
+        buildPagination('usrPagination', data.pagination, 'loadUsers');
+      } catch (e) { toast(e.message, 'error'); }
     }
 
-    // 2. Contact/Message Inbox Badge
-    if (['superadmin', 'admin_website'].includes(me.role)) {
-      const contactRes = await api('GET', '/contacts');
-      const unreadContacts = (contactRes.data || []).filter(c => !c.is_read).length;
-      const contactBadge = document.getElementById('contactUnreadBadge');
-      if (contactBadge) {
-        contactBadge.innerHTML = unreadContacts ? `<span class="nav-badge">${unreadContacts}</span>` : '';
+    let currentEditUserId = null;
+    const editUser = openUserModal;
+    function openUserModal(id = null) {
+      currentEditUserId = id;
+      const title = document.getElementById('modalUserTitle');
+      const passGroup = document.getElementById('uPassGroup');
+
+      setVal('uUsername', '');
+      setVal('uRole', 'marketing');
+      setVal('uEmail', '');
+      setVal('uName', '');
+      setVal('uPhone', '');
+      setVal('uPassword', '');
+      document.getElementById('uActive').checked = true;
+      document.getElementById('uUsername').disabled = false;
+
+      if (id) {
+        const u = usrData.find(x => x.id == id);
+        if (!u) return;
+        title.innerText = 'Edit User';
+        passGroup.style.display = 'none';
+        setVal('uUsername', u.username);
+        document.getElementById('uUsername').disabled = true;
+        setVal('uRole', u.role);
+        setVal('uEmail', u.email);
+        setVal('uName', u.full_name || '');
+        setVal('uPhone', u.phone || '');
+        document.getElementById('uActive').checked = !!u.is_active;
+      } else {
+        title.innerText = 'Tambah User Baru';
+        passGroup.style.display = 'block';
+      }
+      openModal('modalUser');
+    }
+
+    async function saveUser() {
+      const username = getVal('uUsername'), role = getVal('uRole'), email = getVal('uEmail'),
+        full_name = getVal('uName'), phone = getVal('uPhone'), password = getVal('uPassword'),
+        is_active = document.getElementById('uActive').checked ? 1 : 0;
+
+      if (!email || !role || (!currentEditUserId && (!username || !password))) {
+        toast('Field wajib (*) harus diisi', 'warning'); return;
+      }
+
+      const body = { role, email, full_name, phone, is_active };
+      if (!currentEditUserId) {
+        body.username = username;
+        body.password = password;
+      }
+
+      try {
+        const method = currentEditUserId ? 'PUT' : 'POST';
+        const url = currentEditUserId ? `/users/${currentEditUserId}` : '/users';
+        await api(method, url, body);
+        toast(`User berhasil ${currentEditUserId ? 'diupdate' : 'dibuat'}`);
+        closeModal('modalUser');
+        loadUsers(usrPage);
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    async function resetUserPassword(id) {
+      const nw = prompt('Masukkan password baru (min 8 karakter):');
+      if (!nw) return;
+      if (nw.length < 8) { toast('Password minimal 8 karakter', 'warning'); return; }
+      try {
+        await api('POST', `/users/${id}/reset-password`, { new_password: nw });
+        toast('Password berhasil direset');
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    async function toggleUser(id) {
+      try {
+        const res = await api('POST', `/users/${id}/toggle`);
+        toast(`User berhasil ${res.is_active ? 'diaktifkan' : 'dinonaktifkan'}`);
+        loadUsers(usrPage);
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    async function forceLogoutUser(id) {
+      if (!confirm('Paksa logout user ini dari semua perangkat?')) return;
+      try {
+        await api('POST', `/users/${id}/force-logout`);
+        toast('User berhasil dikeluarkan');
+        loadUsers(usrPage);
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    // ==================================================================================================
+    // PROFILE & NOTIFICATIONS
+    // ==================================================================================================
+    async function loadNotifications() {
+      try {
+        // 1. General Staff Notifications
+        const notifRes = await api('GET', '/notifications');
+        const notifBadge = document.getElementById('notifBadge');
+        if (notifBadge) {
+          notifBadge.textContent = notifRes.unread || 0;
+          notifBadge.style.display = notifRes.unread > 0 ? 'block' : 'none';
+        }
+
+        // 2. Contact/Message Inbox Badge
+        if (['superadmin', 'admin_website'].includes(me.role)) {
+          const contactRes = await api('GET', '/contacts');
+          const unreadContacts = (contactRes.data || []).filter(c => !c.is_read).length;
+          const contactBadge = document.getElementById('contactUnreadBadge');
+          if (contactBadge) {
+            contactBadge.innerHTML = unreadContacts ? `<span class="nav-badge">${unreadContacts}</span>` : '';
+          }
+        }
+
+        // 3. Render if on notifications page
+        if (currentPageId === 'notifications') {
+          renderNotifs('notifList');
+        }
+      } catch (e) {
+        console.error('Failed to load notifications:', e.message);
       }
     }
 
-    // 3. Render if on notifications page
-    if (currentPageId === 'notifications') {
-      renderNotifs('notifList');
-    }
-  } catch (e) {
-    console.error('Failed to load notifications:', e.message);
-  }
-}
-
-let notifData = [];
-function toggleNotifDropdown(e) {
-  e.stopPropagation();
-  const dd = document.getElementById('notifDropdown');
-  if (!dd) return;
-  const isShow = dd.classList.toggle('show');
-  if (isShow) {
-    renderNotifs('notifListDropdown');
-    const closer = () => { dd.classList.remove('show'); document.removeEventListener('click', closer); };
-    document.addEventListener('click', closer);
-  }
-}
-
-function closeNotifDropdown() {
-  document.getElementById('notifDropdown')?.classList.remove('show');
-}
-
-async function renderNotifs(targetId = 'notifListDropdown') {
-  const listEl = document.getElementById(targetId);
-  if (!listEl) return;
-  
-  try {
-    const res = await api('GET', '/notifications');
-    notifData = res.data || [];
-    
-    if (!notifData.length) {
-      listEl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-light)">Tidak ada notifikasi</div>';
-      return;
+    let notifData = [];
+    function toggleNotifDropdown(e) {
+      e.stopPropagation();
+      const dd = document.getElementById('notifDropdown');
+      if (!dd) return;
+      const isShow = dd.classList.toggle('show');
+      if (isShow) {
+        renderNotifs('notifListDropdown');
+        const closer = () => { dd.classList.remove('show'); document.removeEventListener('click', closer); };
+        document.addEventListener('click', closer);
+      }
     }
 
-    listEl.innerHTML = notifData.map(n => `
+    function closeNotifDropdown() {
+      document.getElementById('notifDropdown')?.classList.remove('show');
+    }
+
+    async function renderNotifs(targetId = 'notifListDropdown') {
+      const listEl = document.getElementById(targetId);
+      if (!listEl) return;
+
+      try {
+        const res = await api('GET', '/notifications');
+        notifData = res.data || [];
+
+        if (!notifData.length) {
+          listEl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-light)">Tidak ada notifikasi</div>';
+          return;
+        }
+
+        listEl.innerHTML = notifData.map(n => `
       <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="handleNotifClick('${n.id}', '${n.link}')">
         <div class="notif-title">${n.title}</div>
         <div class="notif-msg">${n.message}</div>
         <div class="notif-time">${fmtDate(n.created_at)}</div>
       </div>
     `).join('');
-  } catch (e) {
-    listEl.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--danger)">Gagal memuat notifikasi</div>';
-  }
-}
-
-async function handleNotifClick(id, link) {
-  try {
-    await api('PUT', `/notifications/${id}/read`);
-    loadNotifications(); // Refresh badge
-    if (link) {
-      if (link.startsWith('/admin/panel.html')) {
-        const page = link.split('#')[1];
-        if (page) navigateTo(page);
-      } else {
-        window.location.href = link;
+      } catch (e) {
+        listEl.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--danger)">Gagal memuat notifikasi</div>';
       }
     }
-  } catch (e) { }
-}
 
-async function markAllRead() {
-  try {
-    await api('PUT', '/notifications/read-all');
-    toast('Semua notifikasi ditandai dibaca');
-    loadNotifications(); // Refreshes badges and page list (if on page)
-    renderNotifs('notifListDropdown'); // Refreshes dropdown list
-  } catch (e) { toast(e.message, 'error'); }
-}
-
-async function loadProfile() {
-  try {
-    const res = await api('GET', '/profile');
-    if (res.success) {
-      Object.assign(me, res.data);
-      localStorage.setItem('jf_user', JSON.stringify(me));
-      // Update header info if present
-      const avatar = document.getElementById('adminAvatar');
-      const name = document.getElementById('adminName');
-      if (avatar) avatar.textContent = (me.full_name || me.username || 'A')[0].toUpperCase();
-      if (name) name.textContent = me.full_name || me.username;
+    async function handleNotifClick(id, link) {
+      try {
+        await api('PUT', `/notifications/${id}/read`);
+        loadNotifications(); // Refresh badge
+        if (link) {
+          if (link.startsWith('/admin/panel.html')) {
+            const page = link.split('#')[1];
+            if (page) navigateTo(page);
+          } else {
+            window.location.href = link;
+          }
+        }
+      } catch (e) { }
     }
-  } catch (e) { console.error('Profile sync error', e); }
 
-  const el = document.getElementById('profileInfo');
-  if (!el) return;
+    async function markAllRead() {
+      try {
+        await api('PUT', '/notifications/read-all');
+        toast('Semua notifikasi ditandai dibaca');
+        loadNotifications(); // Refreshes badges and page list (if on page)
+        renderNotifs('notifListDropdown'); // Refreshes dropdown list
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-  el.innerHTML = `
+    async function loadProfile() {
+      try {
+        const res = await api('GET', '/profile');
+        if (res.success) {
+          Object.assign(me, res.data);
+          localStorage.setItem('jf_user', JSON.stringify(me));
+          // Update header info if present
+          const avatar = document.getElementById('adminAvatar');
+          const name = document.getElementById('adminName');
+          if (avatar) avatar.textContent = (me.full_name || me.username || 'A')[0].toUpperCase();
+          if (name) name.textContent = me.full_name || me.username;
+        }
+      } catch (e) { console.error('Profile sync error', e); }
+
+      const el = document.getElementById('profileInfo');
+      if (!el) return;
+
+      el.innerHTML = `
     <div style="padding:1.5rem; display:flex; flex-direction:column; gap:1.2rem">
       <div style="display:flex; align-items:center; gap:1.5rem">
         <div style="width:70px; height:70px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:700">
@@ -2781,36 +2806,36 @@ async function loadProfile() {
       </div>
     </div>
   `;
-}
-async function doChangePassword() {
-  const old = getVal('cpOld'), nw = getVal('cpNew'), conf = getVal('cpConfirm');
-  if (!old || !nw || !conf) { toast('Semua field password wajib diisi', 'warning'); return; }
-  if (nw !== conf) { toast('Konfirmasi password tidak cocok', 'warning'); return; }
-  if (nw.length < 6) { toast('Password minimal 6 karakter', 'warning'); return; }
-  try {
-    await api('PUT', '/change-password', { current_password: old, new_password: nw });
-    toast('Password berhasil diubah. Harap login ulang.');
-    ['cpOld', 'cpNew', 'cpConfirm'].forEach(f => setVal(f, ''));
-    setTimeout(() => { localStorage.removeItem('jf_token'); localStorage.removeItem('jf_user'); window.location.href = 'index.html'; }, 2500);
-  } catch (e) { toast(e.message, 'error'); }
-}
+    }
+    async function doChangePassword() {
+      const old = getVal('cpOld'), nw = getVal('cpNew'), conf = getVal('cpConfirm');
+      if (!old || !nw || !conf) { toast('Semua field password wajib diisi', 'warning'); return; }
+      if (nw !== conf) { toast('Konfirmasi password tidak cocok', 'warning'); return; }
+      if (nw.length < 6) { toast('Password minimal 6 karakter', 'warning'); return; }
+      try {
+        await api('PUT', '/change-password', { current_password: old, new_password: nw });
+        toast('Password berhasil diubah. Harap login ulang.');
+        ['cpOld', 'cpNew', 'cpConfirm'].forEach(f => setVal(f, ''));
+        setTimeout(() => { localStorage.removeItem('jf_token'); localStorage.removeItem('jf_user'); window.location.href = 'index.html'; }, 2500);
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-// --------------------------------------------------------------------------------------------------
-// EXPORT TRANSACTIONS (PREMIUM)
-// --------------------------------------------------------------------------------------------------
-async function exportTransactionPDF() {
-  const btn = event?.target;
-  const oldText = btn ? btn.textContent : '📄 Export PDF';
-  if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+    // --------------------------------------------------------------------------------------------------
+    // EXPORT TRANSACTIONS (PREMIUM)
+    // --------------------------------------------------------------------------------------------------
+    async function exportTransactionPDF() {
+      const btn = event?.target;
+      const oldText = btn ? btn.textContent : '📄 Export PDF';
+      if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
 
-  const win = window.open('', '_blank');
-  if (!win) {
-    if (btn) { btn.disabled = false; btn.textContent = oldText; }
-    toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning');
-    return;
-  }
+      const win = window.open('', '_blank');
+      if (!win) {
+        if (btn) { btn.disabled = false; btn.textContent = oldText; }
+        toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning');
+        return;
+      }
 
-  win.document.write(`
+      win.document.write(`
     <html>
       <head>
         <title>Memuat Laporan...</title>
@@ -2828,87 +2853,87 @@ async function exportTransactionPDF() {
     </html>
   `);
 
-  try {
-    const type = getVal('txType'), from = getVal('txFrom'), to = getVal('txTo');
-    const data = await api('GET', '/stock/transactions?limit=2000&type=' + type + '&date_from=' + from + '&date_to=' + to);
-    const items = data.data || [];
-    const company = data.company || {};
-    const typeLabel = { '': 'Semua Tipe', in: 'Barang Masuk', out: 'Barang Keluar', adjustment: 'Adjustment' };
+      try {
+        const type = getVal('txType'), from = getVal('txFrom'), to = getVal('txTo');
+        const data = await api('GET', '/stock/transactions?limit=2000&type=' + type + '&date_from=' + from + '&date_to=' + to);
+        const items = data.data || [];
+        const company = data.company || {};
+        const typeLabel = { '': 'Semua Tipe', in: 'Barang Masuk', out: 'Barang Keluar', adjustment: 'Adjustment' };
 
-    const rows = items.map(t => {
-      const date = t.created_at ? new Date(t.created_at).toLocaleString('id-ID') : '-';
-      return '<tr>' +
-        '<td>' + date + '</td>' +
-        '<td><strong>' + t.product_name + '</strong>' + (t.sku ? '<br><small>' + t.sku + '</small>' : '') + '</td>' +
-        '<td style="text-align:center"><span class="badge badge-' + t.type + '">' + t.type.toUpperCase() + '</span></td>' +
-        '<td style="text-align:center;font-weight:700;color:' + (t.type === 'in' ? '#2E7D32' : '#C62828') + '">' + (t.type === 'in' ? '+' : '-') + t.qty + '</td>' +
-        '<td style="text-align:center;color:#888">' + t.qty_before + '</td>' +
-        '<td style="text-align:center;font-weight:600">' + t.qty_after + '</td>' +
-        '<td>' + (t.reference_no || '-') + '</td>' +
-        '<td>' + (t.created_by_name || '-') + '</td>' +
-        '</tr>';
-    }).join('');
+        const rows = items.map(t => {
+          const date = t.created_at ? new Date(t.created_at).toLocaleString('id-ID') : '-';
+          return '<tr>' +
+            '<td>' + date + '</td>' +
+            '<td><strong>' + t.product_name + '</strong>' + (t.sku ? '<br><small>' + t.sku + '</small>' : '') + '</td>' +
+            '<td style="text-align:center"><span class="badge badge-' + t.type + '">' + t.type.toUpperCase() + '</span></td>' +
+            '<td style="text-align:center;font-weight:700;color:' + (t.type === 'in' ? '#2E7D32' : '#C62828') + '">' + (t.type === 'in' ? '+' : '-') + t.qty + '</td>' +
+            '<td style="text-align:center;color:#888">' + t.qty_before + '</td>' +
+            '<td style="text-align:center;font-weight:600">' + t.qty_after + '</td>' +
+            '<td>' + (t.reference_no || '-') + '</td>' +
+            '<td>' + (t.created_by_name || '-') + '</td>' +
+            '</tr>';
+        }).join('');
 
-    const html = '<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Riwayat Transaksi Stok</title>' +
-      '<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">' +
-      '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>' +
-      '<style>' +
-      '* { margin:0; padding:0; box-sizing:border-box; }' +
-      'body { font-family:"Outfit",sans-serif; color:#2C1A0E; padding:40px; background:#f4f1ee; line-height:1.4; font-size:11px; }' +
-      '.actions { position:fixed; top:20px; right:20px; display:flex; gap:10px; z-index:999; }' +
-      '.btn { border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,0.1); transition:.2s; display:flex; align-items:center; gap:8px; }' +
-      '.btn-primary { background:#5C2E0E; color:#fff; }' +
-      '.btn-outline { background:#fff; color:#5C2E0E; border:1px solid #5C2E0E; }' +
-      '@media print { .actions { display:none !important; } body { padding:0; background:#fff; } .report-card { box-shadow:none !important; margin:0 !important; width:100% !important; max-width:none !important; } }' +
-      '.report-card { background:#fff; max-width:1100px; margin:0 auto; padding:40px; box-shadow:0 20px 50px rgba(0,0,0,0.05); border-radius:12px; position:relative; }' +
-      '.report-card::before { content:""; position:absolute; top:0; left:0; right:0; height:8px; background:linear-gradient(90deg, #5C2E0E, #C49A6C); border-radius:12px 12px 0 0; }' +
-      '.header { display:flex; justify-content:space-between; margin-bottom:30px; border-bottom:2px solid #F0EBE3; padding-bottom:20px; }' +
-      '.co-name { font-size:24px; font-weight:700; color:#5C2E0E; }' +
-      '.report-title { font-size:18px; font-weight:700; color:#5C2E0E; text-align:right; }' +
-      '.report-meta { font-size:10px; color:#6B5040; text-align:right; margin-top:5px; line-height:1.6; }' +
-      'table { width:100%; border-collapse:collapse; margin-top:20px; }' +
-      'th { background:#F5F0EB; padding:12px 8px; border-bottom:2px solid #5C2E0E; text-align:left; font-size:10px; text-transform:uppercase; color:#5C2E0E; font-weight:800; }' +
-      'td { padding:10px 8px; border-bottom:1px solid #F0EBE3; }' +
-      '.badge { padding:2px 6px; border-radius:4px; font-size:9px; font-weight:700; }' +
-      '.badge-in { background:#E8F5E9; color:#2E7D32; }' +
-      '.badge-out { background:#FFEBEE; color:#C62828; }' +
-      '.footer { margin-top:30px; border-top:1px solid #F0EBE3; padding-top:20px; font-size:10px; color:#999; display:flex; justify-content:space-between; }' +
-      '</style></head><body>' +
-      '<div class="actions">' +
-      '<button class="btn btn-outline" onclick="savePDF()">📄 Simpan PDF</button>' +
-      '<button class="btn btn-primary" onclick="window.print()">🖨️ Cetak Langsung</button>' +
-      '</div>' +
-      '<div class="report-card" id="printArea">' +
-      '<div class="header"><div><div class="co-name">' + (company.site_name || 'JOGJA FURNITURE') + '</div>' +
-      '<div style="font-size:11px;color:#6B5040">' + (company.address || '-') + '</div></div>' +
-      '<div><div class="report-title">LAPORAN TRANSAKSI STOK</div><div class="report-meta">' +
-      'Periode: ' + (from || 'Awal') + ' - ' + (to || 'Sekarang') + '<br>' +
-      'Tipe: ' + (typeLabel[type] || 'Semua') + '<br>' +
-      'Dicetak: ' + new Date().toLocaleString('id-ID') + '</div></div></div>' +
-      '<table><thead><tr><th>Tanggal</th><th>Produk</th><th style="text-align:center">Tipe</th><th style="text-align:center">Qty</th><th style="text-align:center">Sblm</th><th style="text-align:center">Ssdh</th><th>Ref. No.</th><th>Admin</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody></table>' +
-      '<div class="footer"><span>Total ' + items.length + ' transaksi ditemukan</span><span>Dicetak oleh: ' + me.full_name + '</span></div></div>' +
-      '<script>function savePDF() { const element = document.getElementById("printArea"); const opt = { margin:0.2, filename:"Transaksi_Stok.pdf", image:{type:"jpeg",quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:"in",format:"a4",orientation:"landscape"} }; html2pdf().set(opt).from(element).save(); } function doPrint() { window.print(); }</script>' +
-      '</body></html>';
+        const html = '<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Riwayat Transaksi Stok</title>' +
+          '<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">' +
+          '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>' +
+          '<style>' +
+          '* { margin:0; padding:0; box-sizing:border-box; }' +
+          'body { font-family:"Outfit",sans-serif; color:#2C1A0E; padding:40px; background:#f4f1ee; line-height:1.4; font-size:11px; }' +
+          '.actions { position:fixed; top:20px; right:20px; display:flex; gap:10px; z-index:999; }' +
+          '.btn { border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,0.1); transition:.2s; display:flex; align-items:center; gap:8px; }' +
+          '.btn-primary { background:#5C2E0E; color:#fff; }' +
+          '.btn-outline { background:#fff; color:#5C2E0E; border:1px solid #5C2E0E; }' +
+          '@media print { .actions { display:none !important; } body { padding:0; background:#fff; } .report-card { box-shadow:none !important; margin:0 !important; width:100% !important; max-width:none !important; } }' +
+          '.report-card { background:#fff; max-width:1100px; margin:0 auto; padding:40px; box-shadow:0 20px 50px rgba(0,0,0,0.05); border-radius:12px; position:relative; }' +
+          '.report-card::before { content:""; position:absolute; top:0; left:0; right:0; height:8px; background:linear-gradient(90deg, #5C2E0E, #C49A6C); border-radius:12px 12px 0 0; }' +
+          '.header { display:flex; justify-content:space-between; margin-bottom:30px; border-bottom:2px solid #F0EBE3; padding-bottom:20px; }' +
+          '.co-name { font-size:24px; font-weight:700; color:#5C2E0E; }' +
+          '.report-title { font-size:18px; font-weight:700; color:#5C2E0E; text-align:right; }' +
+          '.report-meta { font-size:10px; color:#6B5040; text-align:right; margin-top:5px; line-height:1.6; }' +
+          'table { width:100%; border-collapse:collapse; margin-top:20px; }' +
+          'th { background:#F5F0EB; padding:12px 8px; border-bottom:2px solid #5C2E0E; text-align:left; font-size:10px; text-transform:uppercase; color:#5C2E0E; font-weight:800; }' +
+          'td { padding:10px 8px; border-bottom:1px solid #F0EBE3; }' +
+          '.badge { padding:2px 6px; border-radius:4px; font-size:9px; font-weight:700; }' +
+          '.badge-in { background:#E8F5E9; color:#2E7D32; }' +
+          '.badge-out { background:#FFEBEE; color:#C62828; }' +
+          '.footer { margin-top:30px; border-top:1px solid #F0EBE3; padding-top:20px; font-size:10px; color:#999; display:flex; justify-content:space-between; }' +
+          '</style></head><body>' +
+          '<div class="actions">' +
+          '<button class="btn btn-outline" onclick="savePDF()">📄 Simpan PDF</button>' +
+          '<button class="btn btn-primary" onclick="window.print()">🖨️ Cetak Langsung</button>' +
+          '</div>' +
+          '<div class="report-card" id="printArea">' +
+          '<div class="header"><div><div class="co-name">' + (company.site_name || 'JOGJA FURNITURE') + '</div>' +
+          '<div style="font-size:11px;color:#6B5040">' + (company.address || '-') + '</div></div>' +
+          '<div><div class="report-title">LAPORAN TRANSAKSI STOK</div><div class="report-meta">' +
+          'Periode: ' + (from || 'Awal') + ' - ' + (to || 'Sekarang') + '<br>' +
+          'Tipe: ' + (typeLabel[type] || 'Semua') + '<br>' +
+          'Dicetak: ' + new Date().toLocaleString('id-ID') + '</div></div></div>' +
+          '<table><thead><tr><th>Tanggal</th><th>Produk</th><th style="text-align:center">Tipe</th><th style="text-align:center">Qty</th><th style="text-align:center">Sblm</th><th style="text-align:center">Ssdh</th><th>Ref. No.</th><th>Admin</th></tr></thead>' +
+          '<tbody>' + rows + '</tbody></table>' +
+          '<div class="footer"><span>Total ' + items.length + ' transaksi ditemukan</span><span>Dicetak oleh: ' + me.full_name + '</span></div></div>' +
+          '<script>function savePDF() { const element = document.getElementById("printArea"); const opt = { margin:0.2, filename:"Transaksi_Stok.pdf", image:{type:"jpeg",quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:"in",format:"a4",orientation:"landscape"} }; html2pdf().set(opt).from(element).save(); } function doPrint() { window.print(); }</script>' +
+          '</body></html>';
 
-    const blob = new Blob([html], { type: 'text/html' });
-    win.location.href = URL.createObjectURL(blob);
-  } catch (e) {
-    if (win) win.close();
-    toast('Gagal memuat data: ' + e.message, 'error');
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = oldText; }
-  }
-}
+        const blob = new Blob([html], { type: 'text/html' });
+        win.location.href = URL.createObjectURL(blob);
+      } catch (e) {
+        if (win) win.close();
+        toast('Gagal memuat data: ' + e.message, 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = oldText; }
+      }
+    }
 
-// ----------------------------------------------------------------------------------------------------
-// CSS ANIMATIONS
-// ----------------------------------------------------------------------------------------------------
-(function () {
-  const style = document.createElement('style');
-  style.textContent = `
+    // ----------------------------------------------------------------------------------------------------
+    // CSS ANIMATIONS
+    // ----------------------------------------------------------------------------------------------------
+    (function () {
+      const style = document.createElement('style');
+      style.textContent = `
     @keyframes slideIn { from { transform:translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
     @keyframes float { 0% { transform:translateY(0px); } 50% { transform:translateY(-10px); } 100% { transform:translateY(0px); } }
   `;
-  document.head.appendChild(style);
-})();
+      document.head.appendChild(style);
+    })();

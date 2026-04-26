@@ -531,7 +531,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo-name">JOGJA</div>
-      <div class="sidebar-logo-tag">Furniture Enterprise</div>
+      <div class="sidebar-logo-tag">Furniture Enterprise v2.2</div>
     </div>
     <div class="sidebar-admin">
       <div class="admin-avatar" id="adminAvatar">A</div>
@@ -721,15 +721,16 @@
       <div class="page" id="page-categories">
         <div class="card">
           <div class="card-header">
-            <div class="page-subtitle"><span class="ps-icon">🗂</span> Pengelompokan produk di katalog website</div>
+            <div class="page-subtitle"><span class="ps-icon">🗂</span> Kelola kategori produk dan menu navigasi website
+            </div>
             <button class="btn btn-primary" id="btnAddCat" onclick="openCategoryModal()">+ Kategori Baru</button>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Ikon</th>
-                  <th>Nama</th>
+                  <th>Gambar</th>
+                  <th>Nama Kategori</th>
                   <th>Slug</th>
                   <th>Status</th>
                   <th>Urutan</th>
@@ -746,15 +747,16 @@
       <div class="page" id="page-services">
         <div class="card">
           <div class="card-header">
-            <div class="page-subtitle"><span class="ps-icon">🛠</span> Jasa & layanan di halaman website</div>
+            <div class="page-subtitle"><span class="ps-icon">🛠</span> Kelola jasa dan layanan profesional di website
+            </div>
             <button class="btn btn-primary" onclick="openServiceModal()">+ Layanan Baru</button>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Ikon</th>
-                  <th>Nama</th>
+                  <th>Gambar</th>
+                  <th>Nama Layanan</th>
                   <th>Deskripsi Singkat</th>
                   <th>Status</th>
                   <th>Urutan</th>
@@ -1776,7 +1778,10 @@
               placeholder="Estimasi: 3–8 minggu|Area: Yogyakarta"></div>
           <div class="form-group"><label>Warna Awal</label><input type="color" id="svColorFrom" value="#5C2E0E"></div>
           <div class="form-group"><label>Warna Akhir</label><input type="color" id="svColorTo" value="#C49A6C"></div>
-          <div class="form-group"><label>Gambar</label><input type="file" id="svImage" accept="image/*"></div>
+          <div class="form-group"><label>Gambar</label><input type="file" id="svImage" accept="image/*">
+            <img id="prevSvImg" src=""
+              style="display:none;width:100px;height:100px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--gray200);margin-top:.5rem">
+          </div>
           <div class="form-group"><label>Urutan</label><input type="number" id="svOrder" value="0"></div>
           <div class="form-group full"><label class="form-check"><input type="checkbox" id="svActive" checked>
               Aktif</label></div>
