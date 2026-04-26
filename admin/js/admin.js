@@ -799,11 +799,12 @@ function openProductModal(id = null, isViewOnly = false) {
   const saveBtn = document.getElementById('saveProductBtn');
   if (saveBtn) saveBtn.style.display = isViewOnly ? 'none' : '';
   const inputs = document.getElementById('modalProduct').querySelectorAll('input, select, textarea');
-  inputs.forEach(el => el.disabled = isViewOnly);
+  inputs.forEach(el => el.disabled = false); // reset dulu
+  if (isViewOnly) inputs.forEach(el => el.disabled = true);
 
   // Load categories dropdown
   loadCategoriesDropdown();
-  switchProdTab('info', document.querySelector('#productTabBar .settings-tab'));
+  switchProductTab('info', document.querySelector('#productTabBar .settings-tab'));
 
   if (id) {
     api('GET', `/products/${id}`).then(data => {
@@ -898,7 +899,7 @@ async function saveProduct() {
 
   try {
     const endpoint = editingId
-      ? (me.role === 'admin_website' ? `/products/${editingId }/cms` : ` /products/${editingId }`)
+      ? (me.role === 'admin_website' ? `/products/${editingId}/cms` : `/products/${editingId}`)
       : '/products';
     const method = editingId ? 'PUT' : 'POST';
     await api(method, endpoint, fd, true);
@@ -917,7 +918,7 @@ function editProduct(id) { openProductModal(id); }
 async function deleteProduct(id) {
   if (!confirm('Hapus produk ini? Semua foto dan data terkait akan ikut dihapus.')) return;
   try {
-    await api('DELETE', `/products/${id }`);
+    await api('DELETE', `/products/${id}`);
     toast('Produk berhasil dihapus');
     loadProducts();
   } catch (e) { toast(e.message, 'error'); }
@@ -925,7 +926,7 @@ async function deleteProduct(id) {
 
 async function quickPublish(id) {
   try {
-    await api('PUT', `/products/${id } / publish`);
+    await api('PUT', `/products/${id}/publish`);
     toast('Produk berhasil dipublish ke website 🌐');
     loadProducts(); loadNewProducts();
   } catch (e) { toast(e.message, 'error'); }
@@ -934,7 +935,7 @@ async function quickPublish(id) {
 async function quickUnpublish(id) {
   if (!confirm('Sembunyikan produk ini dari website?')) return;
   try {
-    await api('PUT', `/products/${id } / unpublish`);
+    await api('PUT', `/products/${id}/unpublish`);
     toast('Produk disembunyikan dari website');
     loadProducts();
   } catch (e) { toast(e.message, 'error'); }
@@ -942,7 +943,7 @@ async function quickUnpublish(id) {
 
 async function setPrimaryImg(productId, imageId) {
   try {
-    await api('PUT', `/products/${productId } / images / ${ imageId } / primary`);
+    await api('PUT', `/products/${productId}/images/${imageId}/primary`);
     toast('Gambar utama diset'); editProduct(productId);
   } catch (e) { toast(e.message, 'error'); }
 }
@@ -950,7 +951,7 @@ async function setPrimaryImg(productId, imageId) {
 async function deleteProductImg(productId, imageId) {
   if (!confirm('Hapus gambar ini?')) return;
   try {
-    await api('DELETE', `/products/${productId } / images / ${ imageId }`);
+    await api('DELETE', `/products/${productId}/images/${imageId}`);
     toast('Gambar dihapus'); editProduct(productId);
   } catch (e) { toast(e.message, 'error'); }
 }
@@ -1032,7 +1033,7 @@ async function saveCategory() {
   const img = document.getElementById('cImage');
   if (img?.files[0]) fd.append('image', img.files[0]);
   try {
-    if (editingId) await api('PUT', `/categories/${editingId }`, fd, true);
+    if (editingId) await api('PUT', `/categories/${editingId}`, fd, true);
     else await api('POST', '/categories', fd, true);
     toast('Kategori berhasil disimpan'); closeModal('modalCategory'); loadCategories();
   } catch (e) { toast(e.message, 'error'); }
@@ -1042,7 +1043,7 @@ function editCategory(id) { openCategoryModal(id); }
 
 async function deleteCategory(id) {
   if (!confirm('Hapus kategori ini?')) return;
-  try { await api('DELETE', `/categories/${id }`); toast('Kategori dihapus'); loadCategories(); }
+  try { await api('DELETE', `/categories/${id}`); toast('Kategori dihapus'); loadCategories(); }
   catch (e) { toast(e.message, 'error'); }
 }
 
@@ -1097,7 +1098,7 @@ function openServiceModal(id = null) {
       setVal('svColorFrom', s.color_from || '#5C2E0E'); setVal('svColorTo', s.color_to || '#C49A6C');
       if (s.image) {
         const prev = document.getElementById('prevSvImg');
-        if (prev) { prev.src = `/ uploads /services/${s.image }`; prev.style.display = 'block'; }
+        if (prev) { prev.src = `/uploads/services/${s.image}`; prev.style.display = 'block'; }
       }
     }
   }
@@ -1115,7 +1116,7 @@ async function saveService() {
   const img = document.getElementById('svImage');
   if (img?.files[0]) fd.append('image', img.files[0]);
   try {
-    if (editingId) await api('PUT', `/services/${editingId }`, fd, true);
+    if (editingId) await api('PUT', `/services/${editingId}`, fd, true);
     else await api('POST', '/services', fd, true);
     toast('Layanan berhasil disimpan'); closeModal('modalService');
     const d = await api('GET', '/services'); serviceData = d.data || []; loadServices();
@@ -1129,7 +1130,7 @@ async function editService(id) {
 
 async function deleteService(id) {
   if (!confirm('Hapus layanan ini?')) return;
-  try { await api('DELETE', `/services/${id }`); toast('Layanan dihapus'); loadServices(); }
+  try { await api('DELETE', `/services/${id}`); toast('Layanan dihapus'); loadServices(); }
   catch (e) { toast(e.message, 'error'); }
 }
 
