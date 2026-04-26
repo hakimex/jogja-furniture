@@ -1,5 +1,15 @@
 {
+  "name": "jogja-furniture-enterprise-v2",
+  "version": "2.0.0",
+  "description": "Jogja Furniture Enterprise Management System",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "install-backend": "cd backend && npm install",
+    "postinstall": "npm run install-backend"
+  },
   "dependencies": {
     "@google/generative-ai": "^0.24.1"
   }
 }
+
