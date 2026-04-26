@@ -1473,12 +1473,17 @@ let testiData = [];
   <meta charset="UTF-8">
   <title>Stock Summary — ${c.site_name || 'Jogja Furniture'}</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Outfit',sans-serif; color:#2C1A0E; padding:40px; background:#fff; font-size:12px; }
-    .print-btn { position:fixed; top:16px; right:16px; background:#5C2E0E; color:#fff; border:none; padding:10px 22px; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer; z-index:999; box-shadow:0 4px 12px rgba(0,0,0,.2); }
-    .print-btn:hover { background:#3D1E08; }
-    @media print { .print-btn { display:none !important; } }
+    body { font-family:'Outfit',sans-serif; color:#2C1A0E; padding:40px; background:#f4f1ee; font-size:12px; }
+    .actions { position:fixed; top:20px; right:20px; display:flex; gap:10px; z-index:999; }
+    .btn { border:none; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,0.1); transition:.2s; display:flex; align-items:center; gap:8px; }
+    .btn-primary { background:#5C2E0E; color:#fff; }
+    .btn-outline { background:#fff; color:#5C2E0E; border:1px solid #5C2E0E; }
+    @media print { .actions { display:none !important; } body { padding:0; background:#fff; } .report-card { box-shadow:none !important; margin:0 !important; width:100% !important; max-width:none !important; } }
+    .report-card { background:#fff; max-width:1100px; margin:0 auto; padding:40px; box-shadow:0 20px 50px rgba(0,0,0,0.05); border-radius:12px; position:relative; }
+    .report-card::before { content:""; position:absolute; top:0; left:0; right:0; height:8px; background:linear-gradient(90deg, #5C2E0E, #C49A6C); border-radius:12px 12px 0 0; }
     .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:32px; border-bottom:3px solid #5C2E0E; padding-bottom:20px; }
     .co-name { font-size:26px; font-weight:700; color:#5C2E0E; }
     .co-sub  { font-size:11px; color:#6B5040; margin-top:3px; letter-spacing:.08em; text-transform:uppercase; }
@@ -1500,7 +1505,11 @@ let testiData = [];
   </style>
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Cetak Langsung</button>
+  <div class="actions">
+    <button class="btn btn-outline" onclick="savePDF()">📄 Simpan PDF</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Cetak Langsung</button>
+  </div>
+  <div class="report-card" id="printArea">
   <div class="header">
     <div>
       <div class="co-name">${c.site_name || 'JOGJA FURNITURE'}</div>
@@ -1551,13 +1560,33 @@ let testiData = [];
     <span>Stok merah = stok ≤ 5 unit (kritis)</span>
     <span>Dicetak: ${new Date().toLocaleString('id-ID')}</span>
   </div>
+  </div>
+  <script>
+    function savePDF() {
+      const element = document.getElementById('printArea');
+      const opt = {
+        margin: 0.2,
+        filename: 'Ringkasan_Stok_JogjaFurniture.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+    window.onbeforeunload = function() {
+      if (window.opener && !window.opener.closed) window.opener.focus();
+    };
+  </script>
 </body>
 </html>`;
 
         const win = window.open('', '_blank');
         if (!win) { toast('Popup diblokir browser. Izinkan popup untuk domain ini.', 'warning'); return; }
-        win.document.write(html);
-        win.document.close();
+        const blob = new Blob([html], { type: 'text/html' });
+        win.location.href = URL.createObjectURL(blob);
+        const pollClose = setInterval(() => {
+          if (win.closed) { clearInterval(pollClose); window.focus(); }
+        }, 300);
       } catch (e) {
         toast('Gagal memuat data: ' + e.message, 'error');
       } finally {
@@ -2355,12 +2384,21 @@ let testiData = [];
     function doPrint() {
       setTimeout(() => { window.print(); }, 100);
     }
+    window.onbeforeunload = function() {
+      if (window.opener && !window.opener.closed) window.opener.focus();
+    };
   </script>
 </body>
 </html>`;
         if (win) {
           const blob = new Blob([html], { type: 'text/html' });
           win.location.href = URL.createObjectURL(blob);
+          const pollClose = setInterval(() => {
+            if (win.closed) {
+              clearInterval(pollClose);
+              window.focus();
+            }
+          }, 300);
         }
       } catch (e) {
         if (win) win.close();
@@ -2913,11 +2951,14 @@ let testiData = [];
           '<table><thead><tr><th>Tanggal</th><th>Produk</th><th style="text-align:center">Tipe</th><th style="text-align:center">Qty</th><th style="text-align:center">Sblm</th><th style="text-align:center">Ssdh</th><th>Ref. No.</th><th>Admin</th></tr></thead>' +
           '<tbody>' + rows + '</tbody></table>' +
           '<div class="footer"><span>Total ' + items.length + ' transaksi ditemukan</span><span>Dicetak oleh: ' + me.full_name + '</span></div></div>' +
-          '<script>function savePDF() { const element = document.getElementById("printArea"); const opt = { margin:0.2, filename:"Transaksi_Stok.pdf", image:{type:"jpeg",quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:"in",format:"a4",orientation:"landscape"} }; html2pdf().set(opt).from(element).save(); } function doPrint() { window.print(); }</script>' +
+          '<script>function savePDF() { const element = document.getElementById("printArea"); const opt = { margin:0.2, filename:"Transaksi_Stok.pdf", image:{type:"jpeg",quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:"in",format:"a4",orientation:"landscape"} }; html2pdf().set(opt).from(element).save(); } function doPrint() { window.print(); } window.onbeforeunload = function() { if (window.opener && !window.opener.closed) window.opener.focus(); };</script>' +
           '</body></html>';
 
         const blob = new Blob([html], { type: 'text/html' });
         win.location.href = URL.createObjectURL(blob);
+        const pollClose = setInterval(() => {
+          if (win.closed) { clearInterval(pollClose); window.focus(); }
+        }, 300);
       } catch (e) {
         if (win) win.close();
         toast('Gagal memuat data: ' + e.message, 'error');
