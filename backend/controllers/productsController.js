@@ -31,7 +31,7 @@ exports.getAll = async (req, res) => {
 
     const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM products p LEFT JOIN categories c ON c.id = p.category_id WHERE ${where}`, params);
     const [rows] = await db.query(
-      `SELECT p.id, p.name, p.slug, p.short_desc, p.material, p.dimensions, p.price_label, p.thumbnail, p.is_featured, p.sort_order, p.created_at,
+      `SELECT p.id, p.name, p.slug, p.short_desc, p.material, p.dimensions, p.price_label, p.thumbnail, p.is_featured, p.sort_order, p.created_at, p.warehouse_stock,
               c.name as category_name, c.slug as category_slug, c.icon as category_icon, c.color_from, c.color_to
        FROM products p LEFT JOIN categories c ON c.id = p.category_id
        WHERE ${where} ORDER BY p.is_featured DESC, p.sort_order ASC, p.created_at DESC LIMIT ? OFFSET ?`,
@@ -115,7 +115,17 @@ exports.getAllAdmin = async (req, res) => {
 
     if (search) { where += ' AND p.name LIKE ?'; params.push(`%${search}%`); }
     if (category) { where += ' AND c.slug = ?'; params.push(category); }
-    if (status) { where += ' AND p.publish_status = ?'; params.push(status); }
+    
+    if (status) {
+      if (status === 'low_stock') {
+        where += ' AND p.warehouse_stock <= 3 AND p.warehouse_stock > 0';
+      } else if (status === 'out_of_stock') {
+        where += ' AND p.warehouse_stock = 0';
+      } else {
+        where += ' AND p.publish_status = ?';
+        params.push(status);
+      }
+    }
 
     const [[{ total }]] = await db.query(`SELECT COUNT(*) as total FROM products p LEFT JOIN categories c ON c.id=p.category_id WHERE ${where}`, params);
     const [rows] = await db.query(
