@@ -2122,7 +2122,7 @@ let testiData = [];
         const qEl = document.getElementById(`iQty_${idx}`);
         let qty = parseFloat(qEl?.value || 0);
         const max = parseFloat(qEl?.max);
-        if (max !== NaN && qty > max) {
+        if (!isNaN(max) && max > 0 && qty > max) {
           qty = max;
           qEl.value = max;
           toast(`Jumlah melebihi stok tersedia (${max})`, 'warning');
