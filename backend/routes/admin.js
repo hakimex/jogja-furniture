@@ -84,9 +84,9 @@ module.exports = function (loginLimiter) {
   // Categories
   const setCatFolder = (req, res, next) => { req.uploadFolder = 'categories'; next(); };
   router.get('/categories',        categoriesCtrl.getAllAdmin);
-  router.post('/categories',       role.warehouseAccess, setCatFolder, upload.single('image'), categoriesCtrl.create);
-  router.put('/categories/:id',    role.warehouseAccess, setCatFolder, upload.single('image'), categoriesCtrl.update);
-  router.delete('/categories/:id', role.superadminOnly,  categoriesCtrl.remove);
+  router.post('/categories',       role.staffAccess, setCatFolder, upload.single('image'), categoriesCtrl.create);
+  router.put('/categories/:id',    role.staffAccess, setCatFolder, upload.single('image'), categoriesCtrl.update);
+  router.delete('/categories/:id', role.staffAccess,  categoriesCtrl.remove);
 
   // Products
   const productUpload    = upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'images', maxCount: 10 }]);
