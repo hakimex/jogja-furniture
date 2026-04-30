@@ -300,6 +300,14 @@
       font-size: .85rem
     }
 
+    .inv-table tr {
+      page-break-inside: avoid !important;
+    }
+
+    .inv-table thead {
+      display: table-header-group !important;
+    }
+
     .inv-table th {
       background: var(--primary);
       color: var(--white);
@@ -441,6 +449,16 @@
 
       body.print-stock-tx table {
         border: 1px solid var(--gray200);
+        width: 100% !important;
+        border-collapse: collapse;
+      }
+
+      body.print-stock-tx tr {
+        page-break-inside: avoid !important;
+      }
+
+      body.print-stock-tx thead {
+        display: table-header-group !important;
       }
 
       body.print-stock-tx th {
@@ -1780,7 +1798,8 @@
               placeholder="Estimasi: 3–8 minggu|Area: Yogyakarta"></div>
           <div class="form-group"><label>Warna Awal</label><input type="color" id="svColorFrom" value="#5C2E0E"></div>
           <div class="form-group"><label>Warna Akhir</label><input type="color" id="svColorTo" value="#C49A6C"></div>
-          <div class="form-group"><label>Gambar</label><input type="file" id="svImage" accept="image/*" onchange="previewImg(this,'prevSvImg')">
+          <div class="form-group"><label>Gambar</label><input type="file" id="svImage" accept="image/*"
+              onchange="previewImg(this,'prevSvImg')">
             <img id="prevSvImg"
               style="display:none;width:100px;height:100px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--gray200);margin-top:.5rem">
           </div>

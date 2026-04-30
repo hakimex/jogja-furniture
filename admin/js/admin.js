@@ -1554,6 +1554,15 @@ let testiData = [];
     .summary-lbl { font-size:11px; color:#6B5040; margin-bottom:4px; }
     .summary-val { font-size:20px; font-weight:700; color:#5C2E0E; }
     .footer { margin-top:32px; border-top:1px solid #E0D8CE; padding-top:14px; font-size:10px; color:#999; display:flex; justify-content:space-between; }
+    
+    /* FIX: Prevent table rows from breaking across pages */
+    table { width:100% !important; border-collapse:collapse; page-break-inside:auto; }
+    tr { page-break-inside:avoid !important; page-break-after:auto; }
+    thead { display:table-header-group !important; }
+    tfoot { display:table-footer-group !important; }
+    
+    /* Ensure summary box doesn't break poorly */
+    .summary-box { page-break-inside:avoid; }
   </style>
 </head>
 <body>
@@ -1620,8 +1629,9 @@ let testiData = [];
         margin: 0.2,
         filename: 'Ringkasan_Stok_JogjaFurniture.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
       html2pdf().set(opt).from(element).save();
     }
@@ -1687,8 +1697,9 @@ let testiData = [];
         margin: 0.5,
         filename: `Invoice_${invNumber}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
       html2pdf().set(opt).from(el).save();
     }
@@ -2993,6 +3004,9 @@ let testiData = [];
           '.badge-in { background:#E8F5E9; color:#2E7D32; }' +
           '.badge-out { background:#FFEBEE; color:#C62828; }' +
           '.footer { margin-top:30px; border-top:1px solid #F0EBE3; padding-top:20px; font-size:10px; color:#999; display:flex; justify-content:space-between; }' +
+          'table { width:100% !important; border-collapse:collapse; page-break-inside:auto; }' +
+          'tr { page-break-inside:avoid !important; page-break-after:auto; }' +
+          'thead { display:table-header-group !important; }' +
           '</style></head><body>' +
           '<div class="actions">' +
           '<button class="btn btn-outline" onclick="savePDF()">📄 Simpan PDF</button>' +
@@ -3008,7 +3022,7 @@ let testiData = [];
           '<table><thead><tr><th>Tanggal</th><th>Produk</th><th style="text-align:center">Tipe</th><th style="text-align:center">Qty</th><th style="text-align:center">Sblm</th><th style="text-align:center">Ssdh</th><th>Ref. No.</th><th>Admin</th></tr></thead>' +
           '<tbody>' + rows + '</tbody></table>' +
           '<div class="footer"><span>Total ' + items.length + ' transaksi ditemukan</span><span>Dicetak oleh: ' + me.full_name + '</span></div></div>' +
-          '<script>function savePDF() { const element = document.getElementById("printArea"); const opt = { margin:0.2, filename:"Transaksi_Stok.pdf", image:{type:"jpeg",quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:"in",format:"a4",orientation:"landscape"} }; html2pdf().set(opt).from(element).save(); } function doPrint() { window.print(); } window.onbeforeunload = function() { if (window.opener && !window.opener.closed) window.opener.focus(); };</script>' +
+          '<script>function savePDF() { const element = document.getElementById("printArea"); const opt = { margin:0.2, filename:"Transaksi_Stok.pdf", image:{type:"jpeg",quality:0.98}, html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:"in",format:"a4",orientation:"landscape"}, pagebreak:{mode:["avoid-all","css","legacy"]} }; html2pdf().set(opt).from(element).save(); } function doPrint() { window.print(); } window.onbeforeunload = function() { if (window.opener && !window.opener.closed) window.opener.focus(); };</script>' +
           '</body></html>';
 
         const blob = new Blob([html], { type: 'text/html' });
